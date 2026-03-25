@@ -12,7 +12,7 @@
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/tuusuario/tucasa.git
+https://github.com/DicrimJac/Proyecto-tuCasa.git
 
 # Entrar al proyecto
 cd tucasa
