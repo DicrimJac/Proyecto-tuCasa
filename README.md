@@ -1,2 +1,24 @@
-# Proyecto-tuCasa
-Proyecto elaborado para Taller de Programación.
+# 🏡 TuCasa
+> Plataforma para la gestión y búsqueda de propiedades de manera fácil, rápida y moderna.
+---
+
+
+## Integrantes
+
+- Camila Roa
+- Nicol Saavedra
+- Karina Martinez
+- Jacqueline Zamora
+
+```bash
+# Clonar repositorio
+git clone https://github.com/tuusuario/tucasa.git
+
+# Entrar al proyecto
+cd tucasa
+
+# Instalar dependencias
+npm install
+
+# Ejecutar proyecto
+npm start
