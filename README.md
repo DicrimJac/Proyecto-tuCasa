@@ -14,11 +14,19 @@
 # Clonar repositorio
 https://github.com/DicrimJac/Proyecto-tuCasa.git
 
-# Entrar al proyecto
-cd tucasa
+```bash
+# Clonar repositorio
+ git clone https://github.com/DicrimJac/Proyecto-tuCasa.git
 
-# Instalar dependencias
-npm install
+# Instalacion deno
+-En PowerShell
+ irm https://deno.land/install.ps1 | iex
 
-# Ejecutar proyecto
-npm start
+- NPM
+  npm install -g deno
+
+#Confirmacion de Version
+  deno --version
+
+#Actualizacion
+  deno upgrade
