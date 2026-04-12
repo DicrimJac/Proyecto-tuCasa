@@ -11,13 +11,6 @@
 - Jacqueline Zamora
 
 ```bash
-# Clonar repositorio
-https://github.com/DicrimJac/Proyecto-tuCasa.git
-
-```bash
-# Clonar repositorio
- git clone https://github.com/DicrimJac/Proyecto-tuCasa.git
-
 # Instalacion deno
 -En PowerShell
  irm https://deno.land/install.ps1 | iex
@@ -30,3 +23,31 @@ https://github.com/DicrimJac/Proyecto-tuCasa.git
 
 #Actualizacion
   deno upgrade
+
+# Clonar repositorio
+ git clone https://github.com/DicrimJac/Proyecto-tuCasa.git
+
+#ver estado proyecto
+ git status
+
+#agregar cambios
+ git add .
+
+#commit
+ git commit -m "Especificar trabajo"
+
+#subir a la rama (branch)
+ git push origin nombre-rama
+
+#cambiar de rama
+ git checkout nombre-rama
+
+#actualizar rama con datos del main
+ git pull origin main --rebase
+
+#solicitar merge (que su codigo pase a main)
+ En GitHub:
+ Ir al repositorio
+ Click en “Compare & pull request”
+ Base: main
+ Compare: su-rama
