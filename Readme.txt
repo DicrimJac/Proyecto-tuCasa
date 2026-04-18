@@ -17,9 +17,9 @@ El proyecto se organiza en las siguientes carpetas:
 
 ### 🔹 Documentación
 
-Contiene todos los documentos asociados al análisis, diseño y planificación:
-
 * Planilla requerimientos
+* UML
+* WireFrames
 
 ### 🔹 Producto
 
