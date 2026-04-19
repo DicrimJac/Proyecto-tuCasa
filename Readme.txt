@@ -20,6 +20,7 @@ El proyecto se organiza en las siguientes carpetas:
 * Planilla requerimientos
 * UML
 * WireFrames
+* Carta Gantt
 
 ### 🔹 Producto
 
