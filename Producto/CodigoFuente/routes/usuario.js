@@ -13,10 +13,28 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // 🔹 CREATE
 const { data: created, error: errCreate } = await supabase
   .from("USUARIO")
-  .insert([{ first_name: "Jaqui JS" }])
+  .insert([{
+    first_name: "Jaqui",
+    second_name: "JS",
+    first_last_name: "Perez",
+    second_last_name: "Gomez",
+    rut: "12345678",
+    rut_dv: "9",
+    fono: "+56912345678",
+    mail: "jaqui@mail.com",
+    nacionalidad: "Chilena",
+    rol_nbr: 1,
+    rol_desc: "ADMIN",
+    date_birth: "1995-06-15",
+    gender_nbr: 1,
+    gender_desc: "Femenino",
+    password: "123456"
+    // date_register NO se envía si tienes DEFAULT
+  }])
   .select();
 
 console.log("CREATE:", created, errCreate);
+
 
 // 🔹 READ ALL
 const { data: all, error: errRead } = await supabase
@@ -25,33 +43,40 @@ const { data: all, error: errRead } = await supabase
 
 console.log("READ ALL:", all, errRead);
 
-// 🔹 tomar un id
-const id = all?.[0]?.id;
+
+// 🔹 tomar un id (CORREGIDO)
+const id = all?.[0]?.id_usuario;
 
 if (id) {
+
   // 🔹 READ ONE
   const { data: one, error: errOne } = await supabase
     .from("USUARIO")
     .select("*")
-    .eq("id", id)
+    .eq("id_usuario", id)
     .single();
 
   console.log("READ ONE:", one, errOne);
 
-  // 🔹 UPDATE
+
+  // 🔹 UPDATE (CORREGIDO: usar campos reales)
   const { data: updated, error: errUpdate } = await supabase
     .from("USUARIO")
-    .update({ nombre: "Actualizado JS" })
-    .eq("id", id)
+    .update({
+      first_name: "Jaqui Actualizada",
+      mail: "nuevo@mail.com"
+    })
+    .eq("id_usuario", id)
     .select();
 
   console.log("UPDATE:", updated, errUpdate);
+
 
   // 🔹 DELETE
   const { error: errDelete } = await supabase
     .from("USUARIO")
     .delete()
-    .eq("id", id);
+    .eq("id_usuario", id);
 
   console.log("DELETE:", errDelete);
 }
