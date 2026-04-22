@@ -8,7 +8,7 @@ Fue desarrollado como parte de la asignatura **[nombre del ramo]**.
 
 * Nombre Completo 1
 * Nombre Completo 2
-* Nombre Completo 3
+* Nicol Andrea Saavedra Gutiérrez
 * Jacqueline Lissette Zamora Tapia
 
 ## 📂 Estructura del Proyecto
