@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" href="/static/css/registro.css">
+    <!-- <img src="/static/img/logo.png"> -->
+</head>
+
+<body>
+    <div class="form-box">
+        <div class="header">
+            <img src="img/logo.png" alt="Logo">
+        </div>
+        <div class="header">
+            <h1>Registro de Usuario</h1>
+        </div>
+
+        <div class="form-grid">
+
+            <!-- NOMBRES -->
+            <div class="input-group">
+                <input id="primerNombre" required placeholder=" ">
+                <label for="primerNombre">Primer nombre</label>
+                <span class="error"></span>
+            </div>
+
+            <div class="input-group">
+                <input id="segundoNombre" required placeholder=" ">
+                <label for="segundoNombre">Segundo nombre</label>
+                <span class="error"></span>
+            </div>
+
+            <!-- APELLIDOS -->
+            <div class="input-group">
+                <input id="apellidoPaterno" required placeholder=" ">
+                <label for="apellidoPaterno">Apellido paterno</label>
+                <span class="error"></span>
+            </div>
+
+            <div class="input-group">
+                <input id="apellidoMaterno" required placeholder=" ">
+                <label for="apellidoMaterno">Apellido materno</label>
+                <span class="error"></span>
+            </div>
+
+            <!-- RUT -->
+            <div class="rut-group full">
+                <div class="input-group">
+                    <input id="rut" required placeholder=" ">
+                    <label for="rut">RUT</label>
+                </div>
+
+                <div class="input-group">
+                    <input id="dv" required placeholder=" ">
+                    <label for="dv">DV</label>
+                </div>
+            </div>
+
+            <!-- TELÉFONO -->
+            <div class="phone-group full">
+                <select id="pais">
+                    <option value="+56">CL +56</option>
+                    <option value="+54">AR +54</option>
+                    <option value="+51">PE +51</option>
+                </select>
+
+                <div class="input-group">
+                    <input id="telefono" required placeholder=" ">
+                    <label for="telefono">Teléfono</label>
+                    <span class="error"></span>
+                </div>
+            </div>
+
+            <!-- NACIONALIDAD -->
+            <select id="nacionalidad" class="full" required>
+                <option value="">Nacionalidad</option>
+                <option value="chilena">Chilena</option>
+                <option value="extranjera">Extranjera</option>
+            </select>
+
+            <!-- FECHA -->
+            <input id="fechaNacimiento" type="date" class="full" required>
+
+            <!-- GENERO -->
+            <select id="genero" required>
+                <option value="">Género</option>
+                <option value="1">Femenino</option>
+                <option value="2">Masculino</option>
+                <option value="3">Prefiero no decirlo</option>
+            </select>
+
+            <!-- RENTA -->
+            <select id="renta" required>
+                <option value="">Renta</option>
+                <option value="0-500000">$0 - $500.000</option>
+                <option value="500000-1000000">$500.000 - $1.000.000</option>
+                <option value="1000000-2000000">$1.000.000 - $2.000.000</option>
+                <option value="2000000+">Más de $2.000.000</option>
+            </select>
+
+            <!-- CORREO -->
+            <div class="input-group full">
+                <input id="correo" required placeholder=" ">
+                <label for="correo">Correo</label>
+                <span class="error"></span>
+            </div>
+
+            <div class="input-group full">
+                <input id="confirmarCorreo" required placeholder=" ">
+                <label for="confirmarCorreo">Confirmar correo</label>
+                <span class="error"></span>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="input-group password-group full">
+                <input id="password" type="password" required placeholder=" ">
+                <label for="password">Contraseña</label>
+                <span class="toggle">👁</span>
+                <span class="error"></span>
+            </div>
+
+            <div class="input-group password-group full">
+                <input id="confirmarPassword" type="password" required placeholder=" ">
+                <label for="confirmarPassword">Confirmar contraseña</label>
+                <span class="toggle">👁</span>
+                <span class="error"></span>
+            </div>
+
+        </div>
+
+        <button id="btn" disabled>CREAR USUARIO</button>
+
+    </div>
+
+   <script src="/static/js/registro.js"></script>
+</body>
+
+</html>
+
+
+
+
+

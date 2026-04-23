@@ -1,0 +1,198 @@
+/* BODY */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #e9f0f5, #d9e2ec);
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* CONTENEDOR */
+.form-box {
+  width: 100%;
+  max-width: 360px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.header img {
+  width: 50px;
+}
+
+/* TITULO */
+h1 {
+  text-align: center;
+  background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+/* GRID */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* INPUTS GENERALES */
+input,
+select {
+  width: 100%;
+  height: 42px;
+  border-radius: 12px;
+  border: 2px solid #dee2e6;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: #4a6272;
+  background: white;
+  transition: 0.2s;
+  box-sizing: border-box;
+}
+
+/* SELECT */
+select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%234a6272' height='20' viewBox='0 0 24 24' width='20'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  padding-right: 35px;
+}
+
+/* DATE */
+input[type="date"] {
+  color: #4a6272;
+}
+
+/* FOCUS */
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #2C5A6E;
+  box-shadow: 0 0 6px rgba(44, 90, 110, 0.25);
+}
+
+/* INPUT GROUP */
+.input-group {
+  position: relative;
+}
+
+/* FLOATING LABEL */
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c7f8b;
+  font-size: 13px;
+  background: white;
+  padding: 0 5px;
+  transition: 0.2s;
+  pointer-events: none;
+}
+
+/* CUANDO SUBE */
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -8px;
+  font-size: 11px;
+  color: #2C5A6E;
+}
+
+/* VALIDACIÓN */
+input.invalid,
+select.invalid {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 5px rgba(255, 77, 79, 0.2);
+}
+
+input.valid,
+select.valid {
+  border-color: #2C5A6E;
+}
+
+/* ERROR */
+.error {
+  font-size: 11px;
+  color: #ff4d4f;
+  margin-top: 3px;
+}
+
+/* RUT */
+.rut-group {
+  display: flex;
+  gap: 10px;
+}
+
+.rut-group .input-group {
+  flex: 1;
+}
+
+/* TELÉFONO */
+.phone-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.phone-group select {
+  width: 90px;
+}
+
+.phone-group .input-group {
+  flex: 1;
+}
+
+/* PASSWORD */
+.password-group {
+  position: relative;
+}
+
+.toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6c7f8b;
+}
+
+/* BOTÓN */
+button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* HOVER */
+button:hover {
+  background: linear-gradient(135deg, #16323f, #1f485b);
+}
+
+/* DESHABILITADO */
+button:disabled {
+  background: #dee2e6;
+  color: #8fabb9;
+  cursor: not-allowed;
+}
