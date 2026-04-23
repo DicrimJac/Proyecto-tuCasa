@@ -43,7 +43,7 @@
  git checkout nombre-rama
 
 #actualizar rama con datos del main
- git pull origin main --rebase
+ git pull origin main
 
 #solicitar merge (que su codigo pase a main)
  En GitHub:
