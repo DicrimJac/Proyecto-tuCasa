@@ -47,6 +47,8 @@
     console.log("\n--- 3. Listar todos los usuarios ---");
     await getUser();
 
+
+    
     /*
     Busca usuario por ID
     console.log("\n--- 4. Buscar usuario por ID (asumiendo ID 1) ---");
