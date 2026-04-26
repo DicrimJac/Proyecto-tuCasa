@@ -22,7 +22,7 @@
   deno --version
 
 #Actualizacion
-  deno upgrade
+  npm install -g deno
 
 # Clonar repositorio
  git clone https://github.com/DicrimJac/Proyecto-tuCasa.git
