@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tu Casa · Iniciar sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+                <div class="login-card p-4 p-md-5">
+                    <div class="card-header-custom text-center">
+                        <div class="logo-container" style="margin-bottom: 0.5rem;">
+                            <img src="assets/image/logo-tucasa.png" alt="Tu Casa Logo" style="width: 250px; max-width: 80%; height: auto;" onerror="this.style.display='none'; this.parentElement.querySelector('.fallback-logo').style.display='inline-block';">
+                            <i class="bi bi-house-heart-fill fallback-logo" style="display: none; font-size: 80px; color: #2C5A6E;"></i>
+                        </div>
+                    </div>
+
+                    <form id="loginForm" novalidate>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="mailInput" placeholder="nombre@ejemplo.com" autocomplete="email" required>
+                            <label for="mailInput"><i class="bi bi-envelope-fill me-2"></i>Mail</label>
+                            <div class="invalid-feedback" id="mailError">
+                                Por favor ingresa un correo electrónico válido.
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="passwordInput" placeholder="Contraseña" autocomplete="current-password" required>
+                            <label for="passwordInput"><i class="bi bi-lock-fill me-2"></i>Contraseña</label>
+                            <div class="invalid-feedback" id="passError">
+                                La contraseña debe tener al menos 4 caracteres.
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberCheck" style="border-radius: 0.3rem; border-color:#bdd3df;">
+                                <label class="form-check-label small text-secondary" for="rememberCheck">
+                                    Mantener sesión iniciada
+                                </label>
+                            </div>
+                            <a href="recover-password.html" class="text-decoration-none small" style="color:#2C5A6E;">¿Olvidaste tu contraseña?</a>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="btn btn-login w-100">
+                            <i class="bi bi-arrow-right-circle me-2"></i> Continuar
+                        </button>
+
+                        <div id="loginMessage" class="mt-2" style="min-height: 20px;"></div>
+
+                        <div class="divider my-2">
+                            <span>¿Nuevo en Tu Casa?</span>
+                        </div>
+                        <div class="text-center">
+                            <a href="#" id="createAccountBtn" class="create-account-link">
+                                <i class="bi bi-person-plus-fill me-1"></i> Crear cuenta
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

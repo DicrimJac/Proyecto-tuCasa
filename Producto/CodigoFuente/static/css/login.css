@@ -1,0 +1,259 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+    font-family: 'Segoe UI', system-ui, 'Inter', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(0px);
+    border-radius: 2rem;
+    box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.login-card:hover {
+    box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.3);
+}
+
+.card-header-custom {
+    background: transparent;
+    border-bottom: none;
+    text-align: center;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Estilos para el logo */
+.logo-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.logo-img {
+    width: 70px;
+    height: auto;
+    display: inline-block;
+}
+
+.brand-title {
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-title i {
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    color: #2C5A6E;
+    font-size: 1.8rem;
+}
+
+.sub-brand {
+    font-size: 0.85rem;
+    color: #6c7f8b;
+    letter-spacing: 0.3px;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.form-floating > label {
+    font-weight: 500;
+    color: #4a6272;
+}
+
+.form-control,
+.form-floating {
+    border-radius: 1rem;
+}
+
+.form-control:focus {
+    border-color: #2C5A6E;
+    box-shadow: 0 0 0 4px rgba(44, 90, 110, 0.2);
+}
+
+.btn-login {
+    background: linear-gradient(100deg, #1F3B4C, #2C5A6E);
+    border: none;
+    padding: 0.8rem 1rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+    border-radius: 2rem;
+    transition: all 0.2s;
+    color: white;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-login:hover {
+    color: #8FABB9;  
+    transform: translateY(-1px);
+    box-shadow: 0 12px 20px -8px rgba(0, 32, 43, 0.3);
+}
+
+.btn-login:hover i {
+    color: #8FABB9; 
+}
+.btn-login:active {
+    transform: translateY(1px);
+}
+
+.create-account-link {
+    text-decoration: none;
+    font-weight: 600;
+    color: #2C5A6E;
+    transition: 0.2s;
+    border-bottom: 1.5px dotted transparent;
+}
+
+.create-account-link:hover {
+    color: #14313f;
+    border-bottom-color: #2C5A6E;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #8fabb9;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.divider::before {
+    margin-right: 1rem;
+}
+
+.divider::after {
+    margin-left: 1rem;
+}
+
+.footer-note {
+    font-size: 0.7rem;
+    color: #8ba0ac;
+}
+
+.alert-custom {
+    border-radius: 1.2rem;
+    font-size: 0.85rem;
+    border-left: 4px solid #2C5A6E;
+    background: #f0f6fa;
+}
+
+@media (max-width: 500px) {
+    .login-card {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .brand-title {
+        font-size: 1.7rem;
+    }
+
+    .logo-img {
+        width: 55px;
+    }
+}
+
+/* ========== REGLAS PARA EL COLOR DE ETIQUETAS ========== */
+.form-floating > label {
+    color: #4a6272 !important;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    color: #4a6272 !important;
+}
+
+.form-floating > label i {
+    color: #4a6272;
+}
+
+/* ========== REGLAS PARA ELIMINAR FONDO BLANCO ========== */
+.form-floating > label {
+    background-color: transparent !important;
+}
+
+.form-floating > .form-control:-webkit-autofill ~ label,
+.form-floating > .form-control:autofill ~ label {
+    background-color: transparent !important;
+    color: #4a6272 !important;
+}
+
+.form-floating label {
+    background: transparent !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+    transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+input:-webkit-autofill ~ label {
+    background-color: transparent !important;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    background-color: transparent !important;
+    color: #4a6272 !important;
+}
+
+/* Estilos específicos para mensajes de error de dominio */
+.invalid-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* Mejora visual para validación en tiempo real */
+.form-control.is-valid {
+    border-color: #1F3B4C;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+/* Tooltip para mostrar dominios permitidos */
+.domains-hint {
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    text-align: center;
+}
