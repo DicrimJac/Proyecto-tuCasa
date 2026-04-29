@@ -8,65 +8,48 @@ const supabaseKey = "sb_publishable_Qn7smKJrhpGseZ0p5XXcKg_qAMiIQuB";
 if (!supabaseUrl || !supabaseKey) {
     throw new Error("Faltan variables de entorno");
 }
-
 const supabase = createClient(supabaseUrl, supabaseKey);
-    /**
-     * Crear un nuevo usuario
-     */
-    export async function createUser(userData) {
+
+/**
+ * Crear un nuevo usuario (con validación de email duplicado)
+ */
+export async function createUser(userData) {
     try {
-        const {
-        first_name,
-        second_name,
-        first_last_name,
-        second_last_name,
-        rut,
-        rut_dv,
-        fono,
-        mail,
-        nacionalidad,
-        rol_nbr,
-        rol_desc,
-        date_birth,
-        gender_nbr,
-        gender_desc,
-        pass,
-        } = userData;
+        const { mail, first_name, pass, ...rest } = userData;
 
-        const { data, error } = await supabase
-        .from("USUARIO")
-        .insert([
-            {
-            first_name,
-            second_name: second_name,
-            first_last_name: first_last_name,
-            second_last_name: second_last_name,
-            rut: rut,
-            rut_dv: rut_dv,
-            fono: fono,
-            mail,
-            nacionalidad: nacionalidad,
-            rol_nbr: rol_nbr,
-            rol_desc: rol_desc,
-            date_birth: date_birth,
-            gender_nbr: gender_nbr,
-            gender_desc: gender_desc,
-            pass,
-            date_register: new Date().toISOString().split("T")[0],
-            },
-        ])
-        .select();
+        // Validar si el email ya existe
+        const { data: existe } = await supabase
+            .from("USUARIO")
+            .select("mail")
+            .eq("mail", mail)
+            .maybeSingle();
 
-        if (error) {
-        console.log("Error al crear usuario:", error.message);
-        return;
+        if (existe) {
+            console.log(`El correo "${mail}" ya está registrado`);
+            return;
         }
 
-        console.log("Usuario creado exitosamente:", data[0].first_name, data[0].mail);
+        // Crear usuario
+        const { data, error } = await supabase
+            .from("USUARIO")
+            .insert([{
+                ...rest,
+                mail,
+                first_name,
+                pass,
+                date_register: new Date().toISOString().split("T")[0],
+            }])
+            .select();
+
+        if (error) throw error;
+
+        console.log(`Usuario creado: ${data[0].first_name} (${data[0].mail})`);
+        return data[0];
+
     } catch (error) {
-        console.log("Error en crearUsuario:", error.message);
+        console.log("Error al crear usuario:", error.message);
     }
-    }
+}
 
     /**
      * Obtener todos los usuarios
@@ -242,6 +225,38 @@ const supabase = createClient(supabaseUrl, supabaseKey);
         console.log("Error en eliminarUsuario:", error.message);
     }
     }
+
+    /**
+ * Eliminar un usuario por Email (versión simple)
+ */
+export async function deleteUserByEmail(email) {
+    try {
+        // Verificar si existe
+        const { data: existe, error: errorExiste } = await supabase
+            .from("USUARIO")
+            .select("first_name, mail")
+            .eq("mail", email)
+            .maybeSingle();
+
+        if (!existe) {
+            console.log(`Usuario no encontrado con email: ${email}`);
+            return;
+        }
+
+        // Eliminar
+        const { error } = await supabase
+            .from("USUARIO")
+            .delete()
+            .eq("mail", email);
+
+        if (error) throw error;
+
+        console.log(`Usuario eliminado: ${existe.first_name} (${existe.mail})`);
+
+    } catch (error) {
+        console.log("Error al eliminar usuario:", error.message);
+    }
+}
 
     /**
      * Autenticar usuario (login)
