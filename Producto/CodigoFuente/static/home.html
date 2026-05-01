@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Casa · Inicio</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- HEADER (se carga dinámicamente) -->
+    <div id="header"></div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <!-- CARRUSEL -->
+        <div class="carousel">
+            <div class="carousel-track">
+                <div class="slide">
+                    <img src="assets/image/casa1.png" alt="Casa 1">
+                    <div class="slide-text">
+                        <p>Arriendos con información real</p>
+                        <a href="register.html" class="btn-slide">Explorar</a>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="assets/image/casa2.png" alt="Casa 2">
+                    <div class="slide-text">
+                        <p>Arriendos con información real</p>
+                        <a href="register.html" class="btn-slide">Explorar</a>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="assets/image/casa3.png" alt="Casa 3">
+                    <div class="slide-text">
+                        <p>Arriendos con información real</p>
+                        <a href="register.html" class="btn-slide">Explorar</a>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="assets/image/casa4.png" alt="Casa 4">
+                    <div class="slide-text">
+                        <p>Arriendos con información real</p>
+                        <a href="register.html" class="btn-slide">Explorar</a>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="assets/image/casa5.png" alt="Casa 5">
+                    <div class="slide-text">
+                        <p>Arriendos con información real</p>
+                        <a href="register.html" class="btn-slide">Explorar</a>
+                    </div>
+                </div>
+            </div>
+            <button class="prev">❮</button>
+            <button class="next">❯</button>
+        </div>
+
+        <!-- FILTROS -->
+        <section class="filtros">
+            <input type="text" id="buscar" placeholder="Buscar por nombre...">
+            <select id="precio">
+                <option value="">Precio</option>
+                <option value="300000">Hasta $300.000</option>
+                <option value="500000">Hasta $500.000</option>
+                <option value="700000">Hasta $700.000</option>
+            </select>
+            <select id="habitaciones">
+                <option value="">Habitaciones</option>
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+            </select>
+        </section>
+
+        <!-- PROPIEDADES -->
+        <section class="propiedades">
+            <h2>Propiedades destacadas</h2>
+            <div class="cards-container">
+                <div class="card" data-precio="500000" data-habitaciones="3">
+                    <img src="assets/image/casa1.png" alt="Casa en Santiago">
+                    <div class="card-body">
+                        <h3>Casa en Santiago</h3>
+                        <p class="precio">$500.000 / mes</p>
+                        <p class="detalle">3 habitaciones · 2 baños</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="card" data-precio="350000" data-habitaciones="2">
+                    <img src="assets/image/casa2.png" alt="Departamento moderno">
+                    <div class="card-body">
+                        <h3>Departamento moderno</h3>
+                        <p class="precio">$350.000 / mes</p>
+                        <p class="detalle">2 habitaciones · 1 baño</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="card" data-precio="600000" data-habitaciones="4">
+                    <img src="assets/image/casa3.png" alt="Casa familiar">
+                    <div class="card-body">
+                        <h3>Casa familiar</h3>
+                        <p class="precio">$600.000 / mes</p>
+                        <p class="detalle">4 habitaciones · 3 baños</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER (se carga dinámicamente) -->
+    <div id="footer"></div>
+
+    <script src="js/home.js"></script>
+</body>
+
+</html>
