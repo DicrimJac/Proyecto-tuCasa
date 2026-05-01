@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tu Casa · Registro de Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/register.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+                <div class="register-card">
+                    <!-- Header - Todo junto y centrado -->
+                    <div class="header">
+                        <div class="logo-container">
+                            <img src="assets/image/2.png" alt="Logo Tu Casa" class="logo-img" onerror="this.src='https://via.placeholder.com/80/2C5A6E/FFFFFF?text=TC'">
+                        </div>
+                        <h2 class="form-title">Registro de Usuario</h2>
+                        <p class="form-subtitle">Crea tu cuenta para comenzar</p>
+                    </div>
+
+                    <form id="registerForm" class="register-form">
+                        <!-- Nombres -->
+                        <div class="input-group">
+                            <input type="text" id="firstName" required placeholder=" ">
+                            <label>Primer nombre</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="text" id="secondName" required placeholder=" ">
+                            <label>Segundo nombre</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div class="input-group">
+                            <input type="text" id="firstLastName" required placeholder=" ">
+                            <label>Apellido paterno</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="text" id="secondLastName" required placeholder=" ">
+                            <label>Apellido materno</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- RUT -->
+                        <div class="rut-group">
+                            <div class="input-group">
+                                <input type="text" id="rut" required placeholder=" " maxlength="12">
+                                <label>RUT</label>
+                                <span class="error-message"></span>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="rutDv" required placeholder=" " maxlength="1">
+                                <label>DV</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="phone-group">
+                            <span class="prefix">+56</span>
+                            <div class="input-group">
+                                <input type="tel" id="phone" required placeholder=" ">
+                                <label>Teléfono</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+
+                        <!-- Nacionalidad -->
+                        <div class="input-group">
+                            <select id="nationality" required>
+                                <option value="">Selecciona nacionalidad</option>
+                                <option value="chilena">Chilena</option>
+                                <option value="extranjera">Extranjera</option>
+                            </select>
+                            <label>Nacionalidad</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Fecha de nacimiento -->
+                        <div class="input-group">
+                            <input type="date" id="birthDate" required>
+                            <label>Fecha de nacimiento</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Género -->
+                        <div class="input-group">
+                            <select id="gender" required>
+                                <option value="">Selecciona género</option>
+                                <option value="F">Femenino</option>
+                                <option value="M">Masculino</option>
+                                <option value="PnD">Prefiero no decirlo</option>
+                            </select>
+                            <label>Género</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Correo -->
+                        <div class="input-group">
+                            <input type="email" id="email" required placeholder=" ">
+                            <label>Correo electrónico</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="email" id="confirmEmail" required placeholder=" ">
+                            <label>Confirmar correo</label>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="input-group password-group">
+                            <input type="password" id="password" required placeholder=" ">
+                            <label>Contraseña</label>
+                            <button type="button" class="toggle-password" tabindex="-1">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="input-group password-group">
+                            <input type="password" id="confirmPassword" required placeholder=" ">
+                            <label>Confirmar contraseña</label>
+                            <button type="button" class="toggle-password" tabindex="-1">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Términos -->
+                        <div class="terms-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="termsCheckbox">
+                                <span>Acepto los <a href="#" class="terms-link">términos y condiciones</a></span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-register" id="submitBtn" disabled>
+                            <i class="bi bi-person-plus"></i> CREAR USUARIO
+                        </button>
+
+                        <div class="login-link">
+                            <p>¿Ya tienes cuenta? <a href="login.html">Iniciar sesión</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-custom" id="notificationToast">
+        <div class="toast-header">
+            <i class="bi bi-info-circle-fill"></i>
+            <strong>Información</strong>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/register.js"></script>
+</body>
+</html>

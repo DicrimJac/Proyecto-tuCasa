@@ -1,311 +1,210 @@
-
-const userProfile = {
-    fullName: 'María González',
-    email: 'maria.gonzalez@example.com',
-    phone: '+56 9 1234 5678',
-    birthdate: '1990-03-15',
-    address: 'Av. Los Condes 1234, Santiago',
-    avatar: 'https://via.placeholder.com/120/CCCCCC/FFFFFF?text=User',
-    memberSince: '2024',
-    notifications: {
-        email: true,
-        push: true,
-        sms: false
-    },
-    privacy: {
-        twoFactor: false,
-        activityLog: true,
-        dataSharing: false
-    }
-};
-
-// ========== DOM ELEMENTS ==========
-
-const avatarImg = document.getElementById('avatarImg');
-const userNameDisplay = document.getElementById('userNameDisplay');
-const userEmailDisplay = document.getElementById('userEmailDisplay');
-const fullNameSpan = document.getElementById('fullName');
-const emailSpan = document.getElementById('email');
-const phoneSpan = document.getElementById('phone');
-const birthdateSpan = document.getElementById('birthdate');
-const addressSpan = document.getElementById('address');
-
-// Form elements
-const editFullName = document.getElementById('editFullName');
-const editPhone = document.getElementById('editPhone');
-const editBirthdate = document.getElementById('editBirthdate');
-const editAddress = document.getElementById('editAddress');
-
-// Notification elements
-const emailNotif = document.getElementById('emailNotif');
-const pushNotif = document.getElementById('pushNotif');
-const smsNotif = document.getElementById('smsNotif');
-
-// Privacy elements
-const twoFactorAuth = document.getElementById('twoFactorAuth');
-const activityLog = document.getElementById('activityLog');
-const dataSharing = document.getElementById('dataSharing');
-
-// Avatar elements
-const avatarUpload = document.getElementById('avatarUpload');
-const avatarPreview = document.getElementById('avatarPreview');
-
-// Toast notification
-const notificationToast = document.getElementById('notificationToast');
-const toastMessage = document.getElementById('toastMessage');
-
-
-function showToast(message, type = 'success') {
+// ========== FUNCIONES UTILITARIAS ==========
+function showToast(message) {
+    const toast = document.getElementById('notificationToast');
+    const toastMessage = document.getElementById('toastMessage');
     toastMessage.textContent = message;
-    const toastHeader = notificationToast.querySelector('.toast-header');
-    toastHeader.className = `toast-header bg-${type} text-white`;
-    notificationToast.style.display = 'block';
-    
+    toast.style.display = 'block';
     setTimeout(() => {
-        notificationToast.style.display = 'none';
+        toast.style.display = 'none';
     }, 3000);
 }
 
-
-function formatDate(dateString) {
-    if (!dateString) return '';
-    const parts = dateString.split('-');
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+function loadUserData() {
+    const savedData = localStorage.getItem('userProfile');
+    if (savedData) {
+        const userData = JSON.parse(savedData);
+        updateProfileDisplay(userData);
+    }
 }
 
-
-function loadUserProfile() {
-    // Header
-    userNameDisplay.textContent = userProfile.fullName;
-    userEmailDisplay.textContent = userProfile.email;
-    avatarImg.src = userProfile.avatar;
-    document.getElementById('memberSince').textContent = `Miembro desde ${userProfile.memberSince}`;
+function updateProfileDisplay(userData) {
+    document.getElementById('userNameDisplay').textContent = userData.fullName || 'María González';
+    document.getElementById('userEmailDisplay').textContent = userData.email || 'maria.gonzalez@example.com';
+    document.getElementById('fullName').textContent = userData.fullName || 'María González';
+    document.getElementById('email').textContent = userData.email || 'maria.gonzalez@example.com';
+    document.getElementById('phone').textContent = userData.phone || '+56 9 1234 5678';
+    document.getElementById('birthdate').textContent = userData.birthdate || '15/03/1990';
+    document.getElementById('address').textContent = userData.address || 'Av. Los Condes 1234, Santiago';
     
-    // Info rows
-    fullNameSpan.textContent = userProfile.fullName;
-    emailSpan.textContent = userProfile.email;
-    phoneSpan.textContent = userProfile.phone;
-    birthdateSpan.textContent = formatDate(userProfile.birthdate);
-    addressSpan.textContent = userProfile.address;
-    
-    // Modal form values
-    editFullName.value = userProfile.fullName;
-    editPhone.value = userProfile.phone;
-    editBirthdate.value = userProfile.birthdate;
-    editAddress.value = userProfile.address;
-    
-    // Notification preferences
-    emailNotif.checked = userProfile.notifications.email;
-    pushNotif.checked = userProfile.notifications.push;
-    smsNotif.checked = userProfile.notifications.sms;
-    
-    // Privacy preferences
-    twoFactorAuth.checked = userProfile.privacy.twoFactor;
-    activityLog.checked = userProfile.privacy.activityLog;
-    dataSharing.checked = userProfile.privacy.dataSharing;
+    if (userData.avatar) {
+        document.getElementById('avatarImg').src = userData.avatar;
+        document.getElementById('avatarPreview').src = userData.avatar;
+    }
 }
 
-/**
- * Save profile changes
- */
-function saveProfileChanges(event) {
-    event.preventDefault();
+// ========== EDITAR PERFIL ==========
+document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     
-    userProfile.fullName = editFullName.value;
-    userProfile.phone = editPhone.value;
-    userProfile.birthdate = editBirthdate.value;
-    userProfile.address = editAddress.value;
+    const userData = {
+        fullName: document.getElementById('editFullName').value,
+        email: document.getElementById('editEmail').value,
+        phone: document.getElementById('editPhone').value,
+        birthdate: document.getElementById('editBirthdate').value,
+        address: document.getElementById('editAddress').value,
+        avatar: document.getElementById('avatarImg').src
+    };
     
-    loadUserProfile();
-    showToast('Perfil actualizado correctamente', 'success');
+    if (userData.birthdate) {
+        const date = new Date(userData.birthdate);
+        userData.birthdate = date.toLocaleDateString('es-ES');
+    }
     
-    // Close modal
+    updateProfileDisplay(userData);
+    localStorage.setItem('userProfile', JSON.stringify(userData));
+    
     const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
-    if (modal) modal.hide();
-}
+    modal.hide();
+    showToast('Perfil actualizado correctamente');
+});
 
-/**
- * Change password
- */
-function changePassword(event) {
-    event.preventDefault();
+// ========== CAMBIAR CONTRASEÑA ==========
+document.getElementById('passwordChangeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const newPass = document.getElementById('newPass').value;
+    const confirmPass = document.getElementById('confirmNewPass').value;
     
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPass').value;
-    const confirmPassword = document.getElementById('confirmNewPass').value;
-    
-    if (!currentPassword || !newPassword || !confirmPassword) {
-        showToast('Por favor completa todos los campos', 'danger');
+    if (newPass !== confirmPass) {
+        showToast('Las contraseñas no coinciden');
         return;
     }
     
-    if (newPassword !== confirmPassword) {
-        showToast('Las contraseñas nuevas no coinciden', 'danger');
+    if (newPass.length < 6) {
+        showToast('La contraseña debe tener al menos 6 caracteres');
         return;
     }
     
-    if (newPassword.length < 6) {
-        showToast('La contraseña debe tener al menos 6 caracteres', 'danger');
-        return;
-    }
-    
-    // Simular cambio de contraseña
-    showToast('Contraseña actualizada correctamente', 'success');
-    
-    // Limpiar formulario
-    document.getElementById('currentPassword').value = '';
-    document.getElementById('newPass').value = '';
-    document.getElementById('confirmNewPass').value = '';
-    
-    // Cerrar modal
+    showToast('Contraseña actualizada correctamente');
+    this.reset();
     const modal = bootstrap.Modal.getInstance(document.getElementById('passwordModal'));
-    if (modal) modal.hide();
-}
+    modal.hide();
+});
 
-/**
- * Save notification preferences
- */
-function saveNotifications() {
-    userProfile.notifications = {
-        email: emailNotif.checked,
-        push: pushNotif.checked,
-        sms: smsNotif.checked
+// ========== NOTIFICACIONES ==========
+document.getElementById('saveNotif').addEventListener('click', function() {
+    const preferences = {
+        email: document.getElementById('emailNotif').checked,
+        push: document.getElementById('pushNotif').checked,
+        sms: document.getElementById('smsNotif').checked
     };
-    
-    showToast('Preferencias de notificaciones guardadas', 'success');
-    
+    localStorage.setItem('notificationPreferences', JSON.stringify(preferences));
+    showToast('Preferencias de notificaciones guardadas');
     const modal = bootstrap.Modal.getInstance(document.getElementById('notificationsModal'));
-    if (modal) modal.hide();
-}
+    modal.hide();
+});
 
-/**
- * Save privacy preferences
- */
-function savePrivacy() {
-    userProfile.privacy = {
-        twoFactor: twoFactorAuth.checked,
-        activityLog: activityLog.checked,
-        dataSharing: dataSharing.checked
+// ========== PRIVACIDAD ==========
+document.getElementById('savePrivacy').addEventListener('click', function() {
+    const privacy = {
+        twoFactor: document.getElementById('twoFactorAuth').checked,
+        activityLog: document.getElementById('activityLog').checked,
+        dataSharing: document.getElementById('dataSharing').checked
     };
-    
-    showToast('Configuración de privacidad guardada', 'success');
-    
+    localStorage.setItem('privacySettings', JSON.stringify(privacy));
+    showToast('Configuración de privacidad guardada');
     const modal = bootstrap.Modal.getInstance(document.getElementById('privacyModal'));
-    if (modal) modal.hide();
-}
+    modal.hide();
+});
 
-/**
- * Handle avatar upload
- */
-function handleAvatarUpload() {
-    const file = avatarUpload.files[0];
+// ========== AVATAR ==========
+document.getElementById('saveAvatar').addEventListener('click', function() {
+    const fileInput = document.getElementById('avatarUpload');
+    const file = fileInput.files[0];
     
-    if (!file) return;
-    
-    // Validar tipo de archivo
-    if (!file.type.match('image.*')) {
-        showToast('Solo se permiten imágenes', 'danger');
-        return;
+    if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+            showToast('La imagen no debe superar los 2MB');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const avatarUrl = e.target.result;
+            document.getElementById('avatarImg').src = avatarUrl;
+            document.getElementById('avatarPreview').src = avatarUrl;
+            
+            const savedData = localStorage.getItem('userProfile');
+            if (savedData) {
+                const userData = JSON.parse(savedData);
+                userData.avatar = avatarUrl;
+                localStorage.setItem('userProfile', JSON.stringify(userData));
+            }
+            
+            showToast('Foto de perfil actualizada');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
+            modal.hide();
+        };
+        reader.readAsDataURL(file);
+    } else {
+        showToast('Selecciona una imagen primero');
     }
-    
-    // Validar tamaño (2MB)
-    if (file.size > 2 * 1024 * 1024) {
-        showToast('La imagen no debe superar los 2MB', 'danger');
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        avatarPreview.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
+});
 
-/**
- * Save avatar
- */
-function saveAvatar() {
-    if (avatarPreview.src && avatarPreview.src !== 'https://via.placeholder.com/150/CCCCCC/FFFFFF?text=User') {
-        userProfile.avatar = avatarPreview.src;
-        avatarImg.src = userProfile.avatar;
-        showToast('Foto de perfil actualizada', 'success');
+document.getElementById('removeAvatar').addEventListener('click', function() {
+    const name = document.getElementById('userNameDisplay').textContent;
+    const defaultAvatar = `https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=120&bold=true&name=${encodeURIComponent(name)}`;
+    document.getElementById('avatarImg').src = defaultAvatar;
+    document.getElementById('avatarPreview').src = defaultAvatar;
+    
+    const savedData = localStorage.getItem('userProfile');
+    if (savedData) {
+        const userData = JSON.parse(savedData);
+        userData.avatar = defaultAvatar;
+        localStorage.setItem('userProfile', JSON.stringify(userData));
     }
     
+    showToast('Foto de perfil eliminada');
     const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
-    if (modal) modal.hide();
+    modal.hide();
+});
+
+// ========== CERRAR SESIÓN ==========
+document.getElementById('logoutBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('profileOffcanvas'));
+    if (offcanvas) {
+        offcanvas.hide();
+    }
+    setTimeout(() => {
+        window.location.href = 'logout.html';
+    }, 200);
+});
+
+// ========== PRECARGAR DATOS EN MODAL DE EDICIÓN ==========
+document.getElementById('editProfileModal').addEventListener('show.bs.modal', function() {
+    document.getElementById('editFullName').value = document.getElementById('fullName').textContent;
+    document.getElementById('editEmail').value = document.getElementById('email').textContent;
+    document.getElementById('editPhone').value = document.getElementById('phone').textContent;
+    document.getElementById('editAddress').value = document.getElementById('address').textContent;
+    
+    const birthdateText = document.getElementById('birthdate').textContent;
+    if (birthdateText && birthdateText !== 'No especificada') {
+        const parts = birthdateText.split('/');
+        if (parts.length === 3) {
+            const date = new Date(parts[2], parts[1] - 1, parts[0]);
+            if (!isNaN(date.getTime())) {
+                document.getElementById('editBirthdate').value = date.toISOString().split('T')[0];
+            }
+        }
+    }
+});
+
+// ========== CARGAR PREFERENCIAS GUARDADAS ==========
+const savedNotif = localStorage.getItem('notificationPreferences');
+if (savedNotif) {
+    const notif = JSON.parse(savedNotif);
+    document.getElementById('emailNotif').checked = notif.email;
+    document.getElementById('pushNotif').checked = notif.push;
+    document.getElementById('smsNotif').checked = notif.sms;
 }
 
-/**
- * Remove avatar
- */
-function removeAvatar() {
-    userProfile.avatar = 'https://via.placeholder.com/120/CCCCCC/FFFFFF?text=User';
-    avatarImg.src = userProfile.avatar;
-    avatarPreview.src = 'https://via.placeholder.com/150/CCCCCC/FFFFFF?text=User';
-    showToast('Foto de perfil eliminada', 'success');
-    
-    const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
-    if (modal) modal.hide();
+const savedPrivacy = localStorage.getItem('privacySettings');
+if (savedPrivacy) {
+    const privacy = JSON.parse(savedPrivacy);
+    document.getElementById('twoFactorAuth').checked = privacy.twoFactor;
+    document.getElementById('activityLog').checked = privacy.activityLog;
+    document.getElementById('dataSharing').checked = privacy.dataSharing;
 }
 
-/**
- * Initialize all event listeners
- */
-function initEventListeners() {
-    // Edit profile form
-    const editProfileForm = document.getElementById('editProfileForm');
-    if (editProfileForm) {
-        editProfileForm.addEventListener('submit', saveProfileChanges);
-    }
-    
-    // Password change form
-    const passwordChangeForm = document.getElementById('passwordChangeForm');
-    if (passwordChangeForm) {
-        passwordChangeForm.addEventListener('submit', changePassword);
-    }
-    
-    // Save notifications button
-    const saveNotifBtn = document.getElementById('saveNotif');
-    if (saveNotifBtn) {
-        saveNotifBtn.addEventListener('click', saveNotifications);
-    }
-    
-    // Save privacy button
-    const savePrivacyBtn = document.getElementById('savePrivacy');
-    if (savePrivacyBtn) {
-        savePrivacyBtn.addEventListener('click', savePrivacy);
-    }
-    
-    // Avatar upload
-    if (avatarUpload) {
-        avatarUpload.addEventListener('change', handleAvatarUpload);
-    }
-    
-    // Save avatar button
-    const saveAvatarBtn = document.getElementById('saveAvatar');
-    if (saveAvatarBtn) {
-        saveAvatarBtn.addEventListener('click', saveAvatar);
-    }
-    
-    // Remove avatar button
-    const removeAvatarBtn = document.getElementById('removeAvatar');
-    if (removeAvatarBtn) {
-        removeAvatarBtn.addEventListener('click', removeAvatar);
-    }
-}
-
-/**
- * Main initialization function
- */
-function init() {
-    loadUserProfile();
-    initEventListeners();
-    console.log('Perfil page initialized');
-}
-
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
+// ========== INICIALIZAR ==========
+loadUserData();
