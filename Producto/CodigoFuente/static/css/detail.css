@@ -1,0 +1,53 @@
+/* CONTENEDOR */
+.detalle {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* IMAGEN */
+.detalle img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+/* TÍTULO */
+.detalle h2 {
+    color: #1F3B4C;
+    margin-bottom: 10px;
+}
+
+/* PRECIO */
+.detalle .precio {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2C5A6E;
+    margin-bottom: 10px;
+}
+
+/* INFO */
+.detalle .info {
+    color: #6c7f8b;
+    margin-bottom: 20px;
+}
+
+/* BOTÓN VOLVER */
+.btn-volver {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #2C5A6E;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.btn-volver:hover {
+    background: #1F3B4C;
+}
+
+.mapa {
+    margin-top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+}
