@@ -9,9 +9,6 @@ export class UserService {
         try {
             const users = await this.userRepository.findAll();
 
-            // Aquí puedes agregar lógica de negocio
-            // Por ejemplo: filtrar, transformar datos, validaciones, etc.
-
             return {
                 success: true,
                 data: users,
