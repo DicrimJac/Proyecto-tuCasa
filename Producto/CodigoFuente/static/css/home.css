@@ -1,0 +1,268 @@
+/* ===================== ESTILOS GENERALES ===================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, 'Inter', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+}
+
+/* ===================== CARRUSEL ===================== */
+.carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.slide {
+    min-width: 100%;
+    position: relative;
+}
+
+.slide img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.slide-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+    background: rgba(0,0,0,0.4);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.slide-text p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.btn-slide {
+    background: linear-gradient(100deg, #1F3B4C, #2C5A6E);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-slide:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(44, 90, 110, 0.3);
+}
+
+/* .prev, .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: background 0.3s;
+} */
+
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    
+    background: rgba(0,0,0,0.4);
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-radius: 8%;
+    font-size: 18px;
+}
+
+.prev:hover, .next:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}
+
+/* ===================== FILTROS ===================== */
+.filtros {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filtros input,
+.filtros select {
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.filtros input:focus,
+.filtros select:focus {
+    border-color: #2C5A6E;
+    box-shadow: 0 0 0 3px rgba(44, 90, 110, 0.1);
+}
+
+/* ===================== PROPIEDADES ===================== */
+.propiedades h2 {
+    color: #1F3B4C;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-body h3 {
+    color: #1F3B4C;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.precio {
+    color: #2C5A6E;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+}
+
+.detalle {
+    color: #6c7f8b;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.card-body button {
+    background: linear-gradient(100deg, #1F3B4C, #2C5A6E);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.card-body button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(44, 90, 110, 0.3);
+}
+
+/* ================= ÚLTIMAS ================= */
+.ultimas {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.ultimas h2 {
+    margin-bottom: 20px;
+    color: #1F3B4C;
+}
+
+/* opcional: un poco diferente */
+.ultimas-container .card {
+    border: 2px solid #e0e6eb;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+    main {
+        padding: 1rem;
+    }
+    
+    .slide img {
+        height: 300px;
+    }
+    
+    .slide-text {
+        bottom: 15%;
+        padding: 0.5rem 1rem;
+    }
+    
+    .slide-text p {
+        font-size: 0.9rem;
+    }
+    
+    .cards-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .filtros {
+        flex-direction: column;
+    }
+    
+    .slide img {
+        height: 250px;
+    }
+}

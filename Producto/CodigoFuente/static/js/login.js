@@ -227,8 +227,16 @@
             passwordInput.value = '';
             mailInput.classList.remove('is-invalid', 'is-valid');
             passwordInput.classList.remove('is-invalid', 'is-valid');
-            showMessage('Crea una nueva cuenta. Recuerda usar email con dominio válido (Gmail, Hotmail, Yahoo, Duoc, Outlook) y contraseña de mínimo 6 caracteres.', 'info');
             mailInput.focus();
         });
     }
 })();
+
+// Redirección al registro
+const createAccountBtn = document.getElementById('createAccountBtn');
+if (createAccountBtn) {
+    createAccountBtn.addEventListener('click', function(e) {
+        // Si el href no funciona, esta es una alternativa
+        window.location.href = 'register.html';
+    });
+}
