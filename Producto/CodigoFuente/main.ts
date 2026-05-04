@@ -1,6 +1,7 @@
 // main.ts
 import { Hono } from "hono";
 import { serveDir } from "jsr:@std/http/file-server";
+import { fromFileUrl, join } from "jsr:@std/path@1";
 import userRoute from "./backend/route/userRoute.js";
 
 const app = new Hono();
@@ -41,16 +42,20 @@ app.route("/api/users", userRoute);
 // RUTAS DE ARCHIVOS ESTÁTICOS
 // ============================================
 
-// Servir archivos estáticos desde la carpeta "static"
+// Resolver ruta absoluta a la carpeta "static" relativa a este archivo, no al cwd
+const moduleDir = fromFileUrl(new URL("./", import.meta.url));
+const staticRoot = join(moduleDir, "static");
+
+// Servir archivos estáticos desde la carpeta "static" (agnóstico del cwd)
 app.get("/*", async (c) => {
   // Convertir el request de Hono a Request nativo de Deno
   const request = new Request(c.req.url, {
     method: c.req.method,
-    headers: c.req.header()
+    headers: c.req.header(),
   });
-  
+
   const response = await serveDir(request, {
-    fsRoot: "static",
+    fsRoot: staticRoot,
     urlRoot: "",
     showDirListing: false,
     enableCors: true,
@@ -71,9 +76,9 @@ app.get("/*", async (c) => {
 
 const port = 3000;
 
-console.log("🚀 Servidor corriendo en http://localhost:" + port);
-console.log("📁 Archivos estáticos: carpeta /static");
-console.log("🔌 API endpoints:");
+console.log("   Servidor corriendo en http://localhost:" + port);
+console.log("   Archivos estáticos: carpeta /static");
+console.log("   API endpoints:");
 console.log("   GET    /api/users");
 console.log("   GET    /api/users/:id");
 console.log("   POST   /api/users");

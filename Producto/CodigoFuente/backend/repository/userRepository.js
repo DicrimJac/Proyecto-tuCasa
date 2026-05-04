@@ -24,7 +24,7 @@ export class UserRepository extends BaseRepository {
     
     async create(userData) {
         const { data, error } = await this.supabase
-            .from('users')
+            .from('USUARIO')
             .insert(userData)
             .select()
             .single();
