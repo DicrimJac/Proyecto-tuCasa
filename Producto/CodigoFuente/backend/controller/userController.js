@@ -1,4 +1,5 @@
 import { UserService } from "../service/UserService.js";
+import { SessionRepository } from "../repository/sessionRepository.js";
 
 export class UserController {
   constructor() {
@@ -27,6 +28,25 @@ export class UserController {
     }
   }
 
+  // POST /api/login (inicio de sesión básico por correo y contraseña)
+  async login(c) {
+    try {
+      const { email, password } = await c.req.json();
+      const result = await this.userService.authenticateByEmail(email, password);
+      const status = result.success ? 200 : 401;
+      // Si el login es exitoso, crear una sesión y persistirla en una cookie HttpOnly
+      if (result.success) {
+        const sessionRepo = new SessionRepository();
+        const userId = result.data?.id || result.data?.id_user || result.data?.user_id;
+        const token = sessionRepo.createSession(userId);
+        // Establecer cookie HttpOnly para mantener la sesión
+        c.cookie("session_id", token, { httpOnly: true, path: "/" });
+      }
+      return c.json(result, status);
+    } catch (error) {
+      return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+    }
+  }
   // GET /api/users/:id
   async getUserById(c) {
     try {
@@ -41,6 +61,18 @@ export class UserController {
         error: "Error interno del servidor",
         message: error.message,
       }, 500);
+    }
+  }
+
+  // POST /api/register
+  async register(c) {
+    try {
+      const payload = await c.req.json();
+      const result = await this.userService.register(payload);
+      const status = result.success ? 201 : 400;
+      return c.json(result, status);
+    } catch (error) {
+      return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
     }
   }
 }

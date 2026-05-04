@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { serveDir } from "jsr:@std/http/file-server";
 import { fromFileUrl, join } from "jsr:@std/path@1";
 import userRoute from "./backend/route/userRoute.js";
+import renderLayout from "./backend/utils/layouth.js";
 
 const app = new Hono();
 
@@ -34,9 +35,6 @@ app.use("*", async (c, next) => {
 // Montar rutas de usuarios
 app.route("/api/users", userRoute);
 
-// O si prefieres rutas directas:
-// app.get("/api/users", (c) => userController.getAllUsers(c));
-// app.get("/api/users/:id", (c) => userController.getUserById(c));
 
 // ============================================
 // RUTAS DE ARCHIVOS ESTÁTICOS

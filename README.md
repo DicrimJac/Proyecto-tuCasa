@@ -51,3 +51,23 @@
  Click en “Compare & pull request”
  Base: main
  Compare: su-rama
+
+----------------------------------------------------------------------------
+
+## Iniciar applicacion con backend
+
+para iniciar aplicacion con el backend, estando en la ruta Producto/CodigoFuente (CMD)
+
+ejecutar el comando 
+
+- deno run start
+
+las paginas van a estar disponibles en la ruta:
+
+ - http://localhost:3000
+
+para detener aplicacion, estando en la terminal de cmd en donde inciamos el proyecto, apretar la tecla
+
+ - Ctrl + c
+
+y luego confirmar escribiendo: "s" en el terminal

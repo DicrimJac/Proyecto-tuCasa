@@ -28,8 +28,7 @@ const { data: created, error: errCreate } = await supabase
     date_birth: "1995-06-15",
     gender_nbr: 1,
     gender_desc: "Femenino",
-    password: "123456"
-    // date_register NO se envía si tienes DEFAULT
+    pass: "123456"
   }])
   .select();
 

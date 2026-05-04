@@ -378,34 +378,70 @@ form.addEventListener('submit', async (e) => {
     // Deshabilitar botón durante el envío
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> REGISTRANDO...';
+
+    const genderValueRaw = fields.gender.value;
+    // Si no hay selección, por defecto usar 3 (prefiero no decirlo)
+    const genderValue = genderValueRaw ? Number(genderValueRaw) : 3;
+    let genderDescValue = null;
+    if (genderValue === 1) {
+        genderDescValue = "Femenino";
+    } else if (genderValue === 2) {
+        genderDescValue = "Masculino";
+    } else if (genderValue === 3) {
+        // Opción 3: mapear como null según decisión
+        genderDescValue = null;
+    }
+
+    const rutRaw = (fields.rut.value ?? "").toString().trim();
+    const rutDvRaw = (fields.rutDv.value ?? "").toString().trim();
+    const rutCombined = (rutRaw && rutDvRaw) ? `${rutRaw}-${rutDvRaw}` : "";
+
+    const userData = {
+        firstName: fields.firstName.value,
+        secondName: fields.secondName.value,
+        firstLastName: fields.firstLastName.value,
+        secondLastName: fields.secondLastName.value,
+        rut: rutCombined,
+        phone: '+56' + fields.phone.value,
+        nationality: fields.nationality.value,
+        birthDate: fields.birthDate.value,
+        gender: genderValue,
+        gender_desc: genderDescValue,
+        email: fields.email.value,
+        pass: fields.password.value // usamos 'pass' para la columna de BD
+    };
     
-    // Simular registro (aquí iría tu llamada a la API)
+    // Enviar datos al endpoint /api/users/register 
+    fetch("http://localhost:3000/api/users/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userData)
+    })
+    .then(async (res) => {
+        const data = await res.json();
+        if (res.ok && data?.success) {
+            showToast("Registro exitoso");
+            // Guardar en localStorage
+            localStorage.setItem("user_last_register", JSON.stringify(data));
+            // Resetear formulario
+            form.reset();
+        } else {
+            showToast(data?.error ?? "Error al registrar", true);
+        }
+    })
+    .catch((err) => {
+        showToast("Error de red: " + (err?.message ?? err), true);
+    });
+    
+    localStorage.setItem('userData', JSON.stringify(userData));
+    
+    showToast('¡Registro exitoso! Redirigiendo al login...');
+    
     setTimeout(() => {
-        const userData = {
-            firstName: fields.firstName.value,
-            secondName: fields.secondName.value,
-            firstLastName: fields.firstLastName.value,
-            secondLastName: fields.secondLastName.value,
-            rut: fields.rut.value + '-' + fields.rutDv.value,
-            phone: '+56' + fields.phone.value,
-            nationality: fields.nationality.value,
-            birthDate: fields.birthDate.value,
-            gender: fields.gender.value,
-            email: fields.email.value,
-            password: fields.password.value
-        };
-        
-        console.log('Datos de registro:', userData);
-        
-        // Guardar en localStorage (simulación)
-        localStorage.setItem('userData', JSON.stringify(userData));
-        
-        showToast('¡Registro exitoso! Redirigiendo al login...');
-        
-        setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 2000);
-    }, 1500);
+        window.location.href = 'login.html';
+    }, 2000);
 });
 
 // ===================== INICIALIZAR =====================
