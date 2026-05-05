@@ -1,4 +1,4 @@
-import { UserService } from "../service/UserService.js";
+import { UserService } from "../service/userService.js";
 import { SessionRepository } from "../repository/sessionRepository.js";
 
 export class UserController {
