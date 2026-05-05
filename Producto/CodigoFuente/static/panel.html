@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tu Casa · Panel de Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/panel.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+</head>
+<body>
+
+    <!-- HEADER (se carga dinámicamente) -->
+    <div id="header"></div>
+
+<main class="panel-main">
+    <div class="container-fluid px-0">
+        <div class="row g-0">
+            <!-- Sidebar fijo -->
+            <div class="col-lg-3 col-xl-2 panel-sidebar-wrapper">
+                <div class="panel-sidebar">
+                    <div class="user-info text-center">
+                        <div class="avatar-circle mx-auto">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <h5 id="userName">Cargando...</h5>
+                        <p class="small text-muted" id="userEmail">---</p>
+                        <div class="user-stats">
+                            <div class="row text-center g-2">
+                                <div class="col-6">
+                                    <small class="text-muted">Propiedades</small>
+                                    <h6 id="statProperties">0</h6>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Mensajes</small>
+                                    <h6 id="statMessages">0</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <nav class="nav flex-column nav-pills">
+                        <a class="nav-link active" data-section="dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                        <a class="nav-link" data-section="properties">
+                            <i class="bi bi-building"></i> Mis Propiedades
+                        </a>
+                        <a class="nav-link" data-section="favorites">
+                            <i class="bi bi-heart"></i> Favoritos
+                        </a>
+                        <a class="nav-link" data-section="messages">
+                            <i class="bi bi-envelope"></i> Mensajes
+                            <span class="badge bg-danger ms-2" id="unreadBadge">3</span>
+                        </a>
+                        <a class="nav-link" data-section="settings">
+                            <i class="bi bi-gear"></i> Configuración
+                        </a>
+                        <hr>
+                        <a class="nav-link text-danger" id="logoutBtn">
+                            <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="col-lg-9 col-xl-10 panel-content-wrapper">
+                <!-- Barra de filtros fija (solo visible en dashboard y propiedades) -->
+                <div class="filtros-sticky" id="filtrosSticky" style="display: none;">
+                    <div class="container-fluid px-4">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="filterSearch" class="form-control" placeholder="Buscar propiedad...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filterPrice" class="form-select">
+                                    <option value="">Precio máximo</option>
+                                    <option value="300000">$300.000</option>
+                                    <option value="500000">$500.000</option>
+                                    <option value="700000">$700.000</option>
+                                    <option value="1000000">$1.000.000</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filterRooms" class="form-select">
+                                    <option value="">Habitaciones</option>
+                                    <option value="1">1 Habitación</option>
+                                    <option value="2">2 Habitaciones</option>
+                                    <option value="3">3 Habitaciones</option>
+                                    <option value="4">4+ Habitaciones</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="clearFilters" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-x-circle"></i> Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-content p-4">
+                    <!-- SECCIÓN DASHBOARD -->
+                    <div id="dashboard-section" class="panel-section">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="stats-card">
+                                    <div class="stats-icon">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    <div class="stats-info">
+                                        <h3 id="totalProperties">0</h3>
+                                        <p>Propiedades activas</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stats-card">
+                                    <div class="stats-icon">
+                                        <i class="bi bi-envelope"></i>
+                                    </div>
+                                    <div class="stats-info">
+                                        <h3 id="totalMessages">0</h3>
+                                        <p>Mensajes recibidos</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5><i class="bi bi-clock-history"></i> Propiedades recientes</h5>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
+                                <i class="bi bi-plus-circle"></i> Publicar propiedad
+                            </button>
+                        </div>
+                        <div class="row g-4" id="propertiesGrid"></div>
+                        <div class="text-center mt-4" id="paginationControls"></div>
+                    </div>
+
+                    <!-- SECCIÓN MIS PROPIEDADES -->
+                    <div id="properties-section" class="panel-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3><i class="bi bi-building"></i> Mis Propiedades</h3>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
+                                <i class="bi bi-plus-circle"></i> Nueva propiedad
+                            </button>
+                        </div>
+                        <div class="row g-4" id="allPropertiesGrid"></div>
+                        <div class="text-center mt-4" id="allPaginationControls"></div>
+                    </div>
+
+                    <!-- SECCIÓN FAVORITOS -->
+                    <div id="favorites-section" class="panel-section">
+                        <h3><i class="bi bi-heart"></i> Propiedades Favoritas</h3>
+                        <div class="row g-4" id="favoritesGrid"></div>
+                    </div>
+
+                    <!-- SECCIÓN MENSAJES -->
+                    <div id="messages-section" class="panel-section">
+                        <h3><i class="bi bi-envelope"></i> Bandeja de entrada</h3>
+                        <div class="messages-list" id="messagesList"></div>
+                    </div>
+
+                    <!-- SECCIÓN CONFIGURACIÓN -->
+                    <div id="settings-section" class="panel-section">
+                        <h3><i class="bi bi-gear"></i> Configuración</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-body">
+                                        <h5>Cambiar contraseña</h5>
+                                        <form id="changePasswordForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Contraseña actual</label>
+                                                <input type="password" class="form-control" id="currentPass" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Nueva contraseña</label>
+                                                <input type="password" class="form-control" id="newPass" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Confirmar contraseña</label>
+                                                <input type="password" class="form-control" id="confirmPass" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary w-100">Actualizar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-body">
+                                        <h5>Preferencias</h5>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="notifyEmail" checked>
+                                            <label class="form-check-label">Notificaciones por email</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="notifySMS">
+                                            <label class="form-check-label">Notificaciones SMS</label>
+                                        </div>
+                                        <button id="saveSettingsBtn" class="btn btn-secondary w-100 mt-3">Guardar cambios</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="footer"></div>
+
+<!-- Modal agregar propiedad -->
+<div class="modal fade" id="addPropertyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Publicar nueva propiedad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPropertyForm">
+                    <div class="mb-3">
+                        <label class="form-label">Título *</label>
+                        <input type="text" class="form-control" id="propTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ubicación *</label>
+                        <input type="text" class="form-control" id="propLocation" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precio mensual (CLP) *</label>
+                        <input type="number" class="form-control" id="propPrice" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Habitaciones</label>
+                        <input type="number" class="form-control" id="propRooms" value="2">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" id="propDesc" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Publicar propiedad</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- FOOTER (se carga dinámicamente) -->
+    <div id="footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/panel.js"></script>
+</body>
+</html>
