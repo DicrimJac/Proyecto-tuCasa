@@ -32,18 +32,30 @@ function updateStats() {
     const totalProperties = userProperties.length;
     const totalMessages = userMessages.length;
     const unreadMessages = userMessages.filter(m => m.unread).length;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     const statProperties = document.getElementById('statProperties');
     const statMessages = document.getElementById('statMessages');
     const totalPropertiesEl = document.getElementById('totalProperties');
     const totalMessagesEl = document.getElementById('totalMessages');
     const unreadBadge = document.getElementById('unreadBadge');
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (statProperties) statProperties.innerText = totalProperties;
     if (statMessages) statMessages.innerText = totalMessages;
     if (totalPropertiesEl) totalPropertiesEl.innerText = totalProperties;
     if (totalMessagesEl) totalMessagesEl.innerText = totalMessages;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (unreadBadge) {
         unreadBadge.innerText = unreadMessages;
         unreadBadge.style.display = unreadMessages > 0 ? 'inline-block' : 'none';
@@ -54,22 +66,38 @@ function updateStats() {
 function renderDashboard() {
     const grid = document.getElementById('propertiesGrid');
     if (!grid) return;
+<<<<<<< HEAD
 
     const searchTerm = document.getElementById('filterSearch')?.value.toLowerCase() || '';
     const maxPrice = parseInt(document.getElementById('filterPrice')?.value) || Infinity;
     const minRooms = parseInt(document.getElementById('filterRooms')?.value) || 0;
 
+=======
+    
+    const searchTerm = document.getElementById('filterSearch')?.value.toLowerCase() || '';
+    const maxPrice = parseInt(document.getElementById('filterPrice')?.value) || Infinity;
+    const minRooms = parseInt(document.getElementById('filterRooms')?.value) || 0;
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     filteredDashboardProperties = userProperties.filter(prop => {
         const matchSearch = prop.title.toLowerCase().includes(searchTerm) || prop.location.toLowerCase().includes(searchTerm);
         const matchPrice = prop.price <= maxPrice;
         const matchRooms = prop.rooms >= minRooms;
         return matchSearch && matchPrice && matchRooms;
     });
+<<<<<<< HEAD
 
     const totalPages = Math.ceil(filteredDashboardProperties.length / itemsPerPage);
     const start = (currentPageDashboard - 1) * itemsPerPage;
     const paginated = filteredDashboardProperties.slice(start, start + itemsPerPage);
 
+=======
+    
+    const totalPages = Math.ceil(filteredDashboardProperties.length / itemsPerPage);
+    const start = (currentPageDashboard - 1) * itemsPerPage;
+    const paginated = filteredDashboardProperties.slice(start, start + itemsPerPage);
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (paginated.length === 0) {
         grid.innerHTML = `<div class="col-12 text-center text-muted py-5">
             <i class="bi bi-building fs-1"></i>
@@ -79,7 +107,11 @@ function renderDashboard() {
         if (paginationControls) paginationControls.innerHTML = '';
         return;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     grid.innerHTML = paginated.map(prop => `
         <div class="col-md-6 col-lg-4">
             <div class="property-card">
@@ -99,7 +131,11 @@ function renderDashboard() {
             </div>
         </div>
     `).join('');
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     let paginationHtml = `<ul class="pagination">`;
     for (let i = 1; i <= totalPages; i++) {
         paginationHtml += `<li class="page-item ${i === currentPageDashboard ? 'active' : ''}"><button class="page-link" data-page-dash="${i}">${i}</button></li>`;
@@ -107,7 +143,11 @@ function renderDashboard() {
     paginationHtml += `</ul>`;
     const paginationControls = document.getElementById('paginationControls');
     if (paginationControls) paginationControls.innerHTML = paginationHtml;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     document.querySelectorAll('[data-page-dash]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             currentPageDashboard = parseInt(e.target.dataset.pageDash);
@@ -120,18 +160,30 @@ function renderDashboard() {
 function renderAllProperties() {
     const grid = document.getElementById('allPropertiesGrid');
     if (!grid) return;
+<<<<<<< HEAD
 
     const totalPages = Math.ceil(userProperties.length / itemsPerPage);
     const start = (currentPageProperties - 1) * itemsPerPage;
     const paginated = userProperties.slice(start, start + itemsPerPage);
 
+=======
+    
+    const totalPages = Math.ceil(userProperties.length / itemsPerPage);
+    const start = (currentPageProperties - 1) * itemsPerPage;
+    const paginated = userProperties.slice(start, start + itemsPerPage);
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (paginated.length === 0) {
         grid.innerHTML = `<div class="col-12 text-center text-muted py-5">No tienes propiedades publicadas</div>`;
         const allPaginationControls = document.getElementById('allPaginationControls');
         if (allPaginationControls) allPaginationControls.innerHTML = '';
         return;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     grid.innerHTML = paginated.map(prop => `
         <div class="col-md-6 col-lg-4">
             <div class="property-card">
@@ -151,7 +203,11 @@ function renderAllProperties() {
             </div>
         </div>
     `).join('');
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     let paginationHtml = `<ul class="pagination">`;
     for (let i = 1; i <= totalPages; i++) {
         paginationHtml += `<li class="page-item ${i === currentPageProperties ? 'active' : ''}"><button class="page-link" data-page-prop="${i}">${i}</button></li>`;
@@ -159,7 +215,11 @@ function renderAllProperties() {
     paginationHtml += `</ul>`;
     const allPaginationControls = document.getElementById('allPaginationControls');
     if (allPaginationControls) allPaginationControls.innerHTML = paginationHtml;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     document.querySelectorAll('[data-page-prop]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             currentPageProperties = parseInt(e.target.dataset.pageProp);
@@ -172,9 +232,15 @@ function renderAllProperties() {
 function renderFavorites() {
     const grid = document.getElementById('favoritesGrid');
     if (!grid) return;
+<<<<<<< HEAD
 
     const favorites = userProperties.filter(prop => prop.favorite === true);
 
+=======
+    
+    const favorites = userProperties.filter(prop => prop.favorite === true);
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (favorites.length === 0) {
         grid.innerHTML = `
             <div class="col-12 text-center text-muted py-5">
@@ -185,7 +251,11 @@ function renderFavorites() {
         `;
         return;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     grid.innerHTML = favorites.map(prop => `
         <div class="col-md-6 col-lg-4">
             <div class="property-card">
@@ -207,12 +277,20 @@ function renderFavorites() {
 }
 
 // ===================== TOGGLE FAVORITO =====================
+<<<<<<< HEAD
 window.toggleFavorite = function (id) {
+=======
+window.toggleFavorite = function(id) {
+>>>>>>> 164a910 (Realice vista panel usuario)
     const property = userProperties.find(p => p.id === id);
     if (property) {
         property.favorite = !property.favorite;
         localStorage.setItem('userProperties', JSON.stringify(userProperties));
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 164a910 (Realice vista panel usuario)
         // Actualizar solo la vista actual
         const activeSection = document.querySelector('.panel-section.active');
         if (activeSection) {
@@ -224,18 +302,71 @@ window.toggleFavorite = function (id) {
                 renderFavorites();
             }
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 164a910 (Realice vista panel usuario)
         const message = property.favorite ? 'Agregado a favoritos' : 'Eliminado de favoritos';
         showToast(message);
     }
 };
 
+<<<<<<< HEAD
 // ===================== ELIMINAR PROPIEDAD =====================
 window.deleteProperty = function (id) {
     if (confirm('¿Eliminar esta propiedad permanentemente?')) {
         userProperties = userProperties.filter(p => p.id !== id);
         localStorage.setItem('userProperties', JSON.stringify(userProperties));
 
+=======
+// ===================== AGREGAR PROPIEDAD =====================
+const addPropertyForm = document.getElementById('addPropertyForm');
+if (addPropertyForm) {
+    addPropertyForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const newProp = {
+            id: Date.now(),
+            title: document.getElementById('propTitle').value,
+            location: document.getElementById('propLocation').value,
+            price: parseInt(document.getElementById('propPrice').value),
+            rooms: parseInt(document.getElementById('propRooms').value) || 2,
+            description: document.getElementById('propDesc').value,
+            image: 'assets/image/default-house.jpg',
+            favorite: false,
+            createdAt: new Date().toISOString().split('T')[0]
+        };
+        
+        userProperties.unshift(newProp);
+        localStorage.setItem('userProperties', JSON.stringify(userProperties));
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addPropertyModal'));
+        if (modal) modal.hide();
+        
+        addPropertyForm.reset();
+        
+        // Actualizar solo la vista actual
+        const activeSection = document.querySelector('.panel-section.active');
+        if (activeSection) {
+            if (activeSection.id === 'dashboard-section') {
+                renderDashboard();
+            } else if (activeSection.id === 'properties-section') {
+                renderAllProperties();
+            }
+        }
+        updateStats();
+        showToast('Propiedad publicada correctamente');
+    });
+}
+
+// ===================== ELIMINAR PROPIEDAD =====================
+window.deleteProperty = function(id) {
+    if (confirm('¿Eliminar esta propiedad permanentemente?')) {
+        userProperties = userProperties.filter(p => p.id !== id);
+        localStorage.setItem('userProperties', JSON.stringify(userProperties));
+        
+>>>>>>> 164a910 (Realice vista panel usuario)
         const activeSection = document.querySelector('.panel-section.active');
         if (activeSection) {
             if (activeSection.id === 'dashboard-section') {
@@ -251,7 +382,11 @@ window.deleteProperty = function (id) {
     }
 };
 
+<<<<<<< HEAD
 window.editProperty = function (id) {
+=======
+window.editProperty = function(id) {
+>>>>>>> 164a910 (Realice vista panel usuario)
     showToast('Funcionalidad de edición próximamente');
 };
 
@@ -261,6 +396,7 @@ function initFilters() {
     const priceSelect = document.getElementById('filterPrice');
     const roomsSelect = document.getElementById('filterRooms');
     const clearBtn = document.getElementById('clearFilters');
+<<<<<<< HEAD
 
     if (searchInput) {
         searchInput.addEventListener('input', () => {
@@ -281,6 +417,28 @@ function initFilters() {
         });
     }
 
+=======
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', () => { 
+            currentPageDashboard = 1; 
+            renderDashboard(); 
+        });
+    }
+    if (priceSelect) {
+        priceSelect.addEventListener('change', () => { 
+            currentPageDashboard = 1; 
+            renderDashboard(); 
+        });
+    }
+    if (roomsSelect) {
+        roomsSelect.addEventListener('change', () => { 
+            currentPageDashboard = 1; 
+            renderDashboard(); 
+        });
+    }
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
             if (searchInput) searchInput.value = '';
@@ -296,7 +454,11 @@ function initFilters() {
 function loadMessages() {
     const messagesList = document.getElementById('messagesList');
     if (!messagesList) return;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (userMessages.length === 0) {
         messagesList.innerHTML = `
             <div class="text-center text-muted py-5">
@@ -306,7 +468,11 @@ function loadMessages() {
         `;
         return;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     messagesList.innerHTML = userMessages.map(msg => `
         <div class="message-item ${msg.unread ? 'unread' : ''}" onclick="markAsRead(${msg.id})">
             <div class="message-avatar">
@@ -325,7 +491,11 @@ function loadMessages() {
 }
 
 // Marcar mensaje como leído
+<<<<<<< HEAD
 window.markAsRead = function (id) {
+=======
+window.markAsRead = function(id) {
+>>>>>>> 164a910 (Realice vista panel usuario)
     const message = userMessages.find(m => m.id === id);
     if (message && message.unread) {
         message.unread = false;
@@ -335,11 +505,63 @@ window.markAsRead = function (id) {
     }
 };
 
+<<<<<<< HEAD
+=======
+// ===================== CONFIGURACIÓN =====================
+function initSettings() {
+    const passwordForm = document.getElementById('changePasswordForm');
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPass = document.getElementById('newPass').value;
+            const confirm = document.getElementById('confirmPass').value;
+            
+            if (newPass !== confirm) {
+                showToast('Las contraseñas no coinciden', true);
+            } else if (newPass.length < 6) {
+                showToast('La contraseña debe tener al menos 6 caracteres', true);
+            } else {
+                showToast('Contraseña actualizada correctamente');
+                passwordForm.reset();
+            }
+        });
+    }
+    
+    const saveSettings = document.getElementById('saveSettingsBtn');
+    if (saveSettings) {
+        saveSettings.addEventListener('click', () => {
+            const prefs = {
+                email: document.getElementById('notifyEmail').checked,
+                push: document.getElementById('notifyPush').checked,
+                sms: document.getElementById('notifySMS').checked
+            };
+            localStorage.setItem('notificationPrefs', JSON.stringify(prefs));
+            showToast('Preferencias guardadas');
+        });
+    }
+    
+    const savedPrefs = localStorage.getItem('notificationPrefs');
+    if (savedPrefs) {
+        const prefs = JSON.parse(savedPrefs);
+        const notifyEmail = document.getElementById('notifyEmail');
+        const notifyPush = document.getElementById('notifyPush');
+        const notifySMS = document.getElementById('notifySMS');
+        if (notifyEmail) notifyEmail.checked = prefs.email;
+        if (notifyPush) notifyPush.checked = prefs.push;
+        if (notifySMS) notifySMS.checked = prefs.sms;
+    }
+}
+
+>>>>>>> 164a910 (Realice vista panel usuario)
 // ===================== MOSTRAR/OCULTAR FILTROS =====================
 function toggleFilters() {
     const currentSection = document.querySelector('.panel-section.active');
     const filtrosSticky = document.getElementById('filtrosSticky');
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (filtrosSticky) {
         if (currentSection && (currentSection.id === 'dashboard-section' || currentSection.id === 'properties-section')) {
             filtrosSticky.style.display = 'block';
@@ -353,10 +575,17 @@ function toggleFilters() {
 function loadUserData() {
     const userData = JSON.parse(localStorage.getItem('userData')) || {};
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
+<<<<<<< HEAD
 
     const userName = userProfile.fullName || userData.firstName || 'Usuario';
     const userEmail = userProfile.email || userData.email || 'usuario@ejemplo.com';
 
+=======
+    
+    const userName = userProfile.fullName || userData.firstName || 'Usuario';
+    const userEmail = userProfile.email || userData.email || 'usuario@ejemplo.com';
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     const userNameEl = document.getElementById('userName');
     const userEmailEl = document.getElementById('userEmail');
     if (userNameEl) userNameEl.innerText = userName;
@@ -378,7 +607,11 @@ function showToast(message, isError = false) {
             <div class="toast-body"></div>
         `;
         document.body.appendChild(toast);
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 164a910 (Realice vista panel usuario)
         if (!document.getElementById('toastStyles')) {
             const style = document.createElement('style');
             style.id = 'toastStyles';
@@ -416,12 +649,21 @@ function showToast(message, isError = false) {
             document.head.appendChild(style);
         }
     }
+<<<<<<< HEAD
 
     const toastBody = toast.querySelector('.toast-body');
     const toastHeader = toast.querySelector('.toast-header');
 
     if (toastBody) toastBody.textContent = message;
 
+=======
+    
+    const toastBody = toast.querySelector('.toast-body');
+    const toastHeader = toast.querySelector('.toast-header');
+    
+    if (toastBody) toastBody.textContent = message;
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     if (isError) {
         toast.style.borderLeftColor = '#dc3545';
         if (toastHeader) {
@@ -445,7 +687,11 @@ function showToast(message, isError = false) {
             if (strong) strong.textContent = 'Éxito';
         }
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     toast.style.display = 'block';
     setTimeout(() => {
         toast.style.display = 'none';
@@ -456,11 +702,16 @@ function showToast(message, isError = false) {
 function initNavigation() {
     const navLinks = document.querySelectorAll('.nav-link[data-section]');
     const sections = document.querySelectorAll('.panel-section');
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 164a910 (Realice vista panel usuario)
     // Ocultar todas las secciones inicialmente
     sections.forEach(section => {
         section.classList.remove('active');
     });
+<<<<<<< HEAD
 
     // Mostrar solo Dashboard al inicio
     const dashboardSection = document.getElementById('dashboard-section');
@@ -479,10 +730,31 @@ function initNavigation() {
 
             if (!targetSection) return;
 
+=======
+    
+    // Mostrar solo Dashboard al inicio
+    const dashboardSection = document.getElementById('dashboard-section');
+    if (dashboardSection) dashboardSection.classList.add('active');
+    
+    // Marcar Dashboard como activo en el menú
+    const dashboardLink = document.querySelector('.nav-link[data-section="dashboard"]');
+    if (dashboardLink) dashboardLink.classList.add('active');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            const sectionId = link.getAttribute('data-section');
+            const targetSection = document.getElementById(`${sectionId}-section`);
+            
+            if (!targetSection) return;
+            
+>>>>>>> 164a910 (Realice vista panel usuario)
             // Ocultar todas las secciones
             sections.forEach(section => {
                 section.classList.remove('active');
             });
+<<<<<<< HEAD
 
             // Mostrar la sección seleccionada
             targetSection.classList.add('active');
@@ -493,6 +765,18 @@ function initNavigation() {
 
             // Cargar datos específicos según la sección
             switch (sectionId) {
+=======
+            
+            // Mostrar la sección seleccionada
+            targetSection.classList.add('active');
+            
+            // Actualizar clase active en el menú
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            link.classList.add('active');
+            
+            // Cargar datos específicos según la sección
+            switch(sectionId) {
+>>>>>>> 164a910 (Realice vista panel usuario)
                 case 'favorites':
                     renderFavorites();
                     break;
@@ -506,17 +790,38 @@ function initNavigation() {
                     renderDashboard();
                     break;
                 case 'settings':
+<<<<<<< HEAD
                     break;
                 case 'profile':
                     break;
             }
 
+=======
+                    // No necesita carga adicional
+                    break;
+            }
+            
+>>>>>>> 164a910 (Realice vista panel usuario)
             // Mostrar/ocultar filtros según la sección
             toggleFilters();
         });
     });
 }
 
+<<<<<<< HEAD
+=======
+// ===================== CERRAR SESIÓN =====================
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        if (confirm('¿Cerrar sesión?')) {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    });
+}
+
+>>>>>>> 164a910 (Realice vista panel usuario)
 // ===================== INICIALIZAR =====================
 document.addEventListener('DOMContentLoaded', () => {
     loadUserData();
@@ -528,3 +833,57 @@ document.addEventListener('DOMContentLoaded', () => {
     initSettings();
     toggleFilters();
 });
+<<<<<<< HEAD
+=======
+// ===================== CARGAR HEADER Y FOOTER =====================
+function loadHeaderFooter() {
+    // Cargar header
+    fetch('components/header.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+            
+            // Inicializar header
+            const navToggle = document.getElementById('navToggle');
+            if (navToggle) {
+                navToggle.addEventListener('click', () => {
+                    const navMenu = document.getElementById('navMenu');
+                    if (navMenu) navMenu.classList.toggle('active');
+                });
+            }
+            
+            const userData = localStorage.getItem('userData');
+            const userProfile = localStorage.getItem('userProfile');
+            const isLoggedIn = userData || userProfile;
+            
+            const registerBtn = document.querySelector('.btn-register-nav');
+            const loginBtn = document.querySelector('.btn-login-nav');
+            const profileBtn = document.getElementById('profileBtn');
+            
+            if (isLoggedIn) {
+                if (registerBtn) registerBtn.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (profileBtn) profileBtn.style.display = 'flex';
+            } else {
+                if (registerBtn) registerBtn.style.display = 'flex';
+                if (loginBtn) loginBtn.style.display = 'flex';
+                if (profileBtn) profileBtn.style.display = 'none';
+            }
+        })
+        .catch(error => console.error('Error cargando header:', error));
+    
+    // Cargar footer
+    fetch('components/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(error => console.error('Error cargando footer:', error));
+}
+
+// Llamar a la función al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    loadHeaderFooter();
+    // ... el resto de tu código de inicialización
+});
+>>>>>>> 164a910 (Realice vista panel usuario)
