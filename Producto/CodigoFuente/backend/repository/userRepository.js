@@ -70,4 +70,26 @@ export class UserRepository extends BaseRepository {
         if (error) throw new Error(`Error al crear usuario: ${error.message}`);
         return data;
     }
+
+    async update(id, userData) {
+        const { data, error } = await this.supabase
+            .from('USUARIO')
+            .update(userData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw new Error(`Error al actualizar usuario ${id}: ${error.message}`);
+        return data;
+    }
+
+    async delete(id) {
+        const { data, error } = await this.supabase
+            .from('USUARIO')
+            .delete()
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw new Error(`Error al eliminar usuario ${id}: ${error.message}`);
+        return data;
+    }
 }

@@ -75,4 +75,30 @@ export class UserController {
       return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
     }
   }
+
+
+  // NEW: CRUD - Update user by mail
+  async updateUserByMail(c) {
+    try {
+      const mail = c.req.param("mail");
+      const payload = await c.req.json();
+      const result = await this.userService.updateUserByMail(mail, payload);
+      const status = result?.success ? 200 : 400;
+      return c.json(result, status);
+    } catch (error) {
+      return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+    }
+  }
+
+  // Delete user by mail
+  async deleteUserByMail(c) {
+    try {
+      const mail = c.req.param("mail");
+      const result = await this.userService.deleteUserByMail(mail);
+      const status = result?.success ? 200 : 400;
+      return c.json(result, status);
+    } catch (error) {
+      return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+    }
+  }
 }
