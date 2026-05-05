@@ -2,7 +2,7 @@ import { SessionRepository } from "../repository/sessionRepository.js";
 
 // Middleware de autenticación basado en cookies (session_id)
 export const requireAuth = async (c, next) => {
-  const cookieHeader = c.req.headers.get("cookie") || "";
+  const cookieHeader = c.req.header("cookie") || "";
   const sessionId = cookieHeader
     .split(";")
     .map((p) => p.trim())

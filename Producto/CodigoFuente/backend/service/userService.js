@@ -65,10 +65,8 @@ export class UserService {
             rut: (typeof userData.rut === "string" && userData.rut.includes("-")) ? (userData.rut.split("-")[0] ? Number(userData.rut.split("-")[0]) : null) : ((userData.rut !== undefined && userData.rut !== null && userData.rut !== "") ? Number(userData.rut) : null),
             rut_dv: (typeof userData.rut === "string" && userData.rut.includes("-")) ? (userData.rut.split("-")[1] !== undefined && userData.rut.split("-")[1] !== "" ? Number(userData.rut.split("-")[1]) : null) : ((userData.rutDv !== undefined && userData.rutDv !== null && userData.rutDv !== "") ? Number(userData.rutDv) : null),
             fono: (function() {
-                // Soporte tanto 'phone' como 'fono' según fuente del payload
                 const rawPhone = userData.phone ?? userData.fono ?? "";
                 const digits = (rawPhone).replace(/\D/g, "");
-                // Si no hay dígitos, devolver null para evitar insert de valor vacio en NUMERIC
                 return digits ? Number(digits) : null;
             })(),
             mail: userData.email ?? userData.mail ?? "",
@@ -103,6 +101,30 @@ export class UserService {
                 delete created.pass;
             }
             return { success: true, data: created };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+
+    // Actualizar usuario (CRUD - Update)
+    async updateUser(id, userData) {
+        try {
+            const updated = await this.userRepository.update(id, userData);
+            if (updated && updated.pass) {
+                delete updated.pass;
+            }
+            return { success: true, data: updated };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Eliminar usuario (CRUD - Delete)
+    async deleteUser(id) {
+        try {
+            const deleted = await this.userRepository.delete(id);
+            return { success: true, data: deleted };
         } catch (error) {
             return { success: false, error: error.message };
         }
@@ -163,5 +185,27 @@ export class UserService {
                 error: error.message,
             };
         }
+    }
+
+    // Actualizar usuario usando mail como identificador si así se prefiere
+    async updateUserByMail(mail, userData) {
+        // Buscar usuario por mail y luego actualizar por id encontrado
+        const existing = await this.userRepository.findByEmail(mail);
+        if (!existing) {
+            return { success: false, error: `Usuario con mail ${mail} no encontrado` };
+        }
+        const updated = await this.userRepository.update(existing.id || existing.id_propi || existing.id_user, userData);
+        if (updated && updated.pass) delete updated.pass;
+        return { success: true, data: updated };
+    }
+
+    // Eliminar usuario por mail (identificador lógico)
+    async deleteUserByMail(mail) {
+        const user = await this.userRepository.findByEmail(mail);
+        if (!user) {
+            return { success: false, error: `Usuario con mail ${mail} no encontrado` };
+        }
+        const deleted = await this.userRepository.delete(user.id || user.id_propi || user.id_user);
+        return { success: true, data: deleted };
     }
 }
