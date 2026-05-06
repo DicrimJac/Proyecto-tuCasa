@@ -258,6 +258,7 @@ input:-webkit-autofill ~ label {
     text-align: center;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* ========== BOTÓN DE GOOGLE - ESTILO OFICIAL SIMPLE ========== */
 .btn-google {
     background: white;
@@ -270,6 +271,8 @@ input:-webkit-autofill ~ label {
     cursor: pointer;
     transition: all 0.2s ease;
 =======
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 /* ========== BOTÓN DE GOOGLE ========== */
 .btn-google {
     background: white;
@@ -281,19 +284,26 @@ input:-webkit-autofill ~ label {
     font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.3s ease;
+<<<<<<< HEAD
 >>>>>>> 164a910 (Realice vista panel usuario)
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
 <<<<<<< HEAD
+<<<<<<< HEAD
     width: 100%;
 =======
 >>>>>>> 164a910 (Realice vista panel usuario)
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 }
 
 .btn-google:hover {
     background: #f8f9fa;
+<<<<<<< HEAD
 <<<<<<< HEAD
     border-color: #d2d5d9;
     box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
@@ -302,17 +312,23 @@ input:-webkit-autofill ~ label {
 .btn-google:active {
     background: #f1f3f4;
 =======
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transform: translateY(-1px);
 }
 
 .btn-google:active {
     transform: translateY(1px);
+<<<<<<< HEAD
 >>>>>>> 164a910 (Realice vista panel usuario)
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 }
 
 .btn-google i {
     font-size: 1.2rem;
+<<<<<<< HEAD
 <<<<<<< HEAD
     color: #4285F4;
 }
@@ -322,4 +338,7 @@ input:-webkit-autofill ~ label {
 =======
     color: #DB4437;
 >>>>>>> 164a910 (Realice vista panel usuario)
+=======
+    color: #DB4437;
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 }

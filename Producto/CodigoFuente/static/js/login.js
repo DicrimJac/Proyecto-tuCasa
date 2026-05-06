@@ -277,17 +277,23 @@ if (createAccountBtn) {
         window.location.href = 'register.html';
     });
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 // ========== BOTÓN DE GOOGLE - CON REDIRECCIÓN REAL ==========
 =======
 
     // ========== BOTÓN DE GOOGLE ==========
 >>>>>>> 164a910 (Realice vista panel usuario)
+=======
+
+    // ========== BOTÓN DE GOOGLE ==========
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 const googleLoginBtn = document.getElementById('googleLoginBtn');
 if (googleLoginBtn) {
     googleLoginBtn.addEventListener('click', function(e) {
         e.preventDefault();
         
+<<<<<<< HEAD
 <<<<<<< HEAD
         // Mostrar estado de carga
         const originalText = this.innerHTML;
@@ -315,6 +321,8 @@ if (googleLoginBtn) {
         */
     });
 =======
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
         // Mostrar mensaje de carga
         const originalText = googleLoginBtn.innerHTML;
         googleLoginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Conectando con Google...';
@@ -341,5 +349,8 @@ if (googleLoginBtn) {
         }, 1000);
     });
 }
+<<<<<<< HEAD
 >>>>>>> 164a910 (Realice vista panel usuario)
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 }
