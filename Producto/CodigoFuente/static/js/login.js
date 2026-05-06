@@ -277,3 +277,35 @@ if (createAccountBtn) {
         window.location.href = 'register.html';
     });
 }
+// ========== BOTÓN DE GOOGLE - CON REDIRECCIÓN REAL ==========
+const googleLoginBtn = document.getElementById('googleLoginBtn');
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Mostrar estado de carga
+        const originalText = this.innerHTML;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirigiendo a Google...';
+        this.disabled = true;
+        
+        // Redirigir a la URL de autenticación de Google (back-end)
+        // Esta URL debe ser proporcionada por tu servidor back-end
+        window.location.href = 'http://localhost:8080/auth/google'; // Cambia por tu URL real
+        
+        // Si solo quieres probar el front-end por ahora, usa esto:
+        // Simular login exitoso (descomenta para pruebas)
+        /*
+        setTimeout(() => {
+            const mockUser = {
+                email: 'usuario@gmail.com',
+                name: 'Usuario Google',
+                provider: 'google',
+                loggedIn: true
+            };
+            localStorage.setItem('userData', JSON.stringify(mockUser));
+            localStorage.setItem('userEmail', mockUser.email);
+            window.location.href = 'panel.html';
+        }, 1500);
+        */
+    });
+}
