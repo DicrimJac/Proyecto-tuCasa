@@ -381,6 +381,8 @@ form.addEventListener('submit', async (e) => {
 
     const genderValueRaw = fields.gender.value;
     // Si no hay selección, por defecto usar 3 (prefiero no decirlo)
+
+    //valor de genderValueRaw no puede se numero por que es una M no se puede castear a
     const genderValue = genderValueRaw ? Number(genderValueRaw) : 3;
     let genderDescValue = null;
     if (genderValue === 1) {
