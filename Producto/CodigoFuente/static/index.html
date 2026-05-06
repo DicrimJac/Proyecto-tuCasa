@@ -3,18 +3,22 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Verificación</title>
-</head>
+    <title>home</title>
 
-<body>
     <script>
-        // Función para cargar el HTML
-        fetch('menu.html')
+        // Cargar home.html dentro del contenedor
+        fetch('home.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('contenedor').innerHTML = data;
             });
     </script>
+</head>
+
+<body>
+
+    <div id="contenedor"></div>
+
 </body>
 
 </html>
