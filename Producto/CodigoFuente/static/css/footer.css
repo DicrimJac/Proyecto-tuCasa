@@ -29,12 +29,13 @@
 .footer-logo {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
     margin-bottom: 1rem;
 }
 
 .footer-logo-img {
-    width: 45px;
+    width: 80px;
     height: auto;
     filter: brightness(0) invert(1);
 }
@@ -44,12 +45,14 @@
     line-height: 1.6;
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
+    text-align: center;
 }
 
 /* Redes sociales */
 .footer-social {
     display: flex;
     gap: 1rem;
+    justify-content: center;
 }
 
 .social-link {

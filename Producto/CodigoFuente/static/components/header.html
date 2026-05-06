@@ -2,8 +2,7 @@
     <div class="nav-container">
         <div class="nav-logo">
             <a href="home.html" class="logo-link">
-                <img src="assets/image/logo_tucasa.png" alt="Tu Casa" class="logo-img"
-                <span class="logo-text">Tu Casa</span>
+                <img src="assets/image/3.png" alt="Tu Casa" class="logo-img">
             </a>
         </div>
 
@@ -14,12 +13,11 @@
         <div class="nav-menu" id="navMenu">
             <ul class="nav-list">
                 <li class="nav-item">
-                    <a href="home.html" class="nav-link active">
+                    <a href="home.html" class="nav-link">
                         <i class="fas fa-home"></i>
                         <span>Inicio</span>
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a href="us.html" class="nav-link">
                         <i class="fas fa-users"></i>
@@ -35,12 +33,6 @@
             </ul>
 
             <div class="nav-buttons">
-                <!-- Saludo de usuario logueado (mismo estilo que los links del menú) -->
-                <span id="userGreeting" class="user-greeting nav-link" style="display: none;">
-                    <i class="fas fa-smile"></i>
-                    <span class="user-greeting-text"></span>
-                </span>
-
                 <a href="register.html" class="btn-register-nav">
                     <i class="fas fa-user-plus"></i>
                     <span>Registrarse</span>
@@ -49,7 +41,8 @@
                     <i class="fas fa-sign-in-alt"></i>
                     <span>Iniciar Sesión</span>
                 </a>
-                <a href="profile.html" class="btn-profile-nav" id="profileBtn" style="display: none;">
+                <!-- Botón Mi Perfil (solo visible cuando usuario está logueado) -->
+                <a href="profile.html" class="btn-profile-nav" id="profileBtn" data-bs-toggle="offcanvas" data-bs-target="#profileOffcanvas" style="display: none;">
                     <i class="fas fa-user-circle"></i>
                     <span>Mi Perfil</span>
                 </a>
