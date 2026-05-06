@@ -4,26 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Verificación</title>
-
 </head>
 
 <body>
-
     <script>
         // Función para cargar el HTML
-        function cargarHTML() {
-            fetch('home.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('menu-container').innerHTML = data;
-                });
-        }
-        // Ejecutar al cargar la página
-        window.onload = cargarHTML;
-
-
+        fetch('menu.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('contenedor').innerHTML = data;
+            });
     </script>
-
 </body>
 
 </html>
