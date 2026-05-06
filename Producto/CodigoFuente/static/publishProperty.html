@@ -110,9 +110,9 @@
                 <button type="button" class="btn-cancel" onclick="prevStep(1)">Atrás</button>
                 <button type="button" class="btn-next" onclick="validateStep2()">Siguiente</button>
             </div>
-
         </div>
 
+        <!-- PASO 3 -->
         <div class="step" id="step3">
 
             <h2>Imágenes del inmueble</h2>
@@ -139,132 +139,141 @@
 
         </div>
 
-        <div class="step" id="step4">
+        <!-- PASO 4 -->
+        <!-- <div class="step" id="step4">
+            <div class="step-card">
 
-            <h2>Características del inmueble</h2>
+                <h2>Características del inmueble</h2>
 
-            <!-- SUPERFICIES -->
-            <div class="form-group">
-                <label>Superficie total (m²) *</label>
-                <input type="number" id="totalArea" min="1">
-            </div>
+                <!-- GRID -->
+                <!-- <div class="features-grid">
 
-            <div class="form-group">
-                <label>Superficie útil (m²) *</label>
-                <input type="number" id="usableArea" min="1">
-            </div>
+                    <div class="form-group">
+                        <label>Superficie total (m²) *</label>
+                        <input type="number" id="totalArea">
+                    </div>
 
-            <!-- COMBOS -->
-            <div class="form-group">
-                <label>Dormitorios *</label>
-                <select id="bedrooms">
-                    <option value="">Selecciona</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5+</option>
-                </select>
-            </div>
+                    <div class="form-group">
+                        <label>Superficie útil (m²) *</label>
+                        <input type="number" id="usableArea">
+                    </div> -->
 
-            <div class="form-group">
-                <label>Baños *</label>
-                <select id="bathrooms">
-                    <option value="">Selecciona</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5+</option>
-                </select>
-            </div>
+                    <!-- <div class="form-group">
+                        <label>Dormitorios *</label>
+                        <select id="bedrooms">
+                            <option>Selecciona</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5+</option>
+                        </select>
+                    </div>
 
-            <div class="form-group">
-                <label>Antigüedad</label>
-                <select id="age">
-                    <option>Menos de 1 año</option>
-                    <option>1-5 años</option>
-                    <option>5-10 años</option>
-                    <option>10+ años</option>
-                </select>
-            </div>
+                    <div class="form-group">
+                        <label>Baños *</label>
+                        <select id="bathrooms">
+                            <option>Selecciona</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5+</option>
+                        </select>
+                    </div>
 
-            <div class="form-group">
-                <label>Cantidad de pisos</label>
-                <select id="floors">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5+</option>
-                </select>
-            </div>
+                    <div class="form-group">
+                        <label>Antigüedad</label>
+                        <select id="age">
+                            <option>Menos de 1 año</option>
+                            <option>1-5 años</option>
+                            <option>5-10 años</option>
+                            <option>10+ años</option>
+                        </select>
+                    </div>
 
-            <div class="form-group">
-                <label>Orientación</label>
-                <select id="orientation">
-                    <option>Norte</option>
-                    <option>Sur</option>
-                    <option>Este</option>
-                    <option>Oeste</option>
-                </select>
-            </div>
+                    <div class="form-group">
+                        <label>Cantidad de pisos</label>
+                        <select id="floors">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5+</option>
+                        </select>
+                    </div>
 
-            <!-- CHECKBOX -->
-            <h3>Equipamiento</h3>
+                    <div class="form-group">
+                        <label>Orientación</label>
+                        <select id="orientation">
+                            <option>Norte</option>
+                            <option>Sur</option>
+                            <option>Este</option>
+                            <option>Oeste</option>
+                        </select>
+                    </div>
 
-            <div class="check-grid">
+                </div> -->
 
-                <label><input type="checkbox"> Bodega</label>
-                <label><input type="checkbox"> Estacionamiento</label>
-                <label><input type="checkbox"> Gas natural</label>
-                <label><input type="checkbox"> Aire acondicionado</label>
-                <label><input type="checkbox"> Calefacción</label>
-                <label><input type="checkbox"> Conexión lavadora</label>
-                <label><input type="checkbox"> Energía solar</label>
-                <label><input type="checkbox"> Caldera</label>
-                <label><input type="checkbox"> Calefont</label>
-                <label><input type="checkbox"> Chimenea</label>
-                <label><input type="checkbox"> Gimnasio</label>
-                <label><input type="checkbox"> Estac. visita</label>
-                <label><input type="checkbox"> Ascensor</label>
-                <label><input type="checkbox"> Juegos infantiles</label>
-                <label><input type="checkbox"> Áreas verdes</label>
-                <label><input type="checkbox"> Multicancha</label>
-                <label><input type="checkbox"> Salón eventos</label>
-                <label><input type="checkbox"> Alarma</label>
-                <label><input type="checkbox"> Portón automático</label>
-                <label><input type="checkbox"> Conserjería</label>
-                <label><input type="checkbox"> Condominio cerrado</label>
-                <label><input type="checkbox"> Acceso controlado</label>
-                <label><input type="checkbox"> Balcón</label>
-                <label><input type="checkbox"> Comedor</label>
-                <label><input type="checkbox"> Dorm. en suite</label>
-                <label><input type="checkbox"> Living</label>
-                <label><input type="checkbox"> Patio</label>
-                <label><input type="checkbox"> Walking closet</label>
-                <label><input type="checkbox"> Logia</label>
-                <label><input type="checkbox"> Baño visita</label>
-                <label><input type="checkbox"> Antejardín</label>
-                <label><input type="checkbox"> Quincho</label>
-                <label><input type="checkbox"> Piscina</label>
-                <label><input type="checkbox"> Terraza</label>
-                <label><input type="checkbox"> Amoblado</label>
+                <!-- CHECKBOX -->
+                <!-- <h3>Equipamiento</h3>
 
-            </div>
+                <div class="check-grid">
 
-            <!-- DESCRIPCIÓN -->
-            <div class="form-group">
-                <label>Descripción *</label>
-                <textarea id="description" maxlength="3000"
-                    placeholder="Describe el inmueble, barrio, servicios cercanos..."></textarea>
-                <small id="charCount">0 / 3000</small>
-            </div>
+                    <label><input type="checkbox"> Bodega</label>
+                    <label><input type="checkbox"> Estacionamiento</label>
+                    <label><input type="checkbox"> Gas natural</label>
+                    <label><input type="checkbox"> Aire acondicionado</label>
+                    <label><input type="checkbox"> Calefacción</label>
+                    <label><input type="checkbox"> Conexión lavadora</label>
+                    <label><input type="checkbox"> Energía solar</label>
+                    <label><input type="checkbox"> Caldera</label>
+                    <label><input type="checkbox"> Calefont</label>
+                    <label><input type="checkbox"> Chimenea</label>
+                    <label><input type="checkbox"> Gimnasio</label>
+                    <label><input type="checkbox"> Estac. visita</label>
+                    <label><input type="checkbox"> Ascensor</label>
+                    <label><input type="checkbox"> Juegos infantiles</label>
+                    <label><input type="checkbox"> Áreas verdes</label>
+                    <label><input type="checkbox"> Multicancha</label>
+                    <label><input type="checkbox"> Salón eventos</label>
+                    <label><input type="checkbox"> Alarma</label>
+                    <label><input type="checkbox"> Portón automático</label>
+                    <label><input type="checkbox"> Conserjería</label>
+                    <label><input type="checkbox"> Condominio cerrado</label>
+                    <label><input type="checkbox"> Acceso controlado</label>
+                    <label><input type="checkbox"> Balcón</label>
+                    <label><input type="checkbox"> Comedor</label>
+                    <label><input type="checkbox"> Dorm. en suite</label>
+                    <label><input type="checkbox"> Living</label>
+                    <label><input type="checkbox"> Patio</label>
+                    <label><input type="checkbox"> Walking closet</label>
+                    <label><input type="checkbox"> Logia</label>
+                    <label><input type="checkbox"> Baño visita</label>
+                    <label><input type="checkbox"> Antejardín</label>
+                    <label><input type="checkbox"> Quincho</label>
+                    <label><input type="checkbox"> Piscina</label>
+                    <label><input type="checkbox"> Terraza</label>
+                    <label><input type="checkbox"> Amoblado</label>
+
+                </div> -->
+
+                <!-- DESCRIPCIÓN -->
+                <!-- <div class="form-group">
+                    <label>Descripción *</label>
+
+                    <textarea id="description" maxlength="3000"
+                        placeholder="Describe el inmueble, barrio, servicios cercanos..."></textarea>
+
+                    <small id="charCount">0 / 3000</small>
+                </div>
+
+            </div> -->
 
             <!-- PRECIO -->
-            <h3>Precio</h3>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
+                <h3>Precio</h3>
                 <label>Precio *</label>
                 <div class="inline-group">
                     <input type="number" id="price">
@@ -284,12 +293,347 @@
                         <option value="UF">UF</option>
                     </select>
                 </div>
-            </div>
+            </div> -->
 
             <!-- BOTONES -->
-            <div class="buttons">
-                <button type="button" onclick="prevStep(3)">Atrás</button>
-                <button type="button" onclick="validateStep4()">Siguiente</button>
+            <!-- <div class="buttons">
+                <button type="button" class="btn-cancel" onclick="prevStep(3)">Atrás</button>
+                <button type="button" class="btn-next" onclick="validateStep4()">Siguiente</button>
+            </div>
+
+        </div> -->
+
+        <!-- PASO 4 -->
+        <div class="step" id="step4">
+
+            <div class="step-card">
+
+                <h2>Características del inmueble</h2>
+
+                <!-- GRID -->
+                <div class="features-grid">
+
+                    <div class="form-group">
+                        <label for="totalArea">Superficie total (m²) *</label>
+                        <input type="number" id="totalArea" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usableArea">Superficie útil (m²) *</label>
+                        <input type="number" id="usableArea" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bedrooms">Dormitorios *</label>
+                        <select id="bedrooms" required>
+                            <option value="">Selecciona</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5+</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bathrooms">Baños *</label>
+                        <select id="bathrooms" required>
+                            <option value="">Selecciona</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5+</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Antigüedad</label>
+                        <select id="age">
+                            <option>Menos de 1 año</option>
+                            <option>1 - 5 años</option>
+                            <option>5 - 10 años</option>
+                            <option>10+ años</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="floors">Cantidad de pisos</label>
+                        <select id="floors">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5+</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orientation">Orientación</label>
+                        <select id="orientation">
+                            <option>Norte</option>
+                            <option>Sur</option>
+                            <option>Este</option>
+                            <option>Oeste</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- EQUIPAMIENTO -->
+                <h3>Equipamiento</h3>
+
+                <div class="check-grid">
+
+                    <label><input type="checkbox"> Bodega</label>
+                    <label><input type="checkbox"> Estacionamiento</label>
+                    <label><input type="checkbox"> Gas natural</label>
+                    <label><input type="checkbox"> Aire acondicionado</label>
+                    <label><input type="checkbox"> Calefacción</label>
+                    <label><input type="checkbox"> Conexión lavadora</label>
+                    <label><input type="checkbox"> Energía solar</label>
+                    <label><input type="checkbox"> Caldera</label>
+                    <label><input type="checkbox"> Calefont</label>
+                    <label><input type="checkbox"> Chimenea</label>
+                    <label><input type="checkbox"> Gimnasio</label>
+                    <label><input type="checkbox"> Estacionamiento visita</label>
+                    <label><input type="checkbox"> Ascensor</label>
+                    <label><input type="checkbox"> Juegos infantiles</label>
+                    <label><input type="checkbox"> Áreas verdes</label>
+                    <label><input type="checkbox"> Multicancha</label>
+                    <label><input type="checkbox"> Salón de eventos</label>
+                    <label><input type="checkbox"> Alarma</label>
+                    <label><input type="checkbox"> Portón automático</label>
+                    <label><input type="checkbox"> Conserjería</label>
+                    <label><input type="checkbox"> Condominio cerrado</label>
+                    <label><input type="checkbox"> Acceso controlado</label>
+                    <label><input type="checkbox"> Balcón</label>
+                    <label><input type="checkbox"> Comedor</label>
+                    <label><input type="checkbox"> Dormitorio en suite</label>
+                    <label><input type="checkbox"> Living</label>
+                    <label><input type="checkbox"> Patio</label>
+                    <label><input type="checkbox"> Walking closet</label>
+                    <label><input type="checkbox"> Logia</label>
+                    <label><input type="checkbox"> Baño de visita</label>
+                    <label><input type="checkbox"> Antejardín</label>
+                    <label><input type="checkbox"> Quincho</label>
+                    <label><input type="checkbox"> Piscina</label>
+                    <label><input type="checkbox"> Terraza</label>
+                    <label><input type="checkbox"> Amoblado</label>
+
+                </div>
+
+                <!-- DESCRIPCIÓN -->
+                <div class="form-group">
+
+                    <label for="description">Descripción *</label>
+
+                    <textarea id="description" maxlength="3000" required
+                        placeholder="Describe el inmueble, barrio, servicios cercanos, locomoción, supermercados, colegios, hospitales, etc."></textarea>
+
+                    <small id="charCount">0 / 3000</small>
+
+                </div>
+
+                <!-- PRECIO -->
+                <h3>Precio</h3>
+
+                <div class="form-group">
+
+                    <label for="price">Precio *</label>
+
+                    <div class="inline-group">
+
+                        <input type="number" id="price" required>
+
+                        <select id="currency">
+                            <option value="$">$</option>
+                            <option value="UF">UF</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- GASTOS COMUNES -->
+                <div class="form-group">
+
+                    <label for="expenses">Gastos comunes</label>
+
+                    <div class="inline-group">
+
+                        <input type="number" id="expenses">
+
+                        <select id="currencyExpenses">
+                            <option value="$">$</option>
+                            <option value="UF">UF</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- BOTONES -->
+                <div class="buttons">
+                    <button type="button" class="btn-cancel" onclick="prevStep(3)">Atrás</button>
+                    <button type="button" class="btn-next" onclick="validateStep4()">Siguiente</button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="step" id="step5">
+
+            <div class="step-card">
+
+                <h2>Tipo de publicación</h2>
+
+                <p class="step-description">
+                    Selecciona el plan que mejor se adapte a tu publicación
+                </p>
+
+                <div class="plans-container">
+
+                    <!-- PLAN BÁSICO -->
+                    <div class="plan-card" onclick="selectPlan(this, 'Básico')">
+
+                        <h3>Básico</h3>
+
+                        <ul>
+                            <li>Duración 1 mes</li>
+                            <li>Sin republicación gratis</li>
+                        </ul>
+
+                        <div class="plan-price">
+                            Gratis
+                        </div>
+
+                    </div>
+
+                    <!-- PLAN ESTANDAR -->
+                    <div class="plan-card" onclick="selectPlan(this, 'Estandar')">
+
+                        <h3>Estandar</h3>
+
+                        <ul>
+                            <li>Duración 6 meses</li>
+                            <li>Sin republicación gratis</li>
+                            <li>Mayor visibilidad</li>
+                            <li>Publicación destacada</li>
+                        </ul>
+
+                        <div class="plan-price">
+                            $100.000
+                        </div>
+
+                    </div>
+
+                    <!-- PLAN PREMIUM -->
+                    <div class="plan-card" onclick="selectPlan(this, 'Premium')">
+
+                        <h3>Premium</h3>
+
+                        <ul>
+                            <li>Duración 1 año</li>
+                            <li>Republicación gratis</li>
+                            <li>Mayor visibilidad</li>
+                            <li>Publicación destacada</li>
+                        </ul>
+
+                        <div class="plan-price">
+                            $500.000
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PLAN SELECCIONADO -->
+                <input type="hidden" id="selectedPlan">
+
+                <!-- BOTONES -->
+                <div class="buttons">
+                    <button type="button" class="btn-cancel" onclick="prevStep(4)">Atrás</button>
+                    <button type="button" class="btn-next" onclick="validateStep5()">Continuar</button>
+                </div>
+            </div>
+        </div>
+        <div class="step" id="step6">
+
+            <div class="step-card">
+
+                <h2>Resumen de publicación</h2>
+
+                <p class="step-description">
+                    Revisa toda la información antes de publicar
+                </p>
+
+                <!-- IMAGEN PRINCIPAL -->
+                <div class="summary-image-container">
+                    <img id="summaryMainImage" src="" alt="Imagen principal">
+                </div>
+
+                <!-- RESUMEN -->
+                <div class="summary-grid">
+
+                    <div class="summary-item">
+                        <span>Categoría</span>
+                        <p id="summaryCategory"></p>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Condición</span>
+                        <p id="summaryCondition"></p>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Dirección</span>
+                        <p id="summaryAddress"></p>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Dormitorios</span>
+                        <p id="summaryBedrooms"></p>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Baños</span>
+                        <p id="summaryBathrooms"></p>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Superficie total</span>
+                        <p id="summaryTotalArea"></p>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Precio</span>
+                        <p id="summaryPrice"></p>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Plan</span>
+                        <p id="summaryPlan"></p>
+                    </div>
+
+                </div>
+
+                <!-- DESCRIPCIÓN -->
+                <div class="summary-description">
+
+                    <h3>Descripción</h3>
+
+                    <p id="summaryDescription"></p>
+
+                </div>
+
+                <!-- BOTONES -->
+                <div class="buttons">
+                    <button type="button" class="btn-cancel" onclick="prevStep(5)">Atrás</button>
+                    <button type="button" class="btn-next" onclick="publishProperty()">Publicar propiedad</button>
+                </div>
+
             </div>
 
         </div>
