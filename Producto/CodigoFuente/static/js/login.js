@@ -6,6 +6,7 @@
     const mailErrorDiv = document.getElementById('mailError');
     const passErrorDiv = document.getElementById('passError');
     const messageContainer = document.getElementById('loginMessage');
+    const loginRedirectUrl = 'home.html';
     
     // Dominios permitidos
     const allowedDomains = ['gmail.com', 'hotmail.com', 'yahoo.com', 'duoc.cl', 'outlook.com'];
@@ -126,8 +127,8 @@
         }
     }
     
-    // Manejar envío del formulario
-    function handleSubmit(event) {
+    // Manejar envío del formulario (login real contra backend)
+    async function handleSubmit(event) {
         event.preventDefault();
         clearMessage();
         
@@ -157,27 +158,63 @@
             return;
         }
         
-        // Si todo es válido, proceder con el login
+        // Si todo es válido, proceder con el login contra el backend
         const submitBtn = document.getElementById('submitBtn');
         const originalBtnText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Ingresando...';
         submitBtn.disabled = true;
-        
-        // Simular proceso de login
-        setTimeout(() => {
+
+        try {
+            const response = await fetch('/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: mail,
+                    password: password
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                const errorMsg = result?.error || 'Correo o contraseña incorrectos';
+                showMessage(errorMsg, 'danger');
+                return;
+            }
+
+            const user = result.data || {};
+
+            // Determinar el primer nombre desde la respuesta o hacer fallback al correo
+            const backendFirstName = user.first_name || user.firstName || user.nombre || '';
+            const firstName = backendFirstName || mail.split('@')[0];
+
+            // Guardar datos de sesión para usarlos en el header (saludo, etc.)
+            const userData = {
+                ...user,
+                first_name: firstName,
+                mail: mail
+            };
+
+            localStorage.setItem('userData', JSON.stringify(userData));
+            // Mantener claves anteriores por compatibilidad con otras pantallas
+            localStorage.setItem('userEmail', mail);
+            localStorage.setItem('userName', firstName);
+            sessionStorage.setItem('isLoggedIn', 'true');
+
+            showMessage('Inicio de sesión exitoso, redirigiendo...', 'success');
+
+            setTimeout(() => {
+                window.location.href = loginRedirectUrl;
+            }, 800);
+        } catch (error) {
+            console.error('Error al iniciar sesión:', error);
+            showMessage('Error al conectar con el servidor. Intenta nuevamente.', 'danger');
+        } finally {
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
-            
-            // Guardar datos de sesión (opcional)
-            localStorage.setItem('userEmail', mail);
-            localStorage.setItem('userName', mail.split('@')[0]);
-            sessionStorage.setItem('isLoggedIn', 'true');
-            
-            // Redirigir al perfil del usuario después de 1.5 segundos
-            setTimeout(() => {
-                window.location.href = 'profile.html';
-            }, 1200);
-        }, 1200);
+        }
     }
     
     // Eventos

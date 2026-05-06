@@ -101,6 +101,21 @@
     gap: 0.75rem;
 }
 
+/* Saludo de usuario logueado (se apoya en .nav-link para colores/hover) */
+.user-greeting {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.user-greeting i {
+    font-size: 1rem;
+}
+
+.user-greeting-text {
+    white-space: nowrap;
+}
+
 .btn-register-nav,
 .btn-login-nav,
 .btn-profile-nav {

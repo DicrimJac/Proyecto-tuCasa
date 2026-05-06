@@ -1,3 +1,4 @@
+import { setCookie } from "hono/cookie";
 import { UserService } from "../service/userService.js";
 import { SessionRepository } from "../repository/sessionRepository.js";
 
@@ -40,13 +41,14 @@ export class UserController {
         const userId = result.data?.id || result.data?.id_user || result.data?.user_id;
         const token = sessionRepo.createSession(userId);
         // Establecer cookie HttpOnly para mantener la sesión
-        c.cookie("session_id", token, { httpOnly: true, path: "/" });
+        setCookie(c, "session_id", token, { httpOnly: true, path: "/" });
       }
       return c.json(result, status);
     } catch (error) {
       return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
     }
   }
+  
   // GET /api/users/:id
   async getUserById(c) {
     try {
