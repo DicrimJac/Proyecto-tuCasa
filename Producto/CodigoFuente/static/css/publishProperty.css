@@ -1,0 +1,173 @@
+/* CONTENEDOR IGUAL AL REGISTRO */
+.step {
+    max-width: 500px;
+    margin: 60px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* TÍTULO */
+.step h2 {
+    text-align: center;
+    color: #1F3B4C;
+    margin-bottom: 10px;
+}
+
+.step p {
+    text-align: center;
+    color: #6c7f8b;
+    margin-bottom: 25px;
+}
+
+/* OPCIONES */
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+/* TARJETAS */
+.option-card {
+    background: #f7fafc;
+    border: 1px solid #d9e2ec;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: #2C5A6E;
+}
+
+/* OCULTAR RADIO */
+.option-card input {
+    display: none;
+}
+
+/* HOVER */
+.option-card:hover {
+    background: #edf4f8;
+    transform: translateY(-2px);
+}
+
+/* SELECCIONADO 🔥 */
+.option-card.selected {
+    background: #1F3B4C;
+    color: white;
+    border-color: #1F3B4C;
+}
+
+/* BOTONES */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+button {
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* CANCELAR */
+.btn-cancel {
+    background: #e2e8f0;
+    color: #1F3B4C;
+}
+
+/* SIGUIENTE */
+.btn-next {
+    background: #1F3B4C;
+    color: white;
+}
+
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+.image-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.image-card {
+    position: relative;
+}
+
+.image-card img {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* BOTONES */
+.img-actions {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    gap: 5px;
+}
+
+.img-actions button {
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+
+/* ELIMINAR */
+.btn-delete {
+    background: red;
+    color: white;
+}
+
+/* PRINCIPAL */
+.btn-main {
+    background: gold;
+}
+
+/* IMAGEN PRINCIPAL */
+.main-image-container {
+    margin-top: 20px;
+}
+
+.main-image-container img {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid #1F3B4C;
+}
+
+.inline-group {
+    display: flex;
+    gap: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 120px;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid #d9e2ec;
+}
+
+#charCount {
+    font-size: 12px;
+    color: #6c7f8b;
+}
