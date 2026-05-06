@@ -56,14 +56,33 @@ export class UserService {
                 throw new Error("Fecha de nacimiento inválida");
             }
         }
+        const rawRut = (userData.rut ?? "").toString().trim();
+        const [rutPart, rutDvPartFromRut] = rawRut.split("-");
+        const rutDigits = rutPart.replace(/\D/g, "");
+        const rutNumber = rutDigits ? Number(rutDigits) : null;
+        const rawRutDv = (rutDvPartFromRut ?? userData.rutDv ?? "").toString().trim().toUpperCase();
+        const rutDvValue = rawRutDv === "K" ? "K" : (rawRutDv ? Number(rawRutDv) : null);
+        const genderInput = (userData.gender_nbr ?? userData.gender ?? "").toString().trim();
+        const genderMap = {
+            "1": { nbr: 1, desc: "Femenino" },
+            "2": { nbr: 2, desc: "Masculino" },
+            "3": { nbr: 3, desc: "Prefiero no decirlo" },
+            F: { nbr: 1, desc: "Femenino" },
+            M: { nbr: 2, desc: "Masculino" },
+            PnD: { nbr: 3, desc: "Prefiero no decirlo" },
+        };
+        const normalizedGender = genderMap[genderInput] ?? null;
+        const genderDescInput = (userData.gender_desc ?? "").toString().trim();
+        const genderNbrValue = normalizedGender?.nbr ?? null;
+
         const payload = {
             first_name: userData.firstName ?? userData.first_name ?? "",
             second_name: userData.secondName ?? userData.second_name ?? "",
             first_last_name: userData.firstLastName ?? userData.first_last_name ?? "",
             second_last_name: userData.secondLastName ?? userData.second_last_name ?? "",
 
-            rut: (typeof userData.rut === "string" && userData.rut.includes("-")) ? (userData.rut.split("-")[0] ? Number(userData.rut.split("-")[0]) : null) : ((userData.rut !== undefined && userData.rut !== null && userData.rut !== "") ? Number(userData.rut) : null),
-            rut_dv: (typeof userData.rut === "string" && userData.rut.includes("-")) ? (userData.rut.split("-")[1] !== undefined && userData.rut.split("-")[1] !== "" ? Number(userData.rut.split("-")[1]) : null) : ((userData.rutDv !== undefined && userData.rutDv !== null && userData.rutDv !== "") ? Number(userData.rutDv) : null),
+            rut: Number.isNaN(rutNumber) ? null : rutNumber,
+            rut_dv: Number.isNaN(rutDvValue) ? null : rutDvValue,
             fono: (function() {
                 const rawPhone = userData.phone ?? userData.fono ?? "";
                 const digits = (rawPhone).replace(/\D/g, "");
@@ -74,8 +93,8 @@ export class UserService {
             rol_nbr: (userData.rol_nbr !== undefined && userData.rol_nbr !== null && userData.rol_nbr !== "") ? Number(userData.rol_nbr) : 1,
             rol_desc: userData.rol_desc ?? "Usuario",
             date_birth: dateBirthNormalized,
-            gender_nbr: (userData.gender !== undefined && userData.gender !== null && userData.gender !== "" ) ? Number(userData.gender) : null,
-            gender_desc: (typeof userData.gender_desc === "string" && userData.gender_desc.trim() !== "") ? userData.gender_desc : null,
+            gender_nbr: Number.isNaN(genderNbrValue) ? null : genderNbrValue,
+            gender_desc: genderDescInput || normalizedGender?.desc || null,
             pass: userData.password ?? userData.pass ?? ""
         };
 

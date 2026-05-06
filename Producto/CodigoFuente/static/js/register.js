@@ -379,20 +379,15 @@ form.addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> REGISTRANDO...';
 
-    const genderValueRaw = fields.gender.value;
-    // Si no hay selección, por defecto usar 3 (prefiero no decirlo)
-
-    //valor de genderValueRaw no puede se numero por que es una M no se puede castear a
-    const genderValue = genderValueRaw ? Number(genderValueRaw) : 3;
-    let genderDescValue = null;
-    if (genderValue === 1) {
-        genderDescValue = "Femenino";
-    } else if (genderValue === 2) {
-        genderDescValue = "Masculino";
-    } else if (genderValue === 3) {
-        // Opción 3: mapear como null según decisión
-        genderDescValue = null;
-    }
+    const genderOptions = {
+        "1": { nbr: 1, desc: "Femenino" },
+        "2": { nbr: 2, desc: "Masculino" },
+        "3": { nbr: 3, desc: "Prefiero no decirlo" },
+        F: { nbr: 1, desc: "Femenino" },
+        M: { nbr: 2, desc: "Masculino" },
+        PnD: { nbr: 3, desc: "Prefiero no decirlo" }
+    };
+    const selectedGender = genderOptions[fields.gender.value] ?? genderOptions.PnD;
 
     const rutRaw = (fields.rut.value ?? "").toString().trim();
     const rutDvRaw = (fields.rutDv.value ?? "").toString().trim();
@@ -407,8 +402,8 @@ form.addEventListener('submit', async (e) => {
         phone: '+56' + fields.phone.value,
         nationality: fields.nationality.value,
         birthDate: fields.birthDate.value,
-        gender: genderValue,
-        gender_desc: genderDescValue,
+        gender_nbr: selectedGender.nbr,
+        gender_desc: selectedGender.desc,
         email: fields.email.value,
         pass: fields.password.value // usamos 'pass' para la columna de BD
     };
