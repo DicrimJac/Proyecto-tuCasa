@@ -276,13 +276,25 @@ if (createAccountBtn) {
         // Si el href no funciona, esta es una alternativa
         window.location.href = 'register.html';
     });
+<<<<<<< HEAD
+<<<<<<< HEAD
 }
 // ========== BOTÓN DE GOOGLE - CON REDIRECCIÓN REAL ==========
+=======
+
+    // ========== BOTÓN DE GOOGLE ==========
+>>>>>>> 164a910 (Realice vista panel usuario)
+=======
+
+    // ========== BOTÓN DE GOOGLE ==========
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 const googleLoginBtn = document.getElementById('googleLoginBtn');
 if (googleLoginBtn) {
     googleLoginBtn.addEventListener('click', function(e) {
         e.preventDefault();
         
+<<<<<<< HEAD
+<<<<<<< HEAD
         // Mostrar estado de carga
         const originalText = this.innerHTML;
         this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirigiendo a Google...';
@@ -308,4 +320,37 @@ if (googleLoginBtn) {
         }, 1500);
         */
     });
+=======
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
+        // Mostrar mensaje de carga
+        const originalText = googleLoginBtn.innerHTML;
+        googleLoginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Conectando con Google...';
+        googleLoginBtn.disabled = true;
+        
+        // Simular redirección a Google (reemplazar con URL real)
+        setTimeout(() => {
+            // Aquí iría la redirección real a Google OAuth
+            // window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=TU_CLIENT_ID&redirect_uri=TU_REDIRECT_URI&response_type=code&scope=email profile';
+            
+            // Por ahora solo simulamos
+            console.log('Redirigiendo a Google para autenticación...');
+            
+            // Restaurar botón (solo para simulación)
+            googleLoginBtn.innerHTML = originalText;
+            googleLoginBtn.disabled = false;
+            
+            // Mostrar mensaje informativo
+            if (window.showMessage) {
+                window.showMessage('Funcionalidad de Google en desarrollo. Próximamente disponible.', 'info');
+            } else {
+                alert('Funcionalidad de Google en desarrollo. Próximamente disponible.');
+            }
+        }, 1000);
+    });
+}
+<<<<<<< HEAD
+>>>>>>> 164a910 (Realice vista panel usuario)
+=======
+>>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 }
