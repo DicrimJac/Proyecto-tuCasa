@@ -171,3 +171,202 @@ textarea {
     font-size: 12px;
     color: #6c7f8b;
 }
+
+/* CARD */
+.step-card {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    margin-top: 30px;
+}
+
+/* TITULOS */
+.step-card h2 {
+    text-align: center;
+    color: #1F3B4C;
+    margin-bottom: 30px;
+}
+
+.step-card h3 {
+    margin-top: 35px;
+    margin-bottom: 20px;
+    color: #2C5A6E;
+}
+
+/* GRID FORM */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* INPUTS */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2C5A6E;
+}
+
+.form-group input,
+.form-group select,
+textarea {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #d9e2ec;
+    background: #f8fbfd;
+    font-size: 15px;
+}
+
+/* CHECK GRID */
+.check-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.check-grid label {
+    background: #f8fbfd;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #d9e2ec;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* TEXTAREA */
+textarea {
+    min-height: 140px;
+    resize: vertical;
+    margin-top: 10px;
+}
+
+/* CONTADOR */
+#charCount {
+    margin-top: 8px;
+    color: #6c7f8b;
+}
+
+/* QUITAR FLECHAS INPUT NUMBER */
+
+/* Chrome, Safari, Edge */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.step-description {
+    text-align: center;
+    color: #6c7f8b;
+    margin-bottom: 30px;
+}
+
+.plans-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.plan-card {
+    background: white;
+    border: 2px solid #d9e2ec;
+    border-radius: 20px;
+    padding: 30px 25px;
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    border-color: #2C5A6E;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.plan-card.selected-plan {
+    border: 2px solid #1F3B4C;
+    background: #edf4f8;
+}
+
+.plan-card h3 {
+    text-align: center;
+    color: #1F3B4C;
+    margin-bottom: 20px;
+}
+
+.plan-card ul {
+    padding-left: 18px;
+    color: #4a6272;
+    line-height: 1.8;
+}
+
+.plan-price {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #2C5A6E;
+}
+
+.summary-image-container {
+    margin-top: 25px;
+}
+
+.summary-image-container img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.summary-grid {
+    margin-top: 30px;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.summary-item {
+    background: #f8fbfd;
+    border: 1px solid #d9e2ec;
+    border-radius: 14px;
+    padding: 15px;
+}
+
+.summary-item span {
+    display: block;
+    font-size: 14px;
+    color: #6c7f8b;
+    margin-bottom: 6px;
+}
+
+.summary-item p {
+    color: #1F3B4C;
+    font-weight: 600;
+}
+
+.summary-description {
+    margin-top: 35px;
+}
+
+.summary-description h3 {
+    color: #1F3B4C;
+    margin-bottom: 15px;
+}
+
+.summary-description p {
+    color: #4a6272;
+    line-height: 1.7;
+}
