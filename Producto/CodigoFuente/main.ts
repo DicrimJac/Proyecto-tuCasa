@@ -57,6 +57,7 @@ app.get("/*", async (c) => {
     urlRoot: "",
     showDirListing: false,
     enableCors: true,
+    index:"home.html"
   });
   
   // Copiar el status y headers
