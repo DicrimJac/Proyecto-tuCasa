@@ -1,4 +1,4 @@
-import { setCookie } from "hono/cookie";
+import { getCookie, setCookie } from "hono/cookie";
 import { UserService } from "../service/userService.js";
 import { SessionRepository } from "../repository/sessionRepository.js";
 
@@ -33,22 +33,51 @@ export class UserController {
   async login(c) {
     try {
       const { email, password } = await c.req.json();
-      const result = await this.userService.authenticateByEmail(email, password);
+      const result = await this.userService.authenticateByEmail(
+        email,
+        password,
+      );
       const status = result.success ? 200 : 401;
       // Si el login es exitoso, crear una sesión y persistirla en una cookie HttpOnly
       if (result.success) {
         const sessionRepo = new SessionRepository();
-        const userId = result.data?.id || result.data?.id_user || result.data?.user_id;
+        const userId = result.data?.id || result.data?.id_user ||
+          result.data?.user_id;
         const token = sessionRepo.createSession(userId);
         // Establecer cookie HttpOnly para mantener la sesión
-        setCookie(c, "session_id", token, { httpOnly: true, path: "/" });
+        setCookie(c, "session_id", token, {
+          httpOnly: true,
+          path: "/",
+          sameSite: "Lax",
+        });
       }
       return c.json(result, status);
     } catch (error) {
-      return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
     }
   }
-  
+
+  async logout(c) {
+    const sessionId = getCookie(c, "session_id");
+    if (sessionId) {
+      const sessionRepo = new SessionRepository();
+      sessionRepo.deleteSession(sessionId);
+    }
+
+    setCookie(c, "session_id", "", {
+      httpOnly: true,
+      path: "/",
+      sameSite: "Lax",
+      maxAge: 0,
+    });
+
+    return c.json({ success: true });
+  }
+
   // GET /api/users/:id
   async getUserById(c) {
     try {
@@ -74,10 +103,13 @@ export class UserController {
       const status = result.success ? 201 : 400;
       return c.json(result, status);
     } catch (error) {
-      return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
     }
   }
-
 
   // NEW: CRUD - Update user by mail
   async updateUserByMail(c) {
@@ -88,7 +120,11 @@ export class UserController {
       const status = result?.success ? 200 : 400;
       return c.json(result, status);
     } catch (error) {
-      return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
     }
   }
 
@@ -100,7 +136,11 @@ export class UserController {
       const status = result?.success ? 200 : 400;
       return c.json(result, status);
     } catch (error) {
-      return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
     }
   }
 }
