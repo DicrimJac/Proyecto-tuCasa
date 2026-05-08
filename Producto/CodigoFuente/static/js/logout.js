@@ -13,7 +13,7 @@ const confirmBtn = document.getElementById("confirmLogout");
 const config = {
   logoutDelay: 1500,
   redirectDelay: 2000,
-  redirectUrl: "login.html",
+  redirectUrl: "home.html",
   profileUrl: "profile.html",
 };
 

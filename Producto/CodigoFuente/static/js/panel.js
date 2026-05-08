@@ -975,7 +975,7 @@ if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
         if (confirm('¿Cerrar sesión?')) {
             localStorage.clear();
-            window.location.href = 'login.html';
+            window.location.href = 'home.html';
         }
     });
 }
