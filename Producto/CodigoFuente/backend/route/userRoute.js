@@ -2,7 +2,6 @@ import { Hono } from "hono";
 import { UserController } from "../controller/userController.js";
 import { requireAuth } from "../middleware/auth.js";
 
-
 const userRoute = new Hono();
 const userController = new UserController();
 
@@ -16,13 +15,20 @@ userRoute.post("/", requireAuth, (c) => userController.createUser(c));
 userRoute.put("/:mail", requireAuth, (c) => userController.updateUserByMail(c));
 
 // DELETE /api/users/:mail - Eliminar usuario por mail
-userRoute.delete("/:mail", requireAuth, (c) => userController.deleteUserByMail(c));
+userRoute.delete(
+  "/:mail",
+  requireAuth,
+  (c) => userController.deleteUserByMail(c),
+);
 
 // GET /api/users/:id
 userRoute.get("/:id", requireAuth, (c) => userController.getUserById(c));
 
 // POST /api/login
 userRoute.post("/login", (c) => userController.login(c));
+
+// POST /api/logout
+userRoute.post("/logout", (c) => userController.logout(c));
 
 // POST /api/register
 userRoute.post("/register", (c) => userController.register(c));
