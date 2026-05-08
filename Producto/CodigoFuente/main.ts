@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { serveDir } from "jsr:@std/http/file-server";
 import { fromFileUrl, join } from "jsr:@std/path@1";
 import userRoute from "./backend/route/userRoute.js";
-import renderLayout from "./backend/utils/layouth.js";
 
 const app = new Hono();
 
@@ -23,7 +22,7 @@ app.use("*", async (c, next) => {
   c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   c.header("Access-Control-Allow-Headers", "Content-Type");
   if (c.req.method === "OPTIONS") {
-    return c.text("", 204);
+    return new Response(null, { status: 204 });
   }
   await next();
 });
@@ -35,7 +34,6 @@ app.use("*", async (c, next) => {
 // Montar rutas de usuarios
 app.route("/api/users", userRoute);
 
-
 // ============================================
 // RUTAS DE ARCHIVOS ESTÁTICOS
 // ============================================
@@ -43,6 +41,25 @@ app.route("/api/users", userRoute);
 // Resolver ruta absoluta a la carpeta "static" relativa a este archivo, no al cwd
 const moduleDir = fromFileUrl(new URL("./", import.meta.url));
 const staticRoot = join(moduleDir, "static");
+
+app.get("/", async (c) => {
+  return new Response(await Deno.readFile(join(staticRoot, "home.html")), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+    },
+  });
+});
+
+app.get("/favicon.ico", async (c) => {
+  return new Response(
+    await Deno.readFile(join(staticRoot, "assets", "image", "favicon.png")),
+    {
+      headers: {
+        "content-type": "image/png",
+      },
+    },
+  );
+});
 
 // Servir archivos estáticos desde la carpeta "static" (agnóstico del cwd)
 app.get("/*", async (c) => {
@@ -57,16 +74,9 @@ app.get("/*", async (c) => {
     urlRoot: "",
     showDirListing: false,
     enableCors: true,
-    index:"home.html"
   });
-  
-  // Copiar el status y headers
-  c.status(response.status);
-  response.headers.forEach((value, key) => {
-    c.header(key, value);
-  });
-  
-  return c.body(response.body);
+
+  return response;
 });
 
 // ============================================
