@@ -76,7 +76,7 @@ body {
     margin-top: 0.25rem;
 }
 
-.form-floating > label {
+.form-floating>label {
     font-weight: 500;
     color: #4a6272;
 }
@@ -105,14 +105,15 @@ body {
 }
 
 .btn-login:hover {
-    color: #8FABB9;  
+    color: #8FABB9;
     transform: translateY(-1px);
     box-shadow: 0 12px 20px -8px rgba(0, 32, 43, 0.3);
 }
 
 .btn-login:hover i {
-    color: #8FABB9; 
+    color: #8FABB9;
 }
+
 .btn-login:active {
     transform: translateY(1px);
 }
@@ -182,27 +183,27 @@ body {
 }
 
 /* ========== REGLAS PARA EL COLOR DE ETIQUETAS ========== */
-.form-floating > label {
+.form-floating>label {
     color: #4a6272 !important;
 }
 
-.form-floating > .form-control:focus ~ label,
-.form-floating > .form-control:not(:placeholder-shown) ~ label,
-.form-floating > .form-select ~ label {
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label,
+.form-floating>.form-select~label {
     color: #4a6272 !important;
 }
 
-.form-floating > label i {
+.form-floating>label i {
     color: #4a6272;
 }
 
 /* ========== REGLAS PARA ELIMINAR FONDO BLANCO ========== */
-.form-floating > label {
+.form-floating>label {
     background-color: transparent !important;
 }
 
-.form-floating > .form-control:-webkit-autofill ~ label,
-.form-floating > .form-control:autofill ~ label {
+.form-floating>.form-control:-webkit-autofill~label,
+.form-floating>.form-control:autofill~label {
     background-color: transparent !important;
     color: #4a6272 !important;
 }
@@ -216,13 +217,13 @@ input:-webkit-autofill:focus {
     transition: background-color 600000s 0s, color 600000s 0s;
 }
 
-input:-webkit-autofill ~ label {
+input:-webkit-autofill~label {
     background-color: transparent !important;
 }
 
-.form-floating > .form-control:focus ~ label,
-.form-floating > .form-control:not(:placeholder-shown) ~ label,
-.form-floating > .form-select ~ label {
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label,
+.form-floating>.form-select~label {
     background-color: transparent !important;
     color: #4a6272 !important;
 }
@@ -257,8 +258,9 @@ input:-webkit-autofill ~ label {
     margin-top: 0.25rem;
     text-align: center;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+
+
 /* ========== BOTÓN DE GOOGLE - ESTILO OFICIAL SIMPLE ========== */
 .btn-google {
     background: white;
@@ -270,9 +272,8 @@ input:-webkit-autofill ~ label {
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
+}
+
 /* ========== BOTÓN DE GOOGLE ========== */
 .btn-google {
     background: white;
@@ -284,61 +285,40 @@ input:-webkit-autofill ~ label {
     font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.3s ease;
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-<<<<<<< HEAD
-<<<<<<< HEAD
     width: 100%;
-=======
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
+
 }
 
 .btn-google:hover {
     background: #f8f9fa;
-<<<<<<< HEAD
-<<<<<<< HEAD
     border-color: #d2d5d9;
     box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
 }
 
 .btn-google:active {
     background: #f1f3f4;
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transform: translateY(-1px);
 }
 
 .btn-google:active {
     transform: translateY(1px);
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
+
 }
 
 .btn-google i {
     font-size: 1.2rem;
-<<<<<<< HEAD
-<<<<<<< HEAD
     color: #4285F4;
 }
+
 .btn-google svg {
     width: 18px;
     height: 18px;
-=======
     color: #DB4437;
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
     color: #DB4437;
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
+
 }

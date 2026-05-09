@@ -167,7 +167,7 @@
         padding: 2rem 1.5rem;
         gap: 1.5rem;
     }
-    
+
     .footer-bottom-container {
         flex-direction: column;
         text-align: center;
@@ -180,19 +180,19 @@
         text-align: center;
         padding: 2rem 1rem;
     }
-    
+
     .footer-logo {
         justify-content: center;
     }
-    
+
     .footer-social {
         justify-content: center;
     }
-    
+
     .footer-links a {
         justify-content: center;
     }
-    
+
     .footer-contact li {
         justify-content: center;
     }
