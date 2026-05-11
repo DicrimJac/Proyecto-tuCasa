@@ -1,8 +1,33 @@
+// ===================== VALIDAR TELÉFONO (SOLO NÚMEROS) =====================
+function validatePhoneNumber(input) {
+    // Guardar el valor actual
+    let value = input.value;
+    
+    // Remover cualquier caracter que NO sea número (solo dígitos 0-9)
+    value = value.replace(/[^0-9]/g, '');
+    
+    // Limitar longitud máxima a 15 dígitos
+    if (value.length > 15) {
+        value = value.slice(0, 15);
+    }
+    
+    // Actualizar el input
+    input.value = value;
+}
+
 // ===================== CONTACTO - FORMULARIO =====================
 document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');
     const toast = document.getElementById('toastContact');
     const toastMessage = document.getElementById('toastMessage');
+    
+    // ========== VALIDACIÓN DEL TELÉFONO (SOLO NÚMEROS) ==========
+    const phoneInput = document.getElementById('contactPhone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            validatePhoneNumber(this);
+        });
+    }
     
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
@@ -11,9 +36,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Obtener valores del formulario
             const nombre = document.getElementById('contactName').value;
             const email = document.getElementById('contactEmail').value;
-            const telefono = document.getElementById('contactPhone').value;
+            let telefono = document.getElementById('contactPhone').value;
             const asunto = document.getElementById('contactSubject').value;
             const mensaje = document.getElementById('contactMessage').value;
+            
+            // Validar teléfono (solo números)
+            const phoneRegex = /^[0-9]+$/;
+            if (telefono && !phoneRegex.test(telefono)) {
+                mostrarToast('El teléfono solo puede contener números', true);
+                return;
+            }
             
             // Validar campos obligatorios
             if (!nombre || !email || !mensaje) {
@@ -109,3 +141,20 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(element);
     });
 });
+
+// ===================== VALIDAR TELÉFONO (SOLO NÚMEROS) =====================
+function validatePhoneNumber(input) {
+    // Guardar el valor actual
+    let value = input.value;
+    
+    // Remover cualquier caracter que NO sea número (solo dígitos 0-9)
+    value = value.replace(/[^0-9]/g, '');
+    
+    // Limitar longitud máxima a 15 dígitos
+    if (value.length > 15) {
+        value = value.slice(0, 15);
+    }
+    
+    // Actualizar el input
+    input.value = value;
+}

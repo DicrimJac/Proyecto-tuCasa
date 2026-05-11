@@ -1,0 +1,136 @@
+/* ========== TERMS AND CONDITIONS STYLES ========== */
+.page-hero {
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+    padding: 4rem 2rem;
+    text-align: center;
+    color: white;
+    margin-top: 70px;
+}
+
+.page-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.page-hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.terms-container {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+    display: flex;
+    gap: 3rem;
+}
+
+.terms-sidebar {
+    width: 250px;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.terms-sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.terms-sidebar li {
+    margin-bottom: 0.5rem;
+}
+
+.terms-sidebar a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #5a6e7a;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.terms-sidebar a:hover {
+    background: #f8f9fa;
+    color: #2C5A6E;
+}
+
+.terms-sidebar a.active {
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+    color: white;
+}
+
+.terms-content {
+    flex: 1;
+}
+
+.terms-content section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.terms-content h2 {
+    color: #1F3B4C;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.terms-content p {
+    color: #6c7f8b;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.terms-content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.terms-content li {
+    color: #6c7f8b;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.terms-footer {
+    text-align: center;
+    padding: 2rem;
+    color: #a0b3c2;
+    font-size: 0.9rem;
+    border-top: 1px solid #e9ecef;
+}
+
+@media (max-width: 768px) {
+    .page-hero {
+        padding: 3rem 1rem;
+        margin-top: 60px;
+    }
+    
+    .page-hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .terms-container {
+        flex-direction: column;
+        padding: 0 1rem;
+    }
+    
+    .terms-sidebar {
+        width: 100%;
+        position: static;
+        margin-bottom: 1rem;
+    }
+    
+    .terms-sidebar ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .terms-content section {
+        padding: 1.5rem;
+    }
+}
