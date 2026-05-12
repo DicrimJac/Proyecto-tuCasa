@@ -110,3 +110,17 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch((error) => console.error("Error:", error));
 });
+
+function initHeader() {
+  // Toggle menú móvil
+  const navToggle = document.getElementById("navToggle");
+  if (navToggle) {
+    navToggle.addEventListener("click", () => {
+      const navMenu = document.getElementById("navMenu");
+      if (navMenu) {
+        navMenu.classList.toggle("active");
+      }
+      navToggle.classList.toggle("active");
+    });
+  }
+}
