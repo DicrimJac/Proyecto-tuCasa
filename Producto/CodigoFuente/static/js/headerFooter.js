@@ -83,7 +83,7 @@
 
 document.addEventListener("DOMContentLoaded", function () {
   // Cargar header
-  fetch("components/header.html")
+  fetch("../components/header.html")
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Error cargando header: ${response.status}`);
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch((error) => console.error("Error:", error));
 
   // Cargar footer
-  fetch("components/footer.html")
+  fetch("../components/footer.html")
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Error cargando footer: ${response.status}`);
