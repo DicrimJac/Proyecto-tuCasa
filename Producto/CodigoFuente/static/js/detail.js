@@ -1,13 +1,3 @@
-// const data = JSON.parse(localStorage.getItem("propiedad"));
-
-// if (data) {
-//     document.getElementById("img").src = data.img;
-//     document.getElementById("titulo").textContent = data.titulo;
-//     document.getElementById("precio").textContent = "$" + data.precio;
-//     document.getElementById("habitaciones").textContent = data.habitaciones + " habitaciones";
-//     document.querySelector(".mapa iframe").src = `https://www.google.com/maps?q=${data.ubicacion}&output=embed`;
-// }
-
 // ============================================
 // MOCK DATA PROPIEDAD
 // ============================================
@@ -26,10 +16,8 @@ const propiedad = {
     nombreContacto: "Juan Pérez",
     telefono: "+56 9 1234 5678",
     correo: "contacto@tucasa.cl",
-    imagen:
-        "img/departamento.jpg"
+    imagen: "assets/image/casa2.png"
 };
-
 
 // ============================================
 // REFERENCIAS HTML
@@ -52,24 +40,26 @@ const mapFrame = document.getElementById("mapFrame");
 // INSERTAR DATOS
 // ============================================
 
-img.src = propiedad.imagen;
-titulo.textContent = propiedad.titulo;
-precio.textContent = propiedad.precio;
-ubicacion.textContent = propiedad.ubicacion;
-habitaciones.textContent = propiedad.habitaciones;
-banos.textContent = propiedad.banos;
-estacionamientos.textContent = propiedad.estacionamientos;
-superficie.textContent = propiedad.superficie;
-tipoPropiedad.textContent = propiedad.tipoPropiedad;
-operacion.textContent = propiedad.operacion;
-descripcion.textContent = propiedad.descripcion;
+if (img) img.src = propiedad.imagen;
+if (titulo) titulo.textContent = propiedad.titulo;
+if (precio) precio.textContent = propiedad.precio;
+if (ubicacion) ubicacion.textContent = propiedad.ubicacion;
+if (habitaciones) habitaciones.textContent = propiedad.habitaciones;
+if (banos) banos.textContent = propiedad.banos;
+if (estacionamientos) estacionamientos.textContent = propiedad.estacionamientos;
+if (superficie) superficie.textContent = propiedad.superficie;
+if (tipoPropiedad) tipoPropiedad.textContent = propiedad.tipoPropiedad;
+if (operacion) operacion.textContent = propiedad.operacion;
+if (descripcion) descripcion.textContent = propiedad.descripcion;
 
 // ============================================
 // MAPA DINÁMICO
 // ============================================
 
-const direccionURL = encodeURIComponent(propiedad.ubicacion);
-mapFrame.src = `https://www.google.com/maps?q=${direccionURL}&output=embed`;
+if (mapFrame && propiedad.ubicacion) {
+    const direccionURL = encodeURIComponent(propiedad.ubicacion);
+    mapFrame.src = `https://www.google.com/maps?q=${direccionURL}&output=embed`;
+}
 
 // ============================================
 // MODAL CONTACTO
@@ -80,17 +70,88 @@ const modalWhatsapp = document.getElementById("modalWhatsapp");
 const cerrarModal = document.getElementById("cerrarModal");
 const cerrarBtn = document.getElementById("cerrarBtn");
 
+// Función para abrir modal
+function openModal() {
+    if (modalWhatsapp) {
+        modalWhatsapp.classList.add("active");
+    }
+}
+
+// Función para cerrar modal
+function closeModal() {
+    if (modalWhatsapp) {
+        modalWhatsapp.classList.remove("active");
+    }
+}
+
 // ABRIR MODAL
-btnWhatsapp.addEventListener("click", () => {
-    modalWhatsapp.style.display = "flex";
-});
+if (btnWhatsapp) {
+    btnWhatsapp.addEventListener("click", openModal);
+}
 
 // CERRAR MODAL X
-cerrarModal.addEventListener("click", () => {
-    modalWhatsapp.style.display = "none";
-});
+if (cerrarModal) {
+    cerrarModal.addEventListener("click", closeModal);
+}
 
 // CERRAR BOTÓN
-cerrarBtn.addEventListener("click", () => {
-    modalWhatsapp.style.display = "none";
-});
+if (cerrarBtn) {
+    cerrarBtn.addEventListener("click", closeModal);
+}
+
+// Cerrar modal al hacer clic fuera
+if (modalWhatsapp) {
+    modalWhatsapp.addEventListener("click", (e) => {
+        if (e.target === modalWhatsapp) {
+            closeModal();
+        }
+    });
+}
+
+// ============================================
+// TOAST
+// ============================================
+
+function showToast(message, isError = false) {
+    const toast = document.getElementById('notificationToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastHeader = toast?.querySelector('.toast-header');
+    
+    if (!toast) return;
+    if (toastMessage) toastMessage.textContent = message;
+    
+    if (isError) {
+        toast.style.borderLeftColor = '#dc3545';
+        const icon = toastHeader?.querySelector('i');
+        if (icon) {
+            icon.className = 'bi bi-exclamation-triangle-fill';
+            icon.style.color = '#dc3545';
+        }
+        const strong = toastHeader?.querySelector('strong');
+        if (strong) strong.textContent = 'Error';
+    } else {
+        toast.style.borderLeftColor = '#2C5A6E';
+        const icon = toastHeader?.querySelector('i');
+        if (icon) {
+            icon.className = 'bi bi-check-circle-fill';
+            icon.style.color = '#2C5A6E';
+        }
+        const strong = toastHeader?.querySelector('strong');
+        if (strong) strong.textContent = 'Éxito';
+    }
+    
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+        if (toastHeader) {
+            const icon = toastHeader.querySelector('i');
+            if (icon) icon.className = 'bi bi-info-circle-fill';
+            const strong = toastHeader.querySelector('strong');
+            if (strong) strong.textContent = 'Información';
+            toast.style.borderLeftColor = '#2C5A6E';
+        }
+    }, 3000);
+}
+
+// Mostrar toast de bienvenida (opcional)
+// showToast('Bienvenido a la página de detalle');
