@@ -3,376 +3,440 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Publicar Propiedad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Casa · Publicar Propiedad</title>
     <!-- CSS -->
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/publishProperty.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
     <!-- HEADER -->
     <div id="header"></div>
-    <!-- FORMULARIO -->
-    <form id="publishForm">
-        <!-- PASO 1 -->
-        <div class="step active" id="step1">
-            <h2>Describe tu inmueble</h2>
-            <p>Selecciona la categoría y tipo de propiedad</p>
-            <!-- CATEGORÍA -->
-            <label>¿A qué categoría pertenece?</label>
-            <div class="options">
-                <label class="option-card">
-                    <input type="radio" name="category" value="depa">
-                    <span>Departamento</span>
-                </label>
-                <label class="option-card">
-                    <input type="radio" name="category" value="casa">
-                    <span>Casa</span>
-                </label>
-                <label class="option-card">
-                    <input type="radio" name="category" value="pieza">
-                    <span>Pieza</span>
-                </label>
-                <label class="option-card">
-                    <input type="radio" name="category" value="suite">
-                    <span>Suite</span>
-                </label>
-                <label class="option-card">
-                    <input type="radio" name="category" value="mansion">
-                    <span>Mansión</span>
-                </label>
-                <label class="option-card">
-                    <input type="radio" name="category" value="bodega">
-                    <span>Bodega</span>
-                </label>
-            </div>
-            <!-- TIPO -->
-            <label>¿Qué tipo de propiedad es?</label>
-            <div class="options">
-                <label class="option-card">
-                    <input type="radio" name="condition" value="new">
-                    <span>Nueva</span>
-                </label>
-                <label class="option-card">
-                    <input type="radio" name="condition" value="used">
-                    <span>Usada</span>
-                </label>
-            </div>
-            <!-- BOTONES -->
-            <div class="buttons">
-                <button type="button" class="btn-cancel" onclick="cancelForm()">Cancelar</button>
-                <button type="button" class="btn-next" onclick="validateStep1()">Siguiente</button>
-            </div>
-        </div>
-        <!-- PASO 2 -->
-        <div class="step" id="step2">
-            <h2>Ubicación del inmueble</h2>
-            <p>Ingresa la dirección y selecciona su ubicación</p>
 
-            <!-- DIRECCIÓN -->
-            <div class="address-group">
-                <label for="address">Dirección *</label>
-
-                <input type="text" id="address" placeholder="Ej: Av. Providencia 1234">
-            </div>
-
-            <!-- CHECKBOX -->
-            <label class="checkbox">
-                <input type="checkbox" id="hideAddress">
-                Deseo no mostrar la dirección exacta del inmueble
-            </label>
-
-            <!-- MAPA -->
-            <div class="map-container">
-                <iframe id="mapFrame" width="100%" height="100%" style="border:0;" loading="lazy" allowfullscreen
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
-            </div>
-            <!-- BOTONES -->
-            <div class="buttons">
-                <button type="button" class="btn-cancel" onclick="prevStep(1)">Atrás</button>
-                <button type="button" class="btn-next" onclick="validateStep2()">Siguiente</button>
-            </div>
-        </div>
-        <!-- PASO 3 -->
-        <div class="step" id="step3">
-            <h2>Imágenes del inmueble</h2>
-            <p>Puedes subir hasta 20 fotos</p>
-            <!-- INPUT -->
-            <label for="images">Subir imágenes *</label>
-            <input type="file" id="images" multiple accept="image/*">
-            <!-- PREVIEW -->
-            <div id="imagePreview" class="image-preview"></div>
-            <!-- IMAGEN PRINCIPAL -->
-            <div class="main-image-container">
-                <h4>Imagen principal</h4>
-                <img id="mainImage" src="" alt="Imagen principal">
-            </div>
-            <!-- BOTONES -->
-            <div class="buttons">
-                <button type="button" class="btn-cancel" onclick="prevStep(2)">Atrás</button>
-                <button type="button" class="btn-next" onclick="validateStep3()">Siguiente</button>
+    <main>
+        <!-- Hero section -->
+        <div class="page-hero">
+            <div class="page-hero-container">
+                <h1>Publicar Propiedad</h1>
+                <p>Completa el formulario para publicar tu propiedad en Tu Casa</p>
             </div>
         </div>
 
-        <!-- PASO 4 -->
-        <div class="step" id="step4">
-            <div class="step-card">
-                <h2>Características del inmueble</h2>
-                <!-- GRID -->
-                <div class="features-grid">
-                    <div class="form-group">
-                        <label for="totalArea">Superficie total (m²) *</label>
-                        <input type="number" id="totalArea" required>
+        <!-- FORMULARIO -->
+        <form id="publishForm" class="publish-form">
+            <!-- PASO 1 -->
+            <div class="step active" id="step1">
+                <div class="step-card">
+                    <h2><i class="fas fa-home"></i> Describe tu inmueble</h2>
+                    <p>Selecciona la categoría y tipo de propiedad</p>
+
+                    <label class="form-label">¿A qué categoría pertenece?</label>
+                    <div class="options">
+                        <label class="option-card">
+                            <input type="radio" name="category" value="departamento">
+                            <span><i class="fas fa-building"></i> Departamento</span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="category" value="casa">
+                            <span><i class="fas fa-home"></i> Casa</span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="category" value="pieza">
+                            <span><i class="fas fa-bed"></i> Pieza</span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="category" value="suite">
+                            <span><i class="fas fa-crown"></i> Suite</span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="category" value="mansion">
+                            <span><i class="fas fa-landmark"></i> Mansión</span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="category" value="bodega">
+                            <span><i class="fas fa-warehouse"></i> Bodega</span>
+                        </label>
                     </div>
-                    <div class="form-group">
-                        <label for="usableArea">Superficie útil (m²) *</label>
-                        <input type="number" id="usableArea" required>
+
+                    <label class="form-label">¿Qué tipo de propiedad es?</label>
+                    <div class="options">
+                        <label class="option-card">
+                            <input type="radio" name="condition" value="nueva">
+                            <span><i class="fas fa-star"></i> Nueva</span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="condition" value="usada">
+                            <span><i class="fas fa-history"></i> Usada</span>
+                        </label>
                     </div>
-                    <div class="form-group">
-                        <label for="bedrooms">Dormitorios *</label>
-                        <select id="bedrooms" required>
-                            <option value="">Selecciona</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5+</option>
-                        </select>
+
+                    <div class="buttons">
+                        <button type="button" class="btn-cancel" onclick="cancelForm()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="button" class="btn-next" onclick="validateStep1()">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="bathrooms">Baños *</label>
-                        <select id="bathrooms" required>
-                            <option value="">Selecciona</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5+</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="age">Antigüedad</label>
-                        <select id="age">
-                            <option>Menos de 1 año</option>
-                            <option>1 - 5 años</option>
-                            <option>5 - 10 años</option>
-                            <option>10+ años</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="floors">Cantidad de pisos</label>
-                        <select id="floors">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5+</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="orientation">Orientación</label>
-                        <select id="orientation">
-                            <option>Norte</option>
-                            <option>Sur</option>
-                            <option>Este</option>
-                            <option>Oeste</option>
-                        </select>
-                    </div>
-                </div>
-                <!-- EQUIPAMIENTO -->
-                <h3>Equipamiento</h3>
-                <div class="check-grid">
-                    <label><input type="checkbox"> Bodega</label>
-                    <label><input type="checkbox"> Estacionamiento</label>
-                    <label><input type="checkbox"> Gas natural</label>
-                    <label><input type="checkbox"> Aire acondicionado</label>
-                    <label><input type="checkbox"> Calefacción</label>
-                    <label><input type="checkbox"> Conexión lavadora</label>
-                    <label><input type="checkbox"> Energía solar</label>
-                    <label><input type="checkbox"> Caldera</label>
-                    <label><input type="checkbox"> Calefont</label>
-                    <label><input type="checkbox"> Chimenea</label>
-                    <label><input type="checkbox"> Gimnasio</label>
-                    <label><input type="checkbox"> Estacionamiento visita</label>
-                    <label><input type="checkbox"> Ascensor</label>
-                    <label><input type="checkbox"> Juegos infantiles</label>
-                    <label><input type="checkbox"> Áreas verdes</label>
-                    <label><input type="checkbox"> Multicancha</label>
-                    <label><input type="checkbox"> Salón de eventos</label>
-                    <label><input type="checkbox"> Alarma</label>
-                    <label><input type="checkbox"> Portón automático</label>
-                    <label><input type="checkbox"> Conserjería</label>
-                    <label><input type="checkbox"> Condominio cerrado</label>
-                    <label><input type="checkbox"> Acceso controlado</label>
-                    <label><input type="checkbox"> Balcón</label>
-                    <label><input type="checkbox"> Comedor</label>
-                    <label><input type="checkbox"> Dormitorio en suite</label>
-                    <label><input type="checkbox"> Living</label>
-                    <label><input type="checkbox"> Patio</label>
-                    <label><input type="checkbox"> Walking closet</label>
-                    <label><input type="checkbox"> Logia</label>
-                    <label><input type="checkbox"> Baño de visita</label>
-                    <label><input type="checkbox"> Antejardín</label>
-                    <label><input type="checkbox"> Quincho</label>
-                    <label><input type="checkbox"> Piscina</label>
-                    <label><input type="checkbox"> Terraza</label>
-                    <label><input type="checkbox"> Amoblado</label>
-                </div>
-                <!-- DESCRIPCIÓN -->
-                <div class="form-group">
-                    <label for="description">Descripción *</label>
-                    <textarea id="description" maxlength="3000" required
-                        placeholder="Describe el inmueble, barrio, servicios cercanos, locomoción, supermercados, colegios, hospitales, etc."></textarea>
-                    <small id="charCount">0 / 3000</small>
-                </div>
-                <!-- PRECIO -->
-                <h3>Precio</h3>
-                <div class="form-group">
-                    <label for="price">Precio *</label>
-                    <div class="inline-group">
-                        <input type="number" id="price" required>
-                        <select id="currency">
-                            <option value="$">$</option>
-                            <option value="UF">UF</option>
-                        </select>
-                    </div>
-                </div>
-                <!-- GASTOS COMUNES -->
-                <div class="form-group">
-                    <label for="expenses">Gastos comunes</label>
-                    <div class="inline-group">
-                        <input type="number" id="expenses">
-                        <select id="currencyExpenses">
-                            <option value="$">$</option>
-                            <option value="UF">UF</option>
-                        </select>
-                    </div>
-                </div>
-                <!-- BOTONES -->
-                <div class="buttons">
-                    <button type="button" class="btn-cancel" onclick="prevStep(3)">Atrás</button>
-                    <button type="button" class="btn-next" onclick="validateStep4()">Siguiente</button>
                 </div>
             </div>
-        </div>
-        <div class="step" id="step5">
-            <div class="step-card">
-                <h2>Tipo de publicación</h2>
-                <p class="step-description">
-                    Selecciona el plan que mejor se adapte a tu publicación
-                </p>
-                <div class="plans-container">
-                    <!-- PLAN BÁSICO -->
-                    <div class="plan-card" onclick="selectPlan(this, 'Básico')">
-                        <h3>Básico</h3>
-                        <ul>
-                            <li>Duración 1 mes</li>
-                            <li>Sin republicación gratis</li>
-                        </ul>
-                        <div class="plan-price">
-                            Gratis
+
+            <!-- PASO 2 -->
+            <div class="step" id="step2">
+                <div class="step-card">
+                    <h2><i class="fas fa-map-marker-alt"></i> Ubicación del inmueble</h2>
+                    <p>Ingresa la dirección y selecciona su ubicación en el mapa</p>
+
+                    <div class="form-group">
+                        <label for="address">Dirección *</label>
+                        <input type="text" id="address" placeholder="Ej: Av. Providencia 1234">
+                    </div>
+
+                    <label class="checkbox">
+                        <input type="checkbox" id="hideAddress">
+                        <span><i class="fas fa-eye-slash"></i> Deseo no mostrar la dirección exacta del inmueble</span>
+                    </label>
+
+                    <div class="map-container">
+                        <iframe id="mapFrame" width="100%" height="100%" style="border:0;" loading="lazy" allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="button" class="btn-cancel" onclick="prevStep(1)">
+                            <i class="fas fa-arrow-left"></i> Atrás
+                        </button>
+                        <button type="button" class="btn-next" onclick="validateStep2()">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 3 -->
+            <div class="step" id="step3">
+                <div class="step-card">
+                    <h2><i class="fas fa-images"></i> Imágenes del inmueble</h2>
+                    <p>Puedes subir hasta 20 fotos de tu propiedad</p>
+
+                    <div class="form-group">
+                        <label for="images">Subir imágenes *</label>
+                        <div class="file-upload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Haz clic o arrastra imágenes aquí</span>
+                            <input type="file" id="images" multiple accept="image/*">
                         </div>
                     </div>
-                    <!-- PLAN ESTANDAR -->
-                    <div class="plan-card" onclick="selectPlan(this, 'Estandar')">
-                        <h3>Estandar</h3>
-                        <ul>
-                            <li>Duración 6 meses</li>
-                            <li>Sin republicación gratis</li>
-                            <li>Mayor visibilidad</li>
-                            <li>Publicación destacada</li>
-                        </ul>
-                        <div class="plan-price">
-                            $100.000
+
+                    <div id="imagePreview" class="image-preview"></div>
+
+                    <div class="main-image-container">
+                        <h4><i class="fas fa-star"></i> Imagen principal</h4>
+                        <div class="main-image-placeholder">
+                            <img id="mainImage" src="" alt="Imagen principal">
+                            <p class="placeholder-text" id="mainImagePlaceholder">Selecciona una imagen como principal</p>
                         </div>
                     </div>
-                    <!-- PLAN PREMIUM -->
-                    <div class="plan-card" onclick="selectPlan(this, 'Premium')">
-                        <h3>Premium</h3>
-                        <ul>
-                            <li>Duración 1 año</li>
-                            <li>Republicación gratis</li>
-                            <li>Mayor visibilidad</li>
-                            <li>Publicación destacada</li>
-                        </ul>
-                        <div class="plan-price">
-                            $500.000
+
+                    <div class="buttons">
+                        <button type="button" class="btn-cancel" onclick="prevStep(2)">
+                            <i class="fas fa-arrow-left"></i> Atrás
+                        </button>
+                        <button type="button" class="btn-next" onclick="validateStep3()">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 4 -->
+            <div class="step" id="step4">
+                <div class="step-card">
+                    <h2><i class="fas fa-chart-line"></i> Características del inmueble</h2>
+
+                    <div class="features-grid">
+                        <div class="form-group">
+                            <label for="totalArea">Superficie total (m²) *</label>
+                            <input type="number" id="totalArea" placeholder="Ej: 120">
+                        </div>
+                        <div class="form-group">
+                            <label for="usableArea">Superficie útil (m²) *</label>
+                            <input type="number" id="usableArea" placeholder="Ej: 100">
+                        </div>
+                        <div class="form-group">
+                            <label for="bedrooms">Dormitorios *</label>
+                            <select id="bedrooms">
+                                <option value="">Selecciona</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bathrooms">Baños *</label>
+                            <select id="bathrooms">
+                                <option value="">Selecciona</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Antigüedad</label>
+                            <select id="age">
+                                <option>Menos de 1 año</option>
+                                <option>1 - 5 años</option>
+                                <option>5 - 10 años</option>
+                                <option>10+ años</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="floors">Cantidad de pisos</label>
+                            <select id="floors">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="orientation">Orientación</label>
+                            <select id="orientation">
+                                <option>Norte</option>
+                                <option>Sur</option>
+                                <option>Este</option>
+                                <option>Oeste</option>
+                            </select>
                         </div>
                     </div>
-                </div>
-                <!-- PLAN SELECCIONADO -->
-                <input type="hidden" id="selectedPlan">
-                <!-- BOTONES -->
-                <div class="buttons">
-                    <button type="button" class="btn-cancel" onclick="prevStep(4)">Atrás</button>
-                    <button type="button" class="btn-next" onclick="validateStep5()">Continuar</button>
+
+                    <h3><i class="fas fa-check-circle"></i> Equipamiento</h3>
+                    <div class="check-grid">
+                        <label><input type="checkbox"> Bodega</label>
+                        <label><input type="checkbox"> Estacionamiento</label>
+                        <label><input type="checkbox"> Gas natural</label>
+                        <label><input type="checkbox"> Aire acondicionado</label>
+                        <label><input type="checkbox"> Calefacción</label>
+                        <label><input type="checkbox"> Conexión lavadora</label>
+                        <label><input type="checkbox"> Energía solar</label>
+                        <label><input type="checkbox"> Caldera</label>
+                        <label><input type="checkbox"> Calefont</label>
+                        <label><input type="checkbox"> Chimenea</label>
+                        <label><input type="checkbox"> Gimnasio</label>
+                        <label><input type="checkbox"> Estacionamiento visita</label>
+                        <label><input type="checkbox"> Ascensor</label>
+                        <label><input type="checkbox"> Juegos infantiles</label>
+                        <label><input type="checkbox"> Áreas verdes</label>
+                        <label><input type="checkbox"> Multicancha</label>
+                        <label><input type="checkbox"> Salón de eventos</label>
+                        <label><input type="checkbox"> Alarma</label>
+                        <label><input type="checkbox"> Portón automático</label>
+                        <label><input type="checkbox"> Conserjería</label>
+                        <label><input type="checkbox"> Condominio cerrado</label>
+                        <label><input type="checkbox"> Acceso controlado</label>
+                        <label><input type="checkbox"> Balcón</label>
+                        <label><input type="checkbox"> Comedor</label>
+                        <label><input type="checkbox"> Dormitorio en suite</label>
+                        <label><input type="checkbox"> Living</label>
+                        <label><input type="checkbox"> Patio</label>
+                        <label><input type="checkbox"> Walking closet</label>
+                        <label><input type="checkbox"> Logia</label>
+                        <label><input type="checkbox"> Baño de visita</label>
+                        <label><input type="checkbox"> Antejardín</label>
+                        <label><input type="checkbox"> Quincho</label>
+                        <label><input type="checkbox"> Piscina</label>
+                        <label><input type="checkbox"> Terraza</label>
+                        <label><input type="checkbox"> Amoblado</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Descripción *</label>
+                        <textarea id="description" maxlength="3000" placeholder="Describe el inmueble, barrio, servicios cercanos, locomoción, supermercados, colegios, hospitales, etc."></textarea>
+                        <small id="charCount">0 / 3000</small>
+                    </div>
+
+                    <h3><i class="fas fa-dollar-sign"></i> Precio</h3>
+                    <div class="form-group">
+                        <label for="price">Precio *</label>
+                        <div class="inline-group">
+                            <input type="number" id="price" placeholder="Ej: 500000">
+                            <select id="currency">
+                                <option value="$">$</option>
+                                <option value="UF">UF</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expenses">Gastos comunes</label>
+                        <div class="inline-group">
+                            <input type="number" id="expenses" placeholder="Ej: 80000">
+                            <select id="currencyExpenses">
+                                <option value="$">$</option>
+                                <option value="UF">UF</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="button" class="btn-cancel" onclick="prevStep(3)">
+                            <i class="fas fa-arrow-left"></i> Atrás
+                        </button>
+                        <button type="button" class="btn-next" onclick="validateStep4()">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="step" id="step6">
-            <div class="step-card">
-                <h2>Resumen de publicación</h2>
-                <p class="step-description">
-                    Revisa toda la información antes de publicar
-                </p>
-                <!-- IMAGEN PRINCIPAL -->
-                <div class="summary-image-container">
-                    <img id="summaryMainImage" src="" alt="Imagen principal">
-                </div>
-                <!-- RESUMEN -->
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <span>Categoría</span>
-                        <p id="summaryCategory"></p>
+
+            <!-- PASO 5 -->
+            <div class="step" id="step5">
+                <div class="step-card">
+                    <h2><i class="fas fa-rocket"></i> Tipo de publicación</h2>
+                    <p>Selecciona el plan que mejor se adapte a tu publicación</p>
+
+                    <div class="plans-container">
+                        <div class="plan-card" onclick="selectPlan(this, 'Básico')">
+                            <div class="plan-icon"><i class="fas fa-gift"></i></div>
+                            <h3>Básico</h3>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Duración 1 mes</li>
+                                <li><i class="fas fa-times"></i> Sin republicación gratis</li>
+                            </ul>
+                            <div class="plan-price">
+                                <span>Gratis</span>
+                            </div>
+                        </div>
+
+                        <div class="plan-card" onclick="selectPlan(this, 'Estándar')">
+                            <div class="plan-icon"><i class="fas fa-chart-line"></i></div>
+                            <h3>Estándar</h3>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Duración 6 meses</li>
+                                <li><i class="fas fa-times"></i> Sin republicación gratis</li>
+                                <li><i class="fas fa-check"></i> Mayor visibilidad</li>
+                                <li><i class="fas fa-check"></i> Publicación destacada</li>
+                            </ul>
+                            <div class="plan-price">
+                                <span>$100.000</span>
+                            </div>
+                        </div>
+
+                        <div class="plan-card" onclick="selectPlan(this, 'Premium')">
+                            <div class="plan-icon"><i class="fas fa-crown"></i></div>
+                            <h3>Premium</h3>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Duración 1 año</li>
+                                <li><i class="fas fa-check"></i> Republicación gratis</li>
+                                <li><i class="fas fa-check"></i> Mayor visibilidad</li>
+                                <li><i class="fas fa-check"></i> Publicación destacada</li>
+                            </ul>
+                            <div class="plan-price">
+                                <span>$500.000</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="summary-item">
-                        <span>Condición</span>
-                        <p id="summaryCondition"></p>
+
+                    <input type="hidden" id="selectedPlan">
+
+                    <div class="buttons">
+                        <button type="button" class="btn-cancel" onclick="prevStep(4)">
+                            <i class="fas fa-arrow-left"></i> Atrás
+                        </button>
+                        <button type="button" class="btn-next" onclick="validateStep5()">
+                            Continuar <i class="fas fa-arrow-right"></i>
+                        </button>
                     </div>
-                    <div class="summary-item">
-                        <span>Dirección</span>
-                        <p id="summaryAddress"></p>
-                    </div>
-                    <div class="summary-item">
-                        <span>Dormitorios</span>
-                        <p id="summaryBedrooms"></p>
-                    </div>
-                    <div class="summary-item">
-                        <span>Baños</span>
-                        <p id="summaryBathrooms"></p>
-                    </div>
-                    <div class="summary-item">
-                        <span>Superficie total</span>
-                        <p id="summaryTotalArea"></p>
-                    </div>
-                    <div class="summary-item">
-                        <span>Precio</span>
-                        <p id="summaryPrice"></p>
-                    </div>
-                    <div class="summary-item">
-                        <span>Plan</span>
-                        <p id="summaryPlan"></p>
-                    </div>
-                </div>
-                <!-- DESCRIPCIÓN -->
-                <div class="summary-description">
-                    <h3>Descripción</h3>
-                    <p id="summaryDescription"></p>
-                </div>
-                <!-- BOTONES -->
-                <div class="buttons">
-                    <button type="button" class="btn-cancel" onclick="prevStep(5)">Atrás</button>
-                    <button type="button" class="btn-next" onclick="publishProperty()">Publicar propiedad</button>
                 </div>
             </div>
-        </div>
-    </form>
+
+            <!-- PASO 6 -->
+            <div class="step" id="step6">
+                <div class="step-card">
+                    <h2><i class="fas fa-file-alt"></i> Resumen de publicación</h2>
+                    <p>Revisa toda la información antes de publicar</p>
+
+                    <div class="summary-image-container">
+                        <img id="summaryMainImage" src="" alt="Imagen principal">
+                    </div>
+
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span><i class="fas fa-tag"></i> Categoría</span>
+                            <p id="summaryCategory"></p>
+                        </div>
+                        <div class="summary-item">
+                            <span><i class="fas fa-star"></i> Condición</span>
+                            <p id="summaryCondition"></p>
+                        </div>
+                        <div class="summary-item">
+                            <span><i class="fas fa-map-marker-alt"></i> Dirección</span>
+                            <p id="summaryAddress"></p>
+                        </div>
+                        <div class="summary-item">
+                            <span><i class="fas fa-bed"></i> Dormitorios</span>
+                            <p id="summaryBedrooms"></p>
+                        </div>
+                        <div class="summary-item">
+                            <span><i class="fas fa-bath"></i> Baños</span>
+                            <p id="summaryBathrooms"></p>
+                        </div>
+                        <div class="summary-item">
+                            <span><i class="fas fa-arrows-alt"></i> Superficie total</span>
+                            <p id="summaryTotalArea"></p>
+                        </div>
+                        <div class="summary-item">
+                            <span><i class="fas fa-dollar-sign"></i> Precio</span>
+                            <p id="summaryPrice"></p>
+                        </div>
+                        <div class="summary-item">
+                            <span><i class="fas fa-rocket"></i> Plan</span>
+                            <p id="summaryPlan"></p>
+                        </div>
+                    </div>
+
+                    <div class="summary-description">
+                        <h3><i class="fas fa-file-alt"></i> Descripción</h3>
+                        <p id="summaryDescription"></p>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="button" class="btn-cancel" onclick="prevStep(5)">
+                            <i class="fas fa-arrow-left"></i> Atrás
+                        </button>
+                        <button type="button" class="btn-next" onclick="publishProperty()">
+                            <i class="fas fa-check-circle"></i> Publicar propiedad
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
     <!-- FOOTER -->
     <div id="footer"></div>
+
+    <!-- Toast -->
+    <div class="toast-custom" id="notificationToast">
+        <div class="toast-header">
+            <i class="bi bi-info-circle-fill"></i>
+            <strong>Información</strong>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+
     <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/headerfooter.js"></script>
     <script src="js/publishProperty.js"></script>
 </body>
 

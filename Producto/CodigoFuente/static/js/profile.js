@@ -701,12 +701,8 @@ if (removeAvatar) {
 // ===================== CERRAR SESIÓN =====================
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        if (confirm('¿Cerrar sesión?')) {
-            localStorage.clear();
-            window.location.href = 'home.html';
-        }
+    logoutBtn.addEventListener('click', function() {
+        window.location.href = 'logout.html';
     });
 }
 

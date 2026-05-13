@@ -3,12 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <title>Detalle Propiedad</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Casa · Detalle Propiedad</title>
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -16,118 +18,132 @@
     <!-- HEADER -->
     <div id="header"></div>
 
-    <!-- CONTENEDOR -->
-    <main class="detail-container">
+    <main>
+        <!-- HERO SECTION -->
+        <div class="page-hero">
+            <div class="page-hero-container">
+                <h1>Detalle de Propiedad</h1>
+                <p>Conoce todos los detalles de esta propiedad</p>
+            </div>
+        </div>
 
-        <!-- IMAGEN -->
-        <section class="imagen-box">
+        <!-- CONTENEDOR PRINCIPAL -->
+        <div class="detail-container">
 
-            <img id="img" alt="Imagen propiedad">
+            <!-- IMAGEN -->
+            <div class="imagen-box">
+                <img id="img" alt="Imagen propiedad">
+            </div>
 
-        </section>
+            <!-- INFORMACIÓN -->
+            <div class="info-box">
 
-        <!-- INFORMACIÓN -->
-        <section class="info-box">
+                <!-- TÍTULO -->
+                <h1 id="titulo"></h1>
 
-            <!-- TÍTULO -->
-            <h1 id="titulo"></h1>
+                <!-- PRECIO -->
+                <div id="precio" class="precio"></div>
 
-            <!-- PRECIO -->
-            <p id="precio" class="precio"></p>
-
-            <!-- UBICACIÓN -->
-            <p id="ubicacion" class="ubicacion"></p>
-
-            <!-- DATOS RÁPIDOS -->
-            <div class="datos-grid">
-
-                <div class="dato-card">
-                    <span>Dormitorios</span>
-                    <strong id="habitaciones"></strong>
+                <!-- UBICACIÓN -->
+                <div class="ubicacion">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="ubicacion"></span>
                 </div>
 
-                <div class="dato-card">
-                    <span>Baños</span>
-                    <strong id="banos"></strong>
+                <!-- DATOS RÁPIDOS -->
+                <div class="datos-grid">
+
+                    <div class="dato-card">
+                        <span><i class="fas fa-bed"></i> Dormitorios</span>
+                        <strong id="habitaciones"></strong>
+                    </div>
+
+                    <div class="dato-card">
+                        <span><i class="fas fa-bath"></i> Baños</span>
+                        <strong id="banos"></strong>
+                    </div>
+
+                    <div class="dato-card">
+                        <span><i class="fas fa-car"></i> Estacionamientos</span>
+                        <strong id="estacionamientos"></strong>
+                    </div>
+
+                    <div class="dato-card">
+                        <span><i class="fas fa-arrows-alt"></i> Superficie</span>
+                        <strong id="superficie"></strong>
+                    </div>
+
+                    <div class="dato-card">
+                        <span><i class="fas fa-building"></i> Tipo propiedad</span>
+                        <strong id="tipoPropiedad"></strong>
+                    </div>
+
+                    <div class="dato-card">
+                        <span><i class="fas fa-tag"></i> Operación</span>
+                        <strong id="operacion"></strong>
+                    </div>
+
                 </div>
 
-                <div class="dato-card">
-                    <span>Estacionamientos</span>
-                    <strong id="estacionamientos"></strong>
+                <!-- DESCRIPCIÓN -->
+                <div class="descripcion-box">
+                    <h3><i class="fas fa-file-alt"></i> Descripción</h3>
+                    <p id="descripcion"></p>
                 </div>
 
-                <div class="dato-card">
-                    <span>Superficie</span>
-                    <strong id="superficie"></strong>
-                </div>
-
-                <div class="dato-card">
-                    <span>Tipo propiedad</span>
-                    <strong id="tipoPropiedad"></strong>
-                </div>
-
-                <div class="dato-card">
-                    <span>Operación</span>
-                    <strong id="operacion"></strong>
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="acciones">
+                    <button id="btnWhatsapp" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
+                    </button>
+                    <a href="search.html" class="btn-volver">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
                 </div>
 
             </div>
 
-            <!-- DESCRIPCIÓN -->
-            <section class="descripcion-box">
+        </div>
 
-                <h3>Descripción</h3>
-
-                <p id="descripcion"></p>
-
-            </section>
-
-            <button id="btnWhatsapp">
-                Contactar por WhatsApp
-            </button>
-
-        </section>
-
-        <!-- BOTÓN -->
-        <a href="home.html" class="btn-volver">
-            Volver
-        </a>
+        <!-- MAPA -->
+        <div class="mapa-section">
+            <h3><i class="fas fa-map-marked-alt"></i> Ubicación</h3>
+            <div class="mapa">
+                <iframe id="mapFrame" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+        </div>
 
     </main>
 
-    <!-- MAPA -->
-    <section class="mapa-section">
-
-        <h3>Ubicación</h3>
-
-        <div class="mapa">
-
-            <iframe id="mapFrame" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy">
-            </iframe>
-
-        </div>
-
-    </section>
+    <!-- FOOTER -->
+    <div id="footer"></div>
 
     <!-- MODAL WHATSAPP -->
     <div class="modal-whatsapp" id="modalWhatsapp">
         <div class="modal-content">
             <span class="cerrar-modal" id="cerrarModal">
-                ×
+                &times;
             </span>
-
-            <h3>Solicitud enviada</h3>
+            <h3><i class="fab fa-whatsapp"></i> Solicitud enviada</h3>
             <p class="mensaje-modal">
                 Hemos enviado tus datos de contacto a la persona encargada de la publicación para que pueda responderte lo antes posible.
             </p>
-
-            <button id="cerrarBtn">
-                Entendido
-            </button>
+            <button id="cerrarBtn" class="btn-modal">Entendido</button>
         </div>
     </div>
 
+    <!-- TOAST -->
+    <div class="toast-custom" id="notificationToast">
+        <div class="toast-header">
+            <i class="bi bi-info-circle-fill"></i>
+            <strong>Información</strong>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+
     <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/headerFooter.js"></script>
     <script src="js/detail.js"></script>
 
