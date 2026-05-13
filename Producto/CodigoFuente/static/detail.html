@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -25,6 +25,143 @@
     </div>
     <script src="js/headerFooter.js"></script>
     <script src="js/detail.js"></script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Detalle Propiedad</title>
+
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/detail.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div id="header"></div>
+
+    <!-- CONTENEDOR -->
+    <main class="detail-container">
+
+        <!-- IMAGEN -->
+        <section class="imagen-box">
+
+            <img id="img" alt="Imagen propiedad">
+
+        </section>
+
+        <!-- INFORMACIÓN -->
+        <section class="info-box">
+
+            <!-- TÍTULO -->
+            <h1 id="titulo"></h1>
+
+            <!-- PRECIO -->
+            <p id="precio" class="precio"></p>
+
+            <!-- UBICACIÓN -->
+            <p id="ubicacion" class="ubicacion"></p>
+
+            <!-- DATOS RÁPIDOS -->
+            <div class="datos-grid">
+
+                <div class="dato-card">
+                    <span>Dormitorios</span>
+                    <strong id="habitaciones"></strong>
+                </div>
+
+                <div class="dato-card">
+                    <span>Baños</span>
+                    <strong id="banos"></strong>
+                </div>
+
+                <div class="dato-card">
+                    <span>Estacionamientos</span>
+                    <strong id="estacionamientos"></strong>
+                </div>
+
+                <div class="dato-card">
+                    <span>Superficie</span>
+                    <strong id="superficie"></strong>
+                </div>
+
+                <div class="dato-card">
+                    <span>Tipo propiedad</span>
+                    <strong id="tipoPropiedad"></strong>
+                </div>
+
+                <div class="dato-card">
+                    <span>Operación</span>
+                    <strong id="operacion"></strong>
+                </div>
+
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <section class="descripcion-box">
+
+                <h3>Descripción</h3>
+
+                <p id="descripcion"></p>
+
+            </section>
+
+            <button id="btnWhatsapp">
+                Contactar por WhatsApp
+            </button>
+
+        </section>
+
+        <!-- BOTÓN -->
+        <a href="home.html" class="btn-volver">
+            Volver
+        </a>
+
+    </main>
+
+    <!-- MAPA -->
+    <section class="mapa-section">
+
+        <h3>Ubicación</h3>
+
+        <div class="mapa">
+
+            <iframe id="mapFrame" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe>
+
+        </div>
+
+    </section>
+
+    <!-- MODAL WHATSAPP -->
+    <div class="modal-whatsapp" id="modalWhatsapp">
+        <div class="modal-content">
+            <span class="cerrar-modal" id="cerrarModal">
+                ×
+            </span>
+
+            <h3>Solicitud enviada</h3>
+            <p class="mensaje-modal">
+                Hemos enviado tus datos de contacto a la persona encargada de la publicación para que pueda responderte lo antes posible.
+            </p>
+
+            <button id="cerrarBtn">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/headerFooter.js"></script>
+    <script src="js/detail.js"></script>
+
 </body>
 
 </html>
