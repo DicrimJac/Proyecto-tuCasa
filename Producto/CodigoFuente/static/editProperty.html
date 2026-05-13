@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Editar Propiedad</title>
+
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/editProperty.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div id="header"></div>
+
+    <!-- CONTENEDOR -->
+    <main class="edit-container">
+
+        <section class="edit-card">
+
+            <h1>Editar propiedad</h1>
+
+            <p class="subtitulo">
+                Modifica la información de tu publicación.
+            </p>
+
+            <p class="info-bloqueada">
+                Algunos datos no pueden modificarse
+                después de publicada la propiedad.
+            </p>
+
+            <!-- PRECIO -->
+            <div class="form-group">
+
+                <label for="precio">
+                    Precio
+                </label>
+
+                <input
+                    type="text"
+                    id="precio"
+                    placeholder="$350.000">
+
+            </div>
+
+            <!-- DIRECCIÓN -->
+            <div class="form-group">
+
+                <label for="direccion">
+                    Dirección
+                </label>
+
+                <input
+                    type="text"
+                    id="direccion"
+                    readonly>
+
+            </div>
+
+            <!-- REGIÓN -->
+            <div class="form-group">
+
+                <label for="region">
+                    Región
+                </label>
+
+                <input
+                    type="text"
+                    id="region"
+                    readonly>
+
+            </div>
+
+            <!-- COMUNA -->
+            <div class="form-group">
+
+                <label for="comuna">
+                    Comuna
+                </label>
+
+                <input
+                    type="text"
+                    id="comuna"
+                    readonly>
+
+            </div>
+
+            <!-- TIPO PROPIEDAD -->
+            <div class="form-group">
+
+                <label for="tipoPropiedad">
+                    Tipo propiedad
+                </label>
+
+                <select
+                    id="tipoPropiedad"
+                    disabled>
+
+                    <option>
+                        Departamento
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- SUPERFICIE TERRENO -->
+            <div class="form-group">
+
+                <label for="superficieTerreno">
+                    Superficie terreno
+                </label>
+
+                <input
+                    type="text"
+                    id="superficieTerreno"
+                    readonly>
+
+            </div>
+
+            <!-- SUPERFICIE ÚTIL -->
+            <div class="form-group">
+
+                <label for="superficieUtil">
+                    Superficie útil
+                </label>
+
+                <input
+                    type="text"
+                    id="superficieUtil">
+
+            </div>
+
+            <!-- DORMITORIOS -->
+            <div class="form-group">
+
+                <label for="habitaciones">
+                    Dormitorios
+                </label>
+
+                <input
+                    type="number"
+                    id="habitaciones">
+
+            </div>
+
+            <!-- BAÑOS -->
+            <div class="form-group">
+
+                <label for="banos">
+                    Baños
+                </label>
+
+                <input
+                    type="number"
+                    id="banos">
+
+            </div>
+
+            <!-- ESTACIONAMIENTOS -->
+            <div class="form-group">
+
+                <label for="estacionamientos">
+                    Estacionamientos
+                </label>
+
+                <input
+                    type="number"
+                    id="estacionamientos">
+
+            </div>
+
+            <!-- GASTOS COMUNES -->
+            <div class="form-group">
+
+                <label for="gastosComunes">
+                    Gastos comunes
+                </label>
+
+                <input
+                    type="text"
+                    id="gastosComunes">
+
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <div class="form-group">
+
+                <label for="descripcion">
+                    Descripción
+                </label>
+
+                <textarea
+                    id="descripcion"
+                    rows="6">
+                </textarea>
+
+            </div>
+
+            <!-- CARACTERÍSTICAS -->
+            <div class="checks-container">
+
+                <h3>Características</h3>
+
+                <label class="check-item">
+                    <input type="checkbox" id="amoblado">
+                    Amoblado
+                </label>
+
+                <label class="check-item">
+                    <input type="checkbox" id="mascotas">
+                    Acepta mascotas
+                </label>
+
+                <label class="check-item">
+                    <input type="checkbox" id="bodega">
+                    Bodega
+                </label>
+
+                <label class="check-item">
+                    <input type="checkbox" id="terraza">
+                    Terraza
+                </label>
+
+            </div>
+
+            <!-- IMAGEN -->
+            <div class="form-group">
+
+                <label for="imagen">
+                    Actualizar imagen
+                </label>
+
+                <input
+                    type="file"
+                    id="imagen">
+
+            </div>
+
+            <!-- BOTONES -->
+            <div class="acciones">
+
+                <button id="btnGuardar">
+
+                    Guardar cambios
+
+                </button>
+
+                <a
+                    href="detail.html"
+                    class="btnCancelar">
+
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal-guardado" id="modalGuardado">
+
+        <div class="modal-content">
+
+            <h3>
+                Cambios guardados
+            </h3>
+
+            <p>
+                La información de la propiedad
+                fue actualizada correctamente.
+            </p>
+
+            <button id="cerrarModal">
+
+                Entendido
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/headerFooter.js"></script>
+    <script src="js/editProperty.js"></script>
+
+</body>
+
+</html>

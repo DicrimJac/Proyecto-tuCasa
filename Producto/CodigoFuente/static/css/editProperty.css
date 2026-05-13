@@ -1,0 +1,228 @@
+/* CONTENEDOR PRINCIPAL */
+.edit-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* CARD */
+.edit-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+/* TITULOS */
+.edit-card h1 {
+    font-size: 32px;
+    color: #222;
+}
+
+.subtitulo {
+    color: #666;
+    margin-top: -10px;
+}
+
+.info-bloqueada {
+    background: #f5f7fa;
+    border-left: 4px solid #0066ff;
+    padding: 15px;
+    border-radius: 10px;
+    color: #555;
+    line-height: 1.6;
+}
+
+
+/* FORMULARIOS */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+}
+
+/* INPUTS */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #dcdcdc;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: 0.3s;
+    box-sizing: border-box;
+}
+
+/* FOCUS */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0066ff;
+    box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+}
+
+/* CAMPOS BLOQUEADOS */
+input[readonly],
+select:disabled {
+    background: #f3f4f6;
+    color: #777;
+    cursor: not-allowed;
+}
+
+/* TEXTAREA */
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* CHECKBOXES */
+.checks-container {
+    background: #fafafa;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.checks-container h3 {
+    color: #222;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+}
+
+/* BOTONES*/
+.acciones {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* BOTÓN GUARDAR */
+#btnGuardar {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#btnGuardar:hover {
+    background: #0052cc;
+}
+
+/* BOTÓN CANCELAR */
+.btnCancelar {
+    text-decoration: none;
+    background: #222;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.btnCancelar:hover {
+    background: #000;
+}
+
+/*MODAL*/
+.modal-guardado {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* CAJA MODAL */
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 420px;
+    padding: 35px;
+    border-radius: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: aparecer 0.25s ease;
+}
+
+/* ANIMACIÓN */
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* TEXTO MODAL */
+.modal-content h3 {
+    color: #222;
+}
+
+.modal-content p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* BOTÓN MODAL */
+#cerrarModal {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+#cerrarModal:hover {
+    background: #0052cc;
+}
+
+/* RESPONSIVE*/
+@media (max-width: 768px) {
+    .edit-card {
+        padding: 25px;
+    }
+    .acciones {
+        flex-direction: column;
+    }
+    #btnGuardar,
+    .btnCancelar {
+        width: 100%;
+    }
+}
