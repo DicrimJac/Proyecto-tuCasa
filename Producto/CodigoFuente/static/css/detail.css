@@ -1,53 +1,254 @@
-/* CONTENEDOR */
-.detalle {
-    max-width: 900px;
+/* CONTENEDOR PRINCIPAL */
+
+.detail-container {
+    max-width: 1200px;
     margin: 40px auto;
     padding: 20px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
 }
 
 /* IMAGEN */
-.detalle img {
+.imagen-box img {
     width: 100%;
-    border-radius: 12px;
-    margin-bottom: 20px;
+    height: 450px;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/*INFORMACIÓN*/
+.info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* TÍTULO */
-.detalle h2 {
-    color: #1F3B4C;
-    margin-bottom: 10px;
+.info-box h1 {
+    font-size: 32px;
+    color: #222;
+    line-height: 1.3;
 }
 
 /* PRECIO */
-.detalle .precio {
-    font-size: 20px;
+.precio {
+    font-size: 32px;
     font-weight: bold;
-    color: #2C5A6E;
-    margin-bottom: 10px;
+    color: #0066ff;
 }
 
-/* INFO */
-.detalle .info {
-    color: #6c7f8b;
-    margin-bottom: 20px;
+/* UBICACIÓN */
+.ubicacion {
+    font-size: 16px;
+    color: #666;
+}
+
+/* GRID DATOS */
+.datos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+/* CARD DATOS */
+.dato-card {
+    background: #f5f7fa;
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid #e9edf2;
+}
+
+.dato-card span {
+    color: #777;
+    font-size: 14px;
+}
+
+.dato-card strong {
+    font-size: 18px;
+    color: #222;
+}
+
+/*DESCRIPCIÓN*/
+.descripcion-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #e5e5e5;
+}
+
+.descripcion-box h3 {
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.descripcion-box p {
+    line-height: 1.8;
+    color: #555;
+}
+
+/*BOTONES*/
+
+.acciones {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* BOTÓN WHATSAPP */
+#btnWhatsapp {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 14px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+#btnWhatsapp:hover {
+    background: #0052cc;
 }
 
 /* BOTÓN VOLVER */
 .btn-volver {
-    display: inline-block;
-    padding: 10px 20px;
-    background: #2C5A6E;
-    color: white;
-    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
+    background: #222;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 10px;
+    transition: 0.3s;
 }
 
 .btn-volver:hover {
-    background: #1F3B4C;
+    background: #000;
+}
+
+/* MAPA*/
+.mapa-section {
+    max-width: 1200px;
+    margin: 0 auto 60px;
+    padding: 20px;
+}
+
+.mapa-section h3 {
+    margin-bottom: 20px;
+    color: #222;
 }
 
 .mapa {
-    margin-top: 20px;
-    border-radius: 12px;
     overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/*MODAL*/
+.modal-whatsapp {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* CONTENIDO MODAL */
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    padding: 35px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    animation: aparecer 0.25s ease;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* CERRAR */
+.cerrar-modal {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+    transition: 0.2s;
+}
+
+.cerrar-modal:hover {
+    color: #000;
+}
+
+/* TEXTO MODAL */
+.modal-content h3 {
+    color: #222;
+}
+
+.mensaje-modal {
+    line-height: 1.7;
+    color: #555;
+}
+
+/* BOTÓN MODAL */
+#cerrarBtn {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+#cerrarBtn:hover {
+    background: #0052cc;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .detail-container {
+        grid-template-columns: 1fr;
+    }
+
+    .imagen-box img {
+        height: 300px;
+    }
+
+    .datos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .acciones {
+        flex-direction: column;
+    }
 }
