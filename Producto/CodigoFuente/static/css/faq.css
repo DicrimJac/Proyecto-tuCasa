@@ -1,6 +1,5 @@
 /* ========== FAQ PAGE - BARRA AZUL COMO EL FOOTER ========== */
 
-/* Eliminar cualquier margen que pueda crear espacio */
 * {
     margin: 0;
     padding: 0;
@@ -12,7 +11,7 @@ body {
     padding: 0;
 }
 
-/* Hero section - IGUAL QUE EL FOOTER (fondo de ancho completo) */
+/* Hero section - ANCHO COMPLETO (como footer) */
 .faq-hero {
     background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
     width: 100%;
@@ -20,7 +19,7 @@ body {
     padding: 3rem 0;
 }
 
-/* Contenedor interno - IGUAL QUE footer-container (centra el contenido) */
+/* Contenedor interno - centra el contenido */
 .faq-hero-container {
     max-width: 1280px;
     margin: 0 auto;
@@ -42,7 +41,7 @@ body {
     margin: 0 auto;
 }
 
-/* Contenedor principal del contenido */
+/* Contenedor principal */
 .faq-container {
     max-width: 800px;
     margin: 2rem auto;

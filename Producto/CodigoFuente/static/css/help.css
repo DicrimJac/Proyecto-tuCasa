@@ -1,22 +1,35 @@
 /* ========== HELP CENTER STYLES ========== */
+
+/* Hero section - ANCHO COMPLETO (como el footer) */
 .page-hero {
     background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
-    padding: 4rem 2rem;
+    width: 100%;
+    margin: 0;
+    padding: 3rem 0;
+}
+
+.page-hero-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
     text-align: center;
     color: white;
-    margin-top: 70px;
 }
 
-.page-hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+.page-hero-container h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
 }
 
-.page-hero p {
-    font-size: 1.1rem;
+.page-hero-container p {
+    font-size: 1rem;
     opacity: 0.9;
+    max-width: 550px;
+    margin: 0 auto;
 }
 
+/* Buscador */
 .help-search {
     background: white;
     padding: 2rem;
@@ -52,6 +65,7 @@
     box-shadow: 0 0 0 3px rgba(44, 90, 110, 0.1);
 }
 
+/* Contenedor principal */
 .help-container {
     max-width: 1200px;
     margin: 3rem auto;
@@ -170,7 +184,8 @@
     padding: 0 1.25rem 1.25rem;
 }
 
-.article-content ol, .article-content ul {
+.article-content ol,
+.article-content ul {
     margin: 1rem 0;
     padding-left: 1.5rem;
 }
@@ -218,32 +233,52 @@
     color: #6c7f8b;
 }
 
+/* Toast */
 .toast-custom {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 20px;
+    right: 20px;
     z-index: 2000;
-    min-width: 280px;
+    min-width: 260px;
     background: white;
-    border-radius: 1rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    border-left: 4px solid #2C5A6E;
-    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-left: 3px solid #2C5A6E;
+    padding: 0.8rem 1rem;
     display: none;
 }
 
+.toast-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.toast-body {
+    font-size: 0.85rem;
+    color: #4a6272;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
     .page-hero {
-        padding: 3rem 1rem;
-        margin-top: 60px;
+        padding: 2rem 0;
     }
     
-    .page-hero h1 {
-        font-size: 1.8rem;
+    .page-hero-container h1 {
+        font-size: 1.6rem;
+    }
+    
+    .page-hero-container p {
+        font-size: 0.85rem;
     }
     
     .help-container {
         padding: 0 1rem;
+        margin: 2rem auto;
     }
     
     .help-categories {
@@ -257,5 +292,11 @@
     
     .help-icon i {
         font-size: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-hero-container {
+        padding: 0 1rem;
     }
 }
