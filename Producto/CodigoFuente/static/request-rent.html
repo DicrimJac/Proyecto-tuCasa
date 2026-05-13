@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Casa · Solicitar Arriendo</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/request-rent.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- HEADER (se carga dinámicamente) -->
+    <div id="header"></div>
+
+    <main>
+        <!-- Hero section -->
+        <div class="page-hero">
+            <div class="page-hero-container">
+                <h1>Solicitar Arriendo</h1>
+                <p>Completa el formulario para solicitar el arriendo de una propiedad</p>
+            </div>
+        </div>
+
+        <div class="request-container">
+            <div class="request-grid">
+                <!-- Información de la propiedad -->
+                <div class="property-summary">
+                    <div class="property-image">
+                        <img src="assets/image/casa1.png" alt="Propiedad" id="propertyImage">
+                        <span class="property-status" id="propertyStatus">Disponible</span>
+                    </div>
+                    <div class="property-details">
+                        <h2 id="propertyTitle">Casa en Santiago Centro</h2>
+                        <div class="property-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="propertyLocation">Santiago Centro, Santiago</span>
+                        </div>
+                        <div class="property-price">
+                            <span id="propertyPrice">$500.000</span>
+                            <span class="price-period">/mes</span>
+                        </div>
+                        <div class="property-features">
+                            <div class="feature">
+                                <i class="fas fa-bed"></i>
+                                <span id="propertyRooms">3</span> habitaciones
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-bath"></i>
+                                <span id="propertyBathrooms">2</span> baños
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-car"></i>
+                                <span id="propertyParking">1</span> estacionamiento
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-arrows-alt"></i>
+                                <span id="propertyArea">120</span> m²
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de solicitud -->
+                <div class="request-form-container">
+                    <h3><i class="fas fa-file-alt"></i> Datos del Solicitante</h3>
+                    <form id="requestForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Nombre completo *</label>
+                                <input type="text" id="fullName" required placeholder="Ingresa tu nombre completo">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-id-card"></i> RUT *</label>
+                                <input type="text" id="rut" required placeholder="12.345.678-9">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-envelope"></i> Correo electrónico *</label>
+                                <input type="email" id="email" required placeholder="tucorreo@ejemplo.com">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-phone"></i> Teléfono *</label>
+                                <input type="tel" id="phone" required placeholder="9 1234 5678">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-alt"></i> Fecha de inicio deseada *</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Duración del contrato *</label>
+                            <select id="duration" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="6">6 meses</option>
+                                <option value="12">12 meses</option>
+                                <option value="24">24 meses</option>
+                                <option value="36">36 meses</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-users"></i> Número de ocupantes *</label>
+                            <select id="occupants" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="1">1 persona</option>
+                                <option value="2">2 personas</option>
+                                <option value="3">3 personas</option>
+                                <option value="4">4 personas</option>
+                                <option value="5">5+ personas</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-paw"></i> ¿Tienes mascotas?</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="pets" value="si"> Sí
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="pets" value="no" checked> No
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-briefcase"></i> Situación laboral *</label>
+                            <select id="employment" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="dependiente">Trabajador dependiente</option>
+                                <option value="independiente">Trabajador independiente</option>
+                                <option value="estudiante">Estudiante</option>
+                                <option value="jubilado">Jubilado</option>
+                                <option value="cesante">Cesante</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-chart-line"></i> Ingreso mensual aproximado *</label>
+                            <div class="income-input">
+                                <span class="currency">$</span>
+                                <input type="number" id="income" required placeholder="0">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-comment"></i> Mensaje para el arrendador</label>
+                            <textarea id="message" rows="4" placeholder="Cuéntanos por qué te interesa esta propiedad..."></textarea>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="termsCheckbox" required>
+                                <span>Acepto los <a href="terms.html" target="_blank">términos y condiciones</a> y confirmo que la información proporcionada es verídica.</span>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-submit">
+                                <i class="fas fa-paper-plane"></i> Enviar Solicitud
+                            </button>
+                            <button type="button" class="btn-cancel" onclick="window.history.back()">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <!-- Toast de notificaciones -->
+    <div class="toast-custom" id="notificationToast">
+        <div class="toast-header">
+            <i class="bi bi-info-circle-fill"></i>
+            <strong>Información</strong>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/headerfooter.js"></script>
+    <script src="js/request-rent.js"></script>
+</body>
+</html>
