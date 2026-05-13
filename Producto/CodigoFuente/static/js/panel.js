@@ -1,6 +1,6 @@
 // ===================== DATOS SIMULADOS =====================
 let userProperties = [
-    { id: 1, title: "Casa en Santiago Centro", location: "Santiago Centro", price: 500000, rooms: 3, image: "assets/image/casa1.png", favorite: false, createdAt: "2024-03-15" },
+    { id: 1, title: "Casa en Santiago Centro", location: "Santiago Centro", price: 500000, rooms: 3, image: "assets/image/casa1.png", favorite: true, createdAt: "2024-03-15" },
     { id: 2, title: "Departamento Moderno", location: "Providencia", price: 350000, rooms: 2, image: "assets/image/casa2.png", favorite: false, createdAt: "2024-03-20" },
     { id: 3, title: "Casa Familiar", location: "Las Condes", price: 600000, rooms: 4, image: "assets/image/casa3.png", favorite: false, createdAt: "2024-04-01" },
     { id: 4, title: "Loft Industrial", location: "Ñuñoa", price: 420000, rooms: 1, image: "assets/image/casa4.png", favorite: false, createdAt: "2024-04-10" },
@@ -17,8 +17,8 @@ if (localStorage.getItem('userProperties')) {
 // Mensajes simulados
 let userMessages = [
     { id: 1, name: "Juan Pérez", date: "Hace 2 horas", subject: "Interesado en la propiedad", message: "Hola, estoy interesado en la propiedad de Santiago Centro. ¿Podríamos coordinar una visita?", unread: true },
-    { id: 2, name: "María López", date: "Ayer", subject: "Consulta disponibilidad", message: "Me gustaría saber si la propiedad aún está disponible para arriendo.", unread: false },
-    { id: 3, name: "Carlos Ruiz", date: "Hace 3 días", subject: "Precio negociable", message: "¿El precio es negociable? Me interesa mucho la propiedad.", unread: false }
+    { id: 2, name: "María López", date: "Ayer", subject: "Consulta disponibilidad", message: "Me gustaría saber si la propiedad aún está disponible para arriendo.", unread: true },
+    { id: 3, name: "Carlos Ruiz", date: "Hace 3 días", subject: "Precio negociable", message: "¿El precio es negociable? Me interesa mucho la propiedad.", unread: true }
 ];
 
 // Variables de paginación
@@ -32,42 +32,18 @@ function updateStats() {
     const totalProperties = userProperties.length;
     const totalMessages = userMessages.length;
     const unreadMessages = userMessages.filter(m => m.unread).length;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     const statProperties = document.getElementById('statProperties');
     const statMessages = document.getElementById('statMessages');
     const totalPropertiesEl = document.getElementById('totalProperties');
     const totalMessagesEl = document.getElementById('totalMessages');
     const unreadBadge = document.getElementById('unreadBadge');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (statProperties) statProperties.innerText = totalProperties;
     if (statMessages) statMessages.innerText = totalMessages;
     if (totalPropertiesEl) totalPropertiesEl.innerText = totalProperties;
     if (totalMessagesEl) totalMessagesEl.innerText = totalMessages;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (unreadBadge) {
         unreadBadge.innerText = unreadMessages;
         unreadBadge.style.display = unreadMessages > 0 ? 'inline-block' : 'none';
@@ -78,50 +54,22 @@ function updateStats() {
 function renderDashboard() {
     const grid = document.getElementById('propertiesGrid');
     if (!grid) return;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    const searchTerm = document.getElementById('filterSearch')?.value.toLowerCase() || '';
-    const maxPrice = parseInt(document.getElementById('filterPrice')?.value) || Infinity;
-    const minRooms = parseInt(document.getElementById('filterRooms')?.value) || 0;
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     
     const searchTerm = document.getElementById('filterSearch')?.value.toLowerCase() || '';
     const maxPrice = parseInt(document.getElementById('filterPrice')?.value) || Infinity;
     const minRooms = parseInt(document.getElementById('filterRooms')?.value) || 0;
     
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     filteredDashboardProperties = userProperties.filter(prop => {
         const matchSearch = prop.title.toLowerCase().includes(searchTerm) || prop.location.toLowerCase().includes(searchTerm);
         const matchPrice = prop.price <= maxPrice;
         const matchRooms = prop.rooms >= minRooms;
         return matchSearch && matchPrice && matchRooms;
     });
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    const totalPages = Math.ceil(filteredDashboardProperties.length / itemsPerPage);
-    const start = (currentPageDashboard - 1) * itemsPerPage;
-    const paginated = filteredDashboardProperties.slice(start, start + itemsPerPage);
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     
     const totalPages = Math.ceil(filteredDashboardProperties.length / itemsPerPage);
     const start = (currentPageDashboard - 1) * itemsPerPage;
     const paginated = filteredDashboardProperties.slice(start, start + itemsPerPage);
     
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (paginated.length === 0) {
         grid.innerHTML = `<div class="col-12 text-center text-muted py-5">
             <i class="bi bi-building fs-1"></i>
@@ -131,15 +79,7 @@ function renderDashboard() {
         if (paginationControls) paginationControls.innerHTML = '';
         return;
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     grid.innerHTML = paginated.map(prop => `
         <div class="col-md-6 col-lg-4">
             <div class="property-card">
@@ -159,15 +99,7 @@ function renderDashboard() {
             </div>
         </div>
     `).join('');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     let paginationHtml = `<ul class="pagination">`;
     for (let i = 1; i <= totalPages; i++) {
         paginationHtml += `<li class="page-item ${i === currentPageDashboard ? 'active' : ''}"><button class="page-link" data-page-dash="${i}">${i}</button></li>`;
@@ -175,15 +107,7 @@ function renderDashboard() {
     paginationHtml += `</ul>`;
     const paginationControls = document.getElementById('paginationControls');
     if (paginationControls) paginationControls.innerHTML = paginationHtml;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     document.querySelectorAll('[data-page-dash]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             currentPageDashboard = parseInt(e.target.dataset.pageDash);
@@ -196,40 +120,18 @@ function renderDashboard() {
 function renderAllProperties() {
     const grid = document.getElementById('allPropertiesGrid');
     if (!grid) return;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    const totalPages = Math.ceil(userProperties.length / itemsPerPage);
-    const start = (currentPageProperties - 1) * itemsPerPage;
-    const paginated = userProperties.slice(start, start + itemsPerPage);
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     
     const totalPages = Math.ceil(userProperties.length / itemsPerPage);
     const start = (currentPageProperties - 1) * itemsPerPage;
     const paginated = userProperties.slice(start, start + itemsPerPage);
     
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (paginated.length === 0) {
         grid.innerHTML = `<div class="col-12 text-center text-muted py-5">No tienes propiedades publicadas</div>`;
         const allPaginationControls = document.getElementById('allPaginationControls');
         if (allPaginationControls) allPaginationControls.innerHTML = '';
         return;
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     grid.innerHTML = paginated.map(prop => `
         <div class="col-md-6 col-lg-4">
             <div class="property-card">
@@ -249,15 +151,7 @@ function renderAllProperties() {
             </div>
         </div>
     `).join('');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     let paginationHtml = `<ul class="pagination">`;
     for (let i = 1; i <= totalPages; i++) {
         paginationHtml += `<li class="page-item ${i === currentPageProperties ? 'active' : ''}"><button class="page-link" data-page-prop="${i}">${i}</button></li>`;
@@ -265,15 +159,7 @@ function renderAllProperties() {
     paginationHtml += `</ul>`;
     const allPaginationControls = document.getElementById('allPaginationControls');
     if (allPaginationControls) allPaginationControls.innerHTML = paginationHtml;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     document.querySelectorAll('[data-page-prop]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             currentPageProperties = parseInt(e.target.dataset.pageProp);
@@ -286,21 +172,9 @@ function renderAllProperties() {
 function renderFavorites() {
     const grid = document.getElementById('favoritesGrid');
     if (!grid) return;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    const favorites = userProperties.filter(prop => prop.favorite === true);
-
-=======
     
     const favorites = userProperties.filter(prop => prop.favorite === true);
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
-    const favorites = userProperties.filter(prop => prop.favorite === true);
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (favorites.length === 0) {
         grid.innerHTML = `
             <div class="col-12 text-center text-muted py-5">
@@ -311,15 +185,7 @@ function renderFavorites() {
         `;
         return;
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     grid.innerHTML = favorites.map(prop => `
         <div class="col-md-6 col-lg-4">
             <div class="property-card">
@@ -341,29 +207,12 @@ function renderFavorites() {
 }
 
 // ===================== TOGGLE FAVORITO =====================
-<<<<<<< HEAD
-<<<<<<< HEAD
-window.toggleFavorite = function (id) {
-=======
 window.toggleFavorite = function(id) {
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-window.toggleFavorite = function(id) {
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     const property = userProperties.find(p => p.id === id);
     if (property) {
         property.favorite = !property.favorite;
         localStorage.setItem('userProperties', JSON.stringify(userProperties));
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-        
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
-        // Actualizar solo la vista actual
         const activeSection = document.querySelector('.panel-section.active');
         if (activeSection) {
             if (activeSection.id === 'dashboard-section') {
@@ -374,31 +223,12 @@ window.toggleFavorite = function(id) {
                 renderFavorites();
             }
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-        
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
         const message = property.favorite ? 'Agregado a favoritos' : 'Eliminado de favoritos';
         showToast(message);
     }
 };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-// ===================== ELIMINAR PROPIEDAD =====================
-window.deleteProperty = function (id) {
-    if (confirm('¿Eliminar esta propiedad permanentemente?')) {
-        userProperties = userProperties.filter(p => p.id !== id);
-        localStorage.setItem('userProperties', JSON.stringify(userProperties));
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 // ===================== AGREGAR PROPIEDAD =====================
 const addPropertyForm = document.getElementById('addPropertyForm');
 if (addPropertyForm) {
@@ -425,7 +255,6 @@ if (addPropertyForm) {
         
         addPropertyForm.reset();
         
-        // Actualizar solo la vista actual
         const activeSection = document.querySelector('.panel-section.active');
         if (activeSection) {
             if (activeSection.id === 'dashboard-section') {
@@ -445,10 +274,6 @@ window.deleteProperty = function(id) {
         userProperties = userProperties.filter(p => p.id !== id);
         localStorage.setItem('userProperties', JSON.stringify(userProperties));
         
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
         const activeSection = document.querySelector('.panel-section.active');
         if (activeSection) {
             if (activeSection.id === 'dashboard-section') {
@@ -464,15 +289,8 @@ window.deleteProperty = function(id) {
     }
 };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-window.editProperty = function (id) {
-=======
+// ===================== EDITAR PROPIEDAD =====================
 window.editProperty = function(id) {
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-window.editProperty = function(id) {
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     showToast('Funcionalidad de edición próximamente');
 };
 
@@ -482,31 +300,6 @@ function initFilters() {
     const priceSelect = document.getElementById('filterPrice');
     const roomsSelect = document.getElementById('filterRooms');
     const clearBtn = document.getElementById('clearFilters');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            currentPageDashboard = 1;
-            renderDashboard();
-        });
-    }
-    if (priceSelect) {
-        priceSelect.addEventListener('change', () => {
-            currentPageDashboard = 1;
-            renderDashboard();
-        });
-    }
-    if (roomsSelect) {
-        roomsSelect.addEventListener('change', () => {
-            currentPageDashboard = 1;
-            renderDashboard();
-        });
-    }
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     
     if (searchInput) {
         searchInput.addEventListener('input', () => { 
@@ -527,10 +320,6 @@ function initFilters() {
         });
     }
     
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
             if (searchInput) searchInput.value = '';
@@ -546,15 +335,7 @@ function initFilters() {
 function loadMessages() {
     const messagesList = document.getElementById('messagesList');
     if (!messagesList) return;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (userMessages.length === 0) {
         messagesList.innerHTML = `
             <div class="text-center text-muted py-5">
@@ -564,15 +345,7 @@ function loadMessages() {
         `;
         return;
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     messagesList.innerHTML = userMessages.map(msg => `
         <div class="message-item ${msg.unread ? 'unread' : ''}" onclick="markAsRead(${msg.id})">
             <div class="message-avatar">
@@ -591,15 +364,7 @@ function loadMessages() {
 }
 
 // Marcar mensaje como leído
-<<<<<<< HEAD
-<<<<<<< HEAD
-window.markAsRead = function (id) {
-=======
 window.markAsRead = function(id) {
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-window.markAsRead = function(id) {
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     const message = userMessages.find(m => m.id === id);
     if (message && message.unread) {
         message.unread = false;
@@ -609,11 +374,6 @@ window.markAsRead = function(id) {
     }
 };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 // ===================== CONFIGURACIÓN =====================
 function initSettings() {
     const passwordForm = document.getElementById('changePasswordForm');
@@ -659,23 +419,11 @@ function initSettings() {
     }
 }
 
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 // ===================== MOSTRAR/OCULTAR FILTROS =====================
 function toggleFilters() {
     const currentSection = document.querySelector('.panel-section.active');
     const filtrosSticky = document.getElementById('filtrosSticky');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (filtrosSticky) {
         if (currentSection && (currentSection.id === 'dashboard-section' || currentSection.id === 'properties-section')) {
             filtrosSticky.style.display = 'block';
@@ -689,23 +437,10 @@ function toggleFilters() {
 function loadUserData() {
     const userData = JSON.parse(localStorage.getItem('userData')) || {};
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    const userName = userProfile.fullName || userData.firstName || 'Usuario';
-    const userEmail = userProfile.email || userData.email || 'usuario@ejemplo.com';
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     
     const userName = userProfile.fullName || userData.firstName || 'Usuario';
     const userEmail = userProfile.email || userData.email || 'usuario@ejemplo.com';
     
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     const userNameEl = document.getElementById('userName');
     const userEmailEl = document.getElementById('userEmail');
     if (userNameEl) userNameEl.innerText = userName;
@@ -727,15 +462,7 @@ function showToast(message, isError = false) {
             <div class="toast-body"></div>
         `;
         document.body.appendChild(toast);
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-        
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
         if (!document.getElementById('toastStyles')) {
             const style = document.createElement('style');
             style.id = 'toastStyles';
@@ -773,27 +500,12 @@ function showToast(message, isError = false) {
             document.head.appendChild(style);
         }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    const toastBody = toast.querySelector('.toast-body');
-    const toastHeader = toast.querySelector('.toast-header');
-
-    if (toastBody) toastBody.textContent = message;
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     
     const toastBody = toast.querySelector('.toast-body');
     const toastHeader = toast.querySelector('.toast-header');
     
     if (toastBody) toastBody.textContent = message;
     
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     if (isError) {
         toast.style.borderLeftColor = '#dc3545';
         if (toastHeader) {
@@ -817,15 +529,7 @@ function showToast(message, isError = false) {
             if (strong) strong.textContent = 'Éxito';
         }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     toast.style.display = 'block';
     setTimeout(() => {
         toast.style.display = 'none';
@@ -836,48 +540,14 @@ function showToast(message, isError = false) {
 function initNavigation() {
     const navLinks = document.querySelectorAll('.nav-link[data-section]');
     const sections = document.querySelectorAll('.panel-section');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-    
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
-    // Ocultar todas las secciones inicialmente
     sections.forEach(section => {
         section.classList.remove('active');
     });
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    // Mostrar solo Dashboard al inicio
-    const dashboardSection = document.getElementById('dashboard-section');
-    if (dashboardSection) dashboardSection.classList.add('active');
-
-    // Marcar Dashboard como activo en el menú
-    const dashboardLink = document.querySelector('.nav-link[data-section="dashboard"]');
-    if (dashboardLink) dashboardLink.classList.add('active');
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            const sectionId = link.getAttribute('data-section');
-            const targetSection = document.getElementById(`${sectionId}-section`);
-
-            if (!targetSection) return;
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
     
-    // Mostrar solo Dashboard al inicio
     const dashboardSection = document.getElementById('dashboard-section');
     if (dashboardSection) dashboardSection.classList.add('active');
     
-    // Marcar Dashboard como activo en el menú
     const dashboardLink = document.querySelector('.nav-link[data-section="dashboard"]');
     if (dashboardLink) dashboardLink.classList.add('active');
     
@@ -890,43 +560,16 @@ function initNavigation() {
             
             if (!targetSection) return;
             
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
-            // Ocultar todas las secciones
             sections.forEach(section => {
                 section.classList.remove('active');
             });
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-            // Mostrar la sección seleccionada
-            targetSection.classList.add('active');
-
-            // Actualizar clase active en el menú
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            link.classList.add('active');
-
-            // Cargar datos específicos según la sección
-            switch (sectionId) {
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
             
-            // Mostrar la sección seleccionada
             targetSection.classList.add('active');
             
-            // Actualizar clase active en el menú
             navLinks.forEach(nav => nav.classList.remove('active'));
             link.classList.add('active');
             
-            // Cargar datos específicos según la sección
             switch(sectionId) {
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
                 case 'favorites':
                     renderFavorites();
                     break;
@@ -939,36 +582,13 @@ function initNavigation() {
                 case 'dashboard':
                     renderDashboard();
                     break;
-                case 'settings':
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    break;
-                case 'profile':
-                    break;
-            }
-
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
-                    // No necesita carga adicional
-                    break;
             }
             
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
-            // Mostrar/ocultar filtros según la sección
             toggleFilters();
         });
     });
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 // ===================== CERRAR SESIÓN =====================
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
@@ -980,10 +600,6 @@ if (logoutBtn) {
     });
 }
 
-<<<<<<< HEAD
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
 // ===================== INICIALIZAR =====================
 document.addEventListener('DOMContentLoaded', () => {
     loadUserData();
@@ -994,65 +610,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initSettings();
     toggleFilters();
-});
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
-// ===================== CARGAR HEADER Y FOOTER =====================
-function loadHeaderFooter() {
-    // Cargar header
-    fetch('components/header.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('header').innerHTML = data;
-            
-            // Inicializar header
-            const navToggle = document.getElementById('navToggle');
-            if (navToggle) {
-                navToggle.addEventListener('click', () => {
-                    const navMenu = document.getElementById('navMenu');
-                    if (navMenu) navMenu.classList.toggle('active');
-                });
-            }
-            
-            const userData = localStorage.getItem('userData');
-            const userProfile = localStorage.getItem('userProfile');
-            const isLoggedIn = userData || userProfile;
-            
-            const registerBtn = document.querySelector('.btn-register-nav');
-            const loginBtn = document.querySelector('.btn-login-nav');
-            const profileBtn = document.getElementById('profileBtn');
-            
-            if (isLoggedIn) {
-                if (registerBtn) registerBtn.style.display = 'none';
-                if (loginBtn) loginBtn.style.display = 'none';
-                if (profileBtn) profileBtn.style.display = 'flex';
-            } else {
-                if (registerBtn) registerBtn.style.display = 'flex';
-                if (loginBtn) loginBtn.style.display = 'flex';
-                if (profileBtn) profileBtn.style.display = 'none';
-            }
-        })
-        .catch(error => console.error('Error cargando header:', error));
     
-    // Cargar footer
-    fetch('components/footer.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('footer').innerHTML = data;
-        })
-        .catch(error => console.error('Error cargando footer:', error));
-}
-
-// Llamar a la función al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-    loadHeaderFooter();
-    // ... el resto de tu código de inicialización
-<<<<<<< HEAD
+    // Cargar header y footer si es necesario
+    if (typeof loadHeaderFooter === 'function') {
+        loadHeaderFooter();
+    }
 });
->>>>>>> 164a910 (Realice vista panel usuario)
-=======
-});
->>>>>>> 2c6a31728db3f6681bc4b939e277da5c18ad9f98
