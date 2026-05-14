@@ -52,6 +52,15 @@
  Base: main
  Compare: su-rama
 
+ git push origin cami
+ en pagina pull request
+ con merge aceptado y en rama main (local)
+ git pull origin main
+ cambian a su rama
+ git pull origin main
+ git push origin nombre-rama
+ 
+
 ----------------------------------------------------------------------------
 
 ## Iniciar applicacion con backend
