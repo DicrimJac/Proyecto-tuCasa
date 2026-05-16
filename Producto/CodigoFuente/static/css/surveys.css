@@ -1,0 +1,328 @@
+/* ========== ENCUESTAS - ESTILO TU CASA ========== */
+
+.page-hero {
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+    width: 100%;
+    margin: 0;
+    padding: 2rem 0;
+}
+
+.page-hero-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+    color: white;
+}
+
+.page-hero-container h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.page-hero-container p {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.surveys-container {
+    max-width: 1280px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2rem;
+}
+
+.survey-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.active-survey {
+    border-top: 4px solid #2C5A6E;
+}
+
+.survey-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.survey-header i {
+    font-size: 2rem;
+    color: #f59e0b;
+}
+
+.survey-header h2 {
+    font-size: 1.3rem;
+    color: #1F3B4C;
+    margin: 0;
+}
+
+.survey-description {
+    color: #6c7f8b;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.question-group {
+    margin-bottom: 1.5rem;
+}
+
+.question-group label {
+    display: block;
+    font-weight: 600;
+    color: #4a6272;
+    margin-bottom: 0.75rem;
+}
+
+.rating-stars i {
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #cbd5e0;
+}
+
+.rating-stars i:hover {
+    transform: scale(1.1);
+}
+
+.rating-stars i.selected {
+    color: #f59e0b;
+}
+
+.rating-stars i.fas.fa-star {
+    color: #f59e0b;
+}
+
+.rating-stars i.far.fa-star {
+    color: #cbd5e0;
+}
+
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e0e6ed;
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    resize: vertical;
+    font-family: inherit;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #2C5A6E;
+    box-shadow: 0 0 0 3px rgba(44, 90, 110, 0.1);
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 90, 110, 0.3);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.history-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    height: fit-content;
+}
+
+.history-card h3 {
+    font-size: 1.1rem;
+    color: #1F3B4C;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.history-card h3 i {
+    color: #2C5A6E;
+    margin-right: 0.5rem;
+}
+
+.surveys-history {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #f0f2f5;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.history-item:hover {
+    background: #f8f9fa;
+}
+
+.history-date {
+    font-size: 0.7rem;
+    color: #a0b3c2;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.history-rating {
+    display: flex;
+    gap: 0.2rem;
+    margin: 0.25rem 0;
+}
+
+.history-rating i {
+    font-size: 0.7rem;
+    color: #f59e0b;
+}
+
+.history-rating i.far {
+    color: #cbd5e0;
+}
+
+.history-comment {
+    font-size: 0.75rem;
+    color: #6c7f8b;
+    margin-top: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-empty {
+    text-align: center;
+    padding: 2rem;
+}
+
+.history-empty i {
+    font-size: 3rem;
+    color: #cbd5e0;
+    margin-bottom: 0.5rem;
+}
+
+.history-empty p {
+    color: #6c7f8b;
+    font-size: 0.85rem;
+}
+
+.toast-custom {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+    min-width: 260px;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-left: 3px solid #2C5A6E;
+    padding: 0.8rem 1rem;
+    display: none;
+}
+
+/* Modal de detalle */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-container {
+    background: white;
+    border-radius: 1rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #1F3B4C;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #a0b3c2;
+}
+
+.modal-body {
+    padding: 1.25rem;
+}
+
+.modal-body p {
+    margin-bottom: 0.5rem;
+    color: #4a6272;
+}
+
+@media (max-width: 992px) {
+    .surveys-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-hero {
+        padding: 1.5rem 0;
+    }
+    
+    .page-hero-container h1 {
+        font-size: 1.6rem;
+    }
+    
+    .surveys-container {
+        padding: 0 1rem;
+    }
+    
+    .rating-stars i {
+        font-size: 1.2rem;
+    }
+}
