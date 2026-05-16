@@ -212,7 +212,6 @@ function applyFilters() {
     const bathrooms = document.getElementById('filterBathrooms').value;
     const category = document.getElementById('filterCategory').value;
     const condition = document.getElementById('filterCondition').value;
-    const type = document.getElementById('filterType').value;
     
     filteredProperties = allProperties.filter(prop => {
         // Filtro ubicación
@@ -232,9 +231,6 @@ function applyFilters() {
         
         // NUEVO: Filtro estado (nueva/usada)
         if (condition && prop.condition !== condition) return false;
-        
-        // Filtro tipo (operación)
-        if (type && prop.type !== type) return false;
         
         return true;
     });
@@ -368,7 +364,6 @@ function clearFilters() {
     document.getElementById('filterBathrooms').value = '';
     document.getElementById('filterCategory').value = '';
     document.getElementById('filterCondition').value = '';
-    document.getElementById('filterType').value = '';
     document.getElementById('sortBy').value = 'relevance';
     
     currentPage = 1;

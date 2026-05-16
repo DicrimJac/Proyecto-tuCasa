@@ -119,9 +119,23 @@ body {
 /* Opciones (cards) */
 .options {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
     margin-bottom: 1.5rem;
+}
+
+/* Para pantallas pequeñas (menos de 500px) - 2 columnas */
+@media (max-width: 500px) {
+    .options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Para pantallas muy pequeñas (menos de 350px) - 1 columna */
+@media (max-width: 350px) {
+    .options {
+        grid-template-columns: 1fr;
+    }
 }
 
 .option-card {
@@ -432,7 +446,7 @@ textarea {
 /* Plan cards */
 .plans-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
@@ -445,6 +459,9 @@ textarea {
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .plan-card:hover {
@@ -476,6 +493,7 @@ textarea {
     padding: 0;
     margin: 0 0 1rem 0;
     text-align: left;
+    flex: 1;
 }
 
 .plan-card ul li {
@@ -500,8 +518,23 @@ textarea {
     font-size: 1.3rem;
     font-weight: 700;
     color: #2C5A6E;
-    margin-top: 1rem;
+    margin-top: auto;
+    padding-top: 1rem;
     font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Responsive para pantallas medianas */
+@media (max-width: 800px) {
+    .plans-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 550px) {
+    .plans-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Buttons */
