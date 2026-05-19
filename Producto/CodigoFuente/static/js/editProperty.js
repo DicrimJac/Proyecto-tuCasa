@@ -21,22 +21,22 @@ const propiedad = {
 
 // REFERENCIAS HTML
 
-const precio = document.getElementById("precio");
-const direccion = document.getElementById("direccion");
+const precio = document.getElementById("price");
+const direccion = document.getElementById("address");
 const region = document.getElementById("region");
-const comuna = document.getElementById("comuna");
-const tipoPropiedad = document.getElementById("tipoPropiedad");
-const superficieTerreno = document.getElementById("superficieTerreno");
-const superficieUtil = document.getElementById("superficieUtil");
-const habitaciones = document.getElementById("habitaciones");
-const banos = document.getElementById("banos");
-const estacionamientos = document.getElementById("estacionamientos");
-const gastosComunes = document.getElementById("gastosComunes");
-const descripcion = document.getElementById("descripcion");
-const amoblado = document.getElementById("amoblado");
-const mascotas = document.getElementById("mascotas");
-const bodega = document.getElementById("bodega");
-const terraza = document.getElementById("terraza");
+const comuna = document.getElementById("district");
+const tipoPropiedad = document.getElementById("propertyType");
+const superficieTerreno = document.getElementById("totalArea");
+const superficieUtil = document.getElementById("usableArea");
+const habitaciones = document.getElementById("bedrooms");
+const banos = document.getElementById("bathrooms");
+const estacionamientos = document.getElementById("parkingSpaces");
+const gastosComunes = document.getElementById("commonExpenses");
+const descripcion = document.getElementById("description");
+const amoblado = document.getElementById("furnished");
+const mascotas = document.getElementById("petsAllowed");
+const bodega = document.getElementById("storage");
+const terraza = document.getElementById("terrace");
 
 // INSERTAR DATOS
 

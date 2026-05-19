@@ -7,8 +7,8 @@ let ownerProperties = [
 ];
 
 let receivedRequests = [
-    { id: 1, propertyId: 1, propertyTitle: "Casa en Santiago Centro", applicant: "María González", email: "maria@email.com", phone: "912345678", date: "2024-05-10", status: "pendiente", message: "Me interesa la propiedad" },
-    { id: 2, propertyId: 1, propertyTitle: "Casa en Santiago Centro", applicant: "Juan Pérez", email: "juan@email.com", phone: "987654321", date: "2024-05-08", status: "aprobada", message: "¿Podría visitar?" }
+    { id: 1, propertyId: 1, propertyTitle: "Casa en Santiago Centro", applicant: "María González", email: "maria@email.com", phone: "912345678", date: "2024-05-10", status: "pending", message: "Me interesa la propiedad" },
+    { id: 2, propertyId: 1, propertyTitle: "Casa en Santiago Centro", applicant: "Juan Pérez", email: "juan@email.com", phone: "987654321", date: "2024-05-08", status: "approved", message: "¿Podría visitar?" }
 ];
 
 let propertyRatings = [
@@ -26,7 +26,7 @@ let recentActivity = [
 function updateStats() {
     const totalProps = ownerProperties.length;
     const totalReqs = receivedRequests.length;
-    const approvedReqs = receivedRequests.filter(r => r.status === 'aprobada').length;
+    const approvedReqs = receivedRequests.filter(r => r.status === 'approved').length;
     const acceptanceRate = totalReqs > 0 ? Math.round((approvedReqs / totalReqs) * 100) : 0;
     
     let avgRating = 0;
@@ -91,7 +91,7 @@ function renderRequests() {
 }
 
 function getStatusText(status) {
-    return { pendiente: 'Pendiente', aprobada: 'Aprobada', rechazada: 'Rechazada' }[status] || status;
+    return { pending: 'Pendiente', approved: 'Aprobada', rejected: 'Rechazada' }[status] || status;
 }
 
 function updateRequestStatus(requestId, newStatus) {

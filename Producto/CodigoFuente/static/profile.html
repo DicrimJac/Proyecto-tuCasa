@@ -296,14 +296,14 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="emailNotif" checked>
+                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
                         <label class="form-check-label">Notificaciones por email</label>
                     </div>
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="smsNotif">
+                        <input class="form-check-input" type="checkbox" id="smsNotifications">
                         <label class="form-check-label">Notificaciones SMS</label>
                     </div>
-                    <button class="btn-login" id="saveNotif">Guardar</button>
+                    <button class="btn-login" id="saveNotifications">Guardar</button>
                 </div>
             </div>
         </div>
@@ -372,23 +372,23 @@
                     <form id="addPropertyForm">
                         <div class="mb-3">
                             <label class="form-label">Título *</label>
-                            <input type="text" class="form-control" id="propTitle" required>
+                            <input type="text" class="form-control" id="propertyTitle" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Ubicación *</label>
-                            <input type="text" class="form-control" id="propLocation" required>
+                            <input type="text" class="form-control" id="propertyLocation" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Precio mensual (CLP) *</label>
-                            <input type="number" class="form-control" id="propPrice" required>
+                            <input type="number" class="form-control" id="propertyPrice" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Habitaciones</label>
-                            <input type="number" class="form-control" id="propRooms" value="2">
+                            <input type="number" class="form-control" id="propertyRooms" value="2">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Descripción</label>
-                            <textarea class="form-control" id="propDesc" rows="2"></textarea>
+                            <textarea class="form-control" id="propertyDesc" rows="2"></textarea>
                         </div>
                         <button type="submit" class="btn-login">Publicar propiedad</button>
                     </form>

@@ -14,7 +14,7 @@
 </head>
 
 <body>
-  <!-- HEADER (se carga dinámicamente) -->
+  <!-- HEADER -->
   <div id="header"></div>
   <!-- CONTENIDO PRINCIPAL -->
   <main>
@@ -24,205 +24,197 @@
         <div class="slide">
           <img src="assets/image/casa1.png" alt="Casa 1">
           <div class="slide-text">
-            <p>Arriendos con información real</p>
+            <p> Arriendos con información real</p>
             <a href="detail.html" class="btn-slide">Explorar</a>
           </div>
         </div>
+
         <div class="slide">
           <img src="assets/image/casa2.png" alt="Casa 2">
+
           <div class="slide-text">
             <p>Arriendos con información real</p>
-            <a href="detail.html" class="btn-slide">Explorar</a>
+            <a href="detail.html" class="btn-slide"> Explorar </a>
           </div>
         </div>
+
         <div class="slide">
           <img src="assets/image/casa3.png" alt="Casa 3">
           <div class="slide-text">
-            <p>Arriendos con información real</p>
-            <a href="detail.html" class="btn-slide">Explorar</a>
+            <p>Arriendos con información real </p>
+            <a href="detail.html" class="btn-slide">Explorar </a>
           </div>
         </div>
+
         <div class="slide">
           <img src="assets/image/casa4.png" alt="Casa 4">
           <div class="slide-text">
             <p>Arriendos con información real</p>
-            <a href="detail.html" class="btn-slide">Explorar</a>
+            <a href="detail.html" class="btn-slide"> Explorar </a>
           </div>
         </div>
+
         <div class="slide">
           <img src="assets/image/casa5.png" alt="Casa 5">
           <div class="slide-text">
             <p>Arriendos con información real</p>
-            <a href="register.html" class="btn-slide">Explorar</a>
+            <a href="detail.html" class="btn-slide"> Explorar </a>
           </div>
         </div>
       </div>
-      <button class="prev">❮</button>
-      <button class="next">❯</button>
+
+      <button class="prev"> ❮ </button>
+      <button class="next"> ❯ </button>
     </div>
+
     <!-- FILTROS -->
-    <section class="filtros">
-      <input type="text" id="buscar" placeholder="Buscar por nombre...">
-      <select id="precio">
-        <option value="">Precio</option>
-        <option value="300000">Hasta $300.000</option>
-        <option value="500000">Hasta $500.000</option>
-        <option value="700000">Hasta $700.000</option>
+    <section class="filters">
+      <input type="text" id="searchInput" placeholder="Buscar por nombre...">
+      <select id="priceFilter">
+        <option value=""> Precio</option>
+        <option value="300000"> Hasta $300.000 </option>
+        <option value="500000"> Hasta $500.000 </option>
+        <option value="700000"> Hasta $700.000 </option>
       </select>
-      <select id="habitaciones">
-        <option value="">Habitaciones</option>
-        <option value="1">1+</option>
-        <option value="2">2+</option>
-        <option value="3">3+</option>
+
+      <select id="bedroomsFilter">
+        <option value=""> Habitaciones </option>
+        <option value="1"> 1+ </option>
+        <option value="2"> 2+ </option>
+        <option value="3"> 3+ </option>
       </select>
     </section>
-    <!-- PROPIEDADES -->
-    <!-- <section class="propiedades">
-            <h2>Propiedades destacadas</h2>
-            <div class="cards-container">
-                <div class="card" data-precio="500000" data-habitaciones="3">
-                    <img src="assets/image/casa1.png" alt="Casa en Santiago">
-                    <div class="card-body">
-                        <h3>Casa en Santiago</h3>
-                        <p class="precio">$500.000 / mes</p>
-                        <p class="detalle">3 habitaciones · 2 baños</p>
-                        <button>Ver más</button>
-                    </div>
-                </div>
-                <div class="card" data-precio="350000" data-habitaciones="2">
-                    <img src="assets/image/casa2.png" alt="Departamento moderno">
-                    <div class="card-body">
-                        <h3>Departamento moderno</h3>
-                        <p class="precio">$350.000 / mes</p>
-                        <p class="detalle">2 habitaciones · 1 baño</p>
-                        <button>Ver más</button>
-                    </div>
-                </div>
-                <div class="card" data-precio="600000" data-habitaciones="4">
-                    <img src="assets/image/casa3.png" alt="Casa familiar">
-                    <div class="card-body">
-                        <h3>Casa familiar</h3>
-                        <p class="precio">$600.000 / mes</p>
-                        <p class="detalle">4 habitaciones · 3 baños</p>
-                        <button>Ver más</button>
-                    </div>
-                </div>
-            </div>
-        </section> -->
-    <section class="propiedades">
-      <h2>Propiedades destacadas</h2>
+
+    <!-- PROPIEDADES DESTACADAS -->
+    <section class="properties">
+      <h2> Propiedades destacadas </h2>
       <div class="cards-container">
-        <div class="card" data-precio="500000" data-habitaciones="3">
+        <div class="card" data-price="500000" data-bedrooms="3">
           <img src="assets/image/casa1.png">
+
           <div class="card-body">
-            <h3>Casa en Santiago</h3>
-            <p class="precio">$500.000 / mes</p>
-            <p class="detalle">3 habitaciones · 1 baños</p>
-            <button>Ver más</button>
+            <h3> Casa en Santiago </h3>
+            <p class="price"> $500.000 / mes </p>
+            <p class="detail"> 3 habitaciones · 1 baños </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="350000" data-habitaciones="2">
+
+        <div class="card" data-price="350000" data-bedrooms="2">
           <img src="assets/image/casa2.png">
           <div class="card-body">
-            <h3>Departamento moderno</h3>
-            <p class="precio">$350.000 / mes</p>
-            <p class="detalle">2 habitaciones · 1 baño</p>
-            <button>Ver más</button>
+            <h3> Departamento moderno </h3>
+            <p class="price"> $350.000 / mes </p>
+            <p class="detail"> 2 habitaciones · 1 baño </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="600000" data-habitaciones="4">
+
+        <div class="card" data-price="600000" data-bedrooms="4">
           <img src="assets/image/casa3.png">
           <div class="card-body">
-            <h3>Casa familiar</h3>
-            <p class="precio">$600.000 / mes</p>
-            <p class="detalle">4 habitaciones · 2 baños</p>
-            <button>Ver más</button>
+            <h3> Casa familiar </h3>
+            <p class="price"> $600.000 / mes </p>
+            <p class="detail"> 4 habitaciones · 2 baños </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="200000" data-habitaciones="1">
+
+        <div class="card" data-price="200000" data-bedrooms="1">
           <img src="assets/image/casa4.png">
           <div class="card-body">
-            <h3>Casa de soltero</h3>
-            <p class="precio">$200.000 / mes</p>
-            <p class="detalle">1 habitaciones · 1 baños</p>
-            <button>Ver más</button>
+            <h3> Casa de soltero </h3>
+            <p class="price"> $200.000 / mes </p>
+            <p class="detail"> 1 habitaciones · 1 baños </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="600000" data-habitaciones="2">
+
+        <div class="card" data-price="600000" data-bedrooms="2">
           <img src="assets/image/casa5.png">
           <div class="card-body">
-            <h3>Casa familiar</h3>
-            <p class="precio">$600.000 / mes</p>
-            <p class="detalle">2 habitaciones · 2 baños</p>
-            <button>Ver más</button>
+            <h3> Casa familiar </h3>
+            <p class="price"> $600.000 / mes </p>
+            <p class="detail"> 2 habitaciones · 2 baños </p>
+            <button> Ver más </button>
           </div>
         </div>
       </div>
     </section>
-    <section class="ultimas">
-      <h2>Últimas propiedades agregadas</h2>
-      <div class="cards-container ultimas-container">
-        <div class="card" data-precio="450000" data-habitaciones="2">
+
+    <!-- ÚLTIMAS PROPIEDADES -->
+    <section class="latest-properties">
+      <h2> Últimas propiedades agregadas </h2>
+      <div class="cards-container latest-container">
+        <div class="card" data-price="450000" data-bedrooms="2">
           <img src="assets/image/casa2.png">
           <div class="card-body">
-            <h3>Depto nuevo</h3>
-            <p class="precio">$450.000 / mes</p>
-            <p class="detalle">2 habitaciones · 1 baño</p>
-            <button>Ver más</button>
+            <h3> Depto nuevo </h3>
+            <p class="price"> $450.000 / mes </p>
+            <p class="detail"> 2 habitaciones · 1 baño </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="700000" data-habitaciones="4">
+
+        <div class="card" data-price="700000" data-bedrooms="4">
           <img src="assets/image/casa3.png">
           <div class="card-body">
-            <h3>Casa amplia</h3>
-            <p class="precio">$700.000 / mes</p>
-            <p class="detalle">4 habitaciones · 3 baños</p>
-            <button>Ver más</button>
+            <h3> Casa amplia </h3>
+            <p class="price"> $700.000 / mes </p>
+            <p class="detail"> 4 habitaciones · 3 baños </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="300000" data-habitaciones="1">
+
+        <div class="card" data-price="300000" data-bedrooms="1">
           <img src="assets/image/casa4.png">
           <div class="card-body">
-            <h3>Mini departamento</h3>
-            <p class="precio">$300.000 / mes</p>
-            <p class="detalle">1 habitación · 1 baño</p>
-            <button>Ver más</button>
+            <h3> Mini departamento </h3>
+            <p class="price"> $300.000 / mes </p>
+            <p class="detail"> 1 habitación · 1 baño </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="350000" data-habitaciones="2">
+
+        <div class="card" data-price="350000" data-bedrooms="2">
           <img src="assets/image/casa2.png">
           <div class="card-body">
-            <h3>Depto nuevo</h3>
-            <p class="precio">$350.000 / mes</p>
-            <p class="detalle">2 habitaciones · 1 baño</p>
-            <button>Ver más</button>
+            <h3> Depto nuevo </h3>
+            <p class="price"> $350.000 / mes </p>
+            <p class="detail"> 2 habitaciones · 1 baño </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="650000" data-habitaciones="2">
+
+        <div class="card" data-price="650000" data-bedrooms="2">
           <img src="assets/image/casa3.png">
           <div class="card-body">
-            <h3>Casa</h3>
-            <p class="precio">$650.000 / mes</p>
-            <p class="detalle">2 habitaciones · 3 baños</p>
-            <button>Ver más</button>
+            <h3> Casa </h3>
+            <p class="price"> $650.000 / mes </p>
+            <p class="detail"> 2 habitaciones · 3 baños </p>
+            <button> Ver más </button>
           </div>
         </div>
-        <div class="card" data-precio="180000" data-habitaciones="1">
+
+        <div class="card" data-price="180000" data-bedrooms="1">
           <img src="assets/image/casa4.png">
           <div class="card-body">
-            <h3>Departamento pequeño</h3>
-            <p class="precio">$180.000 / mes</p>
-            <p class="detalle">1 habitación · 1 baño</p>
-            <button>Ver más</button>
+            <h3> Departamento pequeño </h3>
+            <p class="price"> $180.000 / mes </p>
+            <p class="detail"> 1 habitación · 1 baño </p>
+            <button> Ver más </button>
           </div>
         </div>
       </div>
     </section>
   </main>
-  <!-- FOOTER (se carga dinámicamente) -->
+
+  <!-- FOOTER -->
   <div id="footer"></div>
+
+  <!-- SCRIPTS -->
   <script src="js/headerfooter.js"></script>
   <script src="js/home.js"></script>
-</body>
 
+</body>
 </html>
