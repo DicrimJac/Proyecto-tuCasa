@@ -14,8 +14,6 @@
 </head>
 
 <body>
-
-    <!-- HEADER -->
     <div id="header"></div>
 
     <main>
@@ -32,104 +30,139 @@
 
             <!-- IMAGEN -->
             <div class="imagen-box">
-                <img id="img" alt="Imagen propiedad">
+                <img id="propertyImage" alt="Imagen propiedad">
             </div>
 
             <!-- INFORMACIÓN -->
             <div class="info-box">
 
                 <!-- TÍTULO -->
-                <h1 id="titulo"></h1>
+                <h1 id="propertyTitle"></h1>
 
                 <!-- PRECIO -->
-                <div id="precio" class="precio"></div>
+                <div id="propertyPrice" class="precio"></div>
 
                 <!-- UBICACIÓN -->
                 <div class="ubicacion">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span id="ubicacion"></span>
+                    <span id="propertyLocation"></span>
                 </div>
 
                 <!-- DATOS RÁPIDOS -->
                 <div class="datos-grid">
-
                     <div class="dato-card">
-                        <span><i class="fas fa-bed"></i> Dormitorios</span>
-                        <strong id="habitaciones"></strong>
+                        <span>
+                            <i class="fas fa-bed"></i>
+                            Dormitorios
+                        </span>
+                        <strong id="bedrooms"></strong>
                     </div>
 
                     <div class="dato-card">
-                        <span><i class="fas fa-bath"></i> Baños</span>
-                        <strong id="banos"></strong>
+                        <span>
+                            <i class="fas fa-bath"></i>
+                            Baños
+                        </span>
+                        <strong id="bathrooms"></strong>
                     </div>
 
                     <div class="dato-card">
-                        <span><i class="fas fa-car"></i> Estacionamientos</span>
-                        <strong id="estacionamientos"></strong>
+                        <span>
+                            <i class="fas fa-car"></i>
+                            Estacionamientos
+                        </span>
+                        <strong id="parkingSpaces"></strong>
                     </div>
 
                     <div class="dato-card">
-                        <span><i class="fas fa-arrows-alt"></i> Superficie</span>
-                        <strong id="superficie"></strong>
+                        <span>
+                            <i class="fas fa-arrows-alt"></i>
+                            Superficie
+                        </span>
+                        <strong id="propertyArea"></strong>
                     </div>
 
                     <div class="dato-card">
-                        <span><i class="fas fa-building"></i> Tipo propiedad</span>
-                        <strong id="tipoPropiedad"></strong>
+                        <span>
+                            <i class="fas fa-building"></i>
+                            Tipo propiedad
+                        </span>
+                        <strong id="propertyType"></strong>
                     </div>
 
                     <div class="dato-card">
-                        <span><i class="fas fa-tag"></i> Operación</span>
-                        <strong id="operacion"></strong>
+                        <span>
+                            <i class="fas fa-tag"></i>
+                            Operación
+                        </span>
+                        <strong id="operationType"></strong>
                     </div>
-
                 </div>
 
                 <!-- DESCRIPCIÓN -->
                 <div class="descripcion-box">
-                    <h3><i class="fas fa-file-alt"></i> Descripción</h3>
-                    <p id="descripcion"></p>
+                    <h3>
+                        <i class="fas fa-file-alt"></i>
+                        Descripción
+                    </h3>
+                    <p id="propertyDescription"></p>
                 </div>
 
-                <!-- BOTONES DE ACCIÓN -->
+                <!-- BOTONES -->
                 <div class="acciones">
-                    <button id="btnWhatsapp" class="btn-whatsapp">
-                        <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
+                    <button id="whatsappButton" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        Contactar por WhatsApp
                     </button>
+
                     <a href="search.html" class="btn-volver">
-                        <i class="fas fa-arrow-left"></i> Volver
+                        <i class="fas fa-arrow-left"></i>
+                        Volver
                     </a>
                 </div>
-
             </div>
-
         </div>
 
         <!-- MAPA -->
         <div class="mapa-section">
-            <h3><i class="fas fa-map-marked-alt"></i> Ubicación</h3>
+            <h3>
+                <i class="fas fa-map-marked-alt"></i>
+                Ubicación
+            </h3>
+
             <div class="mapa">
-                <iframe id="mapFrame" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy">
+                <iframe id="mapFrame"
+                    width="100%"
+                    height="350"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy">
                 </iframe>
+
             </div>
         </div>
-
     </main>
 
     <!-- FOOTER -->
     <div id="footer"></div>
 
-    <!-- MODAL WHATSAPP -->
-    <div class="modal-whatsapp" id="modalWhatsapp">
+    <!-- MODAL -->
+    <div class="modal-whatsapp" id="whatsappModal">
         <div class="modal-content">
-            <span class="cerrar-modal" id="cerrarModal">
-                &times;
-            </span>
-            <h3><i class="fab fa-whatsapp"></i> Solicitud enviada</h3>
+            <span class="cerrar-modal" id="closeModal"> &times; </span>
+
+            <h3>
+                <i class="fab fa-whatsapp"></i>
+                Solicitud enviada
+            </h3>
+
             <p class="mensaje-modal">
                 Hemos enviado tus datos de contacto a la persona encargada de la publicación para que pueda responderte lo antes posible.
             </p>
-            <button id="cerrarBtn" class="btn-modal">Entendido</button>
+
+            <button id="closeButton" class="btn-modal">
+                Entendido
+            </button>
         </div>
     </div>
 
@@ -146,7 +179,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/headerFooter.js"></script>
     <script src="js/detail.js"></script>
-
 </body>
-
 </html>

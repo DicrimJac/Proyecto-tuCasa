@@ -1,157 +1,171 @@
-// ============================================
-// MOCK DATA PROPIEDAD
-// ============================================
-
-const propiedad = {
-    titulo: "Departamento moderno en Santiago Centro",
-    precio: "$350.000 / mes",
-    ubicacion: "Padre Alonso de Ovalle 1586, Santiago Centro",
-    habitaciones: 2,
-    banos: 1,
-    estacionamientos: 1,
-    superficie: "65 m²",
-    tipoPropiedad: "Departamento",
-    operacion: "Arriendo",
-    descripcion: "Departamento amplio y moderno ubicado cerca del metro, supermercados y áreas verdes. Excelente conectividad y seguridad.",
-    nombreContacto: "Juan Pérez",
-    telefono: "+56 9 1234 5678",
-    correo: "contacto@tucasa.cl",
-    imagen: "assets/image/casa2.png"
+const property = {
+    title: "Departamento moderno en Santiago Centro",
+    price: "$350.000 / mes",
+    location: "Padre Alonso de Ovalle 1586, Santiago Centro",
+    bedrooms: 2,
+    bathrooms: 1,
+    parkingSpaces: 1,
+    propertyArea: "65 m²",
+    propertyType: "Departamento",
+    operationType: "Arriendo",
+    description: "Departamento amplio y moderno ubicado cerca del metro, supermercados y áreas verdes. Excelente conectividad y seguridad.",
+    contactName: "Juan Pérez",
+    phone: "+56 9 1234 5678",
+    email: "contacto@tucasa.cl",
+    image: "assets/image/casa2.png"
 };
 
-// ============================================
-// REFERENCIAS HTML
-// ============================================
-
-const img = document.getElementById("img");
-const titulo = document.getElementById("titulo");
-const precio = document.getElementById("precio");
-const ubicacion = document.getElementById("ubicacion");
-const habitaciones = document.getElementById("habitaciones");
-const banos = document.getElementById("banos");
-const estacionamientos = document.getElementById("estacionamientos");
-const superficie = document.getElementById("superficie");
-const tipoPropiedad = document.getElementById("tipoPropiedad");
-const operacion = document.getElementById("operacion");
-const descripcion = document.getElementById("descripcion");
+const propertyImage = document.getElementById("propertyImage");
+const propertyTitle = document.getElementById("propertyTitle");
+const propertyPrice = document.getElementById("propertyPrice");
+const propertyLocation = document.getElementById("propertyLocation");
+const bedrooms = document.getElementById("bedrooms");
+const bathrooms = document.getElementById("bathrooms");
+const parkingSpaces = document.getElementById("parkingSpaces");
+const propertyArea = document.getElementById("propertyArea");
+const propertyType = document.getElementById("propertyType");
+const operationType = document.getElementById("operationType");
+const propertyDescription = document.getElementById("propertyDescription");
 const mapFrame = document.getElementById("mapFrame");
 
-// ============================================
-// INSERTAR DATOS
-// ============================================
-
-if (img) img.src = propiedad.imagen;
-if (titulo) titulo.textContent = propiedad.titulo;
-if (precio) precio.textContent = propiedad.precio;
-if (ubicacion) ubicacion.textContent = propiedad.ubicacion;
-if (habitaciones) habitaciones.textContent = propiedad.habitaciones;
-if (banos) banos.textContent = propiedad.banos;
-if (estacionamientos) estacionamientos.textContent = propiedad.estacionamientos;
-if (superficie) superficie.textContent = propiedad.superficie;
-if (tipoPropiedad) tipoPropiedad.textContent = propiedad.tipoPropiedad;
-if (operacion) operacion.textContent = propiedad.operacion;
-if (descripcion) descripcion.textContent = propiedad.descripcion;
-
-// ============================================
-// MAPA DINÁMICO
-// ============================================
-
-if (mapFrame && propiedad.ubicacion) {
-    const direccionURL = encodeURIComponent(propiedad.ubicacion);
-    mapFrame.src = `https://www.google.com/maps?q=${direccionURL}&output=embed`;
+if (propertyImage) {
+    propertyImage.src = property.image;
 }
 
-// ============================================
-// MODAL CONTACTO
-// ============================================
+if (propertyTitle) {
+    propertyTitle.textContent = property.title;
+}
 
-const btnWhatsapp = document.getElementById("btnWhatsapp");
-const modalWhatsapp = document.getElementById("modalWhatsapp");
-const cerrarModal = document.getElementById("cerrarModal");
-const cerrarBtn = document.getElementById("cerrarBtn");
+if (propertyPrice) {
+    propertyPrice.textContent = property.price;
+}
 
-// Función para abrir modal
+if (propertyLocation) {
+    propertyLocation.textContent = property.location;
+}
+
+if (bedrooms) {
+    bedrooms.textContent = property.bedrooms;
+}
+
+if (bathrooms) {
+    bathrooms.textContent = property.bathrooms;
+}
+
+if (parkingSpaces) {
+    parkingSpaces.textContent = property.parkingSpaces;
+}
+
+if (propertyArea) {
+    propertyArea.textContent = property.propertyArea;
+}
+
+if (propertyType) {
+    propertyType.textContent = property.propertyType;
+}
+
+if (operationType) {
+    operationType.textContent = property.operationType;
+}
+
+if (propertyDescription) {
+    propertyDescription.textContent = property.description;
+}
+
+if (mapFrame && property.location) {
+
+    const addressURL = encodeURIComponent(property.location);
+    mapFrame.src =
+        `https://www.google.com/maps?q=${addressURL}&output=embed`;
+}
+
+const whatsappButton = document.getElementById("whatsappButton");
+const whatsappModal = document.getElementById("whatsappModal");
+const closeModalButton = document.getElementById("closeModal");
+const closeButton = document.getElementById("closeButton");
+
 function openModal() {
-    if (modalWhatsapp) {
-        modalWhatsapp.classList.add("active");
+    if (whatsappModal) {
+        whatsappModal.classList.add("active");
     }
 }
 
-// Función para cerrar modal
 function closeModal() {
-    if (modalWhatsapp) {
-        modalWhatsapp.classList.remove("active");
+    if (whatsappModal) {
+        whatsappModal.classList.remove("active");
     }
 }
 
-// ABRIR MODAL
-if (btnWhatsapp) {
-    btnWhatsapp.addEventListener("click", openModal);
+if (whatsappButton) {
+    whatsappButton.addEventListener("click", openModal);
 }
 
-// CERRAR MODAL X
-if (cerrarModal) {
-    cerrarModal.addEventListener("click", closeModal);
+if (closeModalButton) {
+    closeModalButton.addEventListener("click", closeModal);
 }
 
-// CERRAR BOTÓN
-if (cerrarBtn) {
-    cerrarBtn.addEventListener("click", closeModal);
+if (closeButton) {
+    closeButton.addEventListener("click", closeModal);
 }
 
-// Cerrar modal al hacer clic fuera
-if (modalWhatsapp) {
-    modalWhatsapp.addEventListener("click", (e) => {
-        if (e.target === modalWhatsapp) {
+if (whatsappModal) {
+    whatsappModal.addEventListener("click", (e) => {
+        if (e.target === whatsappModal) {
             closeModal();
         }
     });
 }
 
-// ============================================
-// TOAST
-// ============================================
-
 function showToast(message, isError = false) {
-    const toast = document.getElementById('notificationToast');
-    const toastMessage = document.getElementById('toastMessage');
-    const toastHeader = toast?.querySelector('.toast-header');
-    
+    const toast = document.getElementById("notificationToast");
+    const toastMessage = document.getElementById("toastMessage");
+    const toastHeader = toast?.querySelector(".toast-header");
+
     if (!toast) return;
-    if (toastMessage) toastMessage.textContent = message;
-    
-    if (isError) {
-        toast.style.borderLeftColor = '#dc3545';
-        const icon = toastHeader?.querySelector('i');
-        if (icon) {
-            icon.className = 'bi bi-exclamation-triangle-fill';
-            icon.style.color = '#dc3545';
-        }
-        const strong = toastHeader?.querySelector('strong');
-        if (strong) strong.textContent = 'Error';
-    } else {
-        toast.style.borderLeftColor = '#2C5A6E';
-        const icon = toastHeader?.querySelector('i');
-        if (icon) {
-            icon.className = 'bi bi-check-circle-fill';
-            icon.style.color = '#2C5A6E';
-        }
-        const strong = toastHeader?.querySelector('strong');
-        if (strong) strong.textContent = 'Éxito';
+    if (toastMessage) {
+        toastMessage.textContent = message;
     }
-    
-    toast.style.display = 'block';
+
+    if (isError) {
+        toast.style.borderLeftColor = "#dc3545";
+        const icon = toastHeader?.querySelector("i");
+        if (icon) {
+            icon.className =
+                "bi bi-exclamation-triangle-fill";
+            icon.style.color = "#dc3545";
+        }
+        const strong =
+            toastHeader?.querySelector("strong");
+        
+        if (strong) {
+            strong.textContent = "Error";
+        }
+    } else {
+        toast.style.borderLeftColor = "#2C5A6E";
+        const icon = toastHeader?.querySelector("i");
+        if (icon) {
+            icon.className = "bi bi-check-circle-fill";
+            icon.style.color = "#2C5A6E";
+        }
+        const strong = toastHeader?.querySelector("strong");
+        if (strong) {
+            strong.textContent = "Éxito";
+        }
+    }
+    toast.style.display = "block";
     setTimeout(() => {
-        toast.style.display = 'none';
+        toast.style.display = "none";
         if (toastHeader) {
-            const icon = toastHeader.querySelector('i');
-            if (icon) icon.className = 'bi bi-info-circle-fill';
-            const strong = toastHeader.querySelector('strong');
-            if (strong) strong.textContent = 'Información';
-            toast.style.borderLeftColor = '#2C5A6E';
+            const icon = toastHeader.querySelector("i");
+            if (icon) {
+                icon.className = "bi bi-info-circle-fill";
+            }
+            const strong = toastHeader.querySelector("strong");
+            if (strong) {
+                strong.textContent = "Información";
+            }
+            toast.style.borderLeftColor = "#2C5A6E";
         }
     }, 3000);
 }
-
-// Mostrar toast de bienvenida (opcional)
-// showToast('Bienvenido a la página de detalle');
+showToast("Bienvenido a la página de detalle");

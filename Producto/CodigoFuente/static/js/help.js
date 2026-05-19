@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Mostrar categoría inicial
-    showCategory('cuenta');
+    showCategory('account');
     
     // Función para mostrar toast
     window.showToast = function(message, isError = false) {
