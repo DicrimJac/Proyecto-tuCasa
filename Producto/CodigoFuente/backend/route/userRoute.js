@@ -21,16 +21,22 @@ userRoute.delete(
   (c) => userController.deleteUserByMail(c),
 );
 
-// GET /api/users/:id
-userRoute.get("/:id", requireAuth, (c) => userController.getUserById(c));
-
 // POST /api/login
 userRoute.post("/login", (c) => userController.login(c));
+
+// GET /api/users/google - Iniciar login con Google
+userRoute.get("/google", (c) => userController.googleLogin(c));
+
+// GET /api/users/google/callback - Recibir respuesta de Google
+userRoute.get("/google/callback", (c) => userController.googleCallback(c));
 
 // POST /api/logout
 userRoute.post("/logout", (c) => userController.logout(c));
 
 // POST /api/register
 userRoute.post("/register", (c) => userController.register(c));
+
+// GET /api/users/:id
+userRoute.get("/:id", requireAuth, (c) => userController.getUserById(c));
 
 export default userRoute;
