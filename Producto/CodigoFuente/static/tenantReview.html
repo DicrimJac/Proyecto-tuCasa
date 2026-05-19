@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Casa · Evaluación de Arrendatario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="css/tenantReview.css">
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="reviews-header">
+        <a href="detail.html" class="back-btn">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h1>Evaluaciones del arrendatario</h1>
+    </header>
+
+    <!-- CONTENIDO -->
+    <main class="reviews-page">
+
+        <!-- RESUMEN -->
+        <section class="rating-summary">
+            <div class="summary-card">
+                <h2>Calificación general</h2>
+                <div class="average-number" id="averageScore">
+                    0.0
+                </div>
+                <div class="average-stars" id="averageStars">
+                    ☆☆☆☆☆
+                </div>
+                <p>
+                    Basado en
+                    <span id="totalReviews">0</span>
+                    reseñas
+                </p>
+            </div>
+        </section>
+
+        <!-- FORMULARIO -->
+        <section class="review-form-section">
+            <div class="form-card">
+                <h2>Dejar una reseña</h2>
+                <div class="ratings-categories">
+
+                    <!-- PAGOS -->
+                    <div class="rating-item">
+                        <div class="rating-top">
+                            <div class="rating-info">
+                                <h4>Pagos</h4>
+                                <p>Puntualidad y cumplimiento de pagos</p>
+                            </div>
+
+                            <div class="star-group" data-category="payments">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LIMPIEZA -->
+                    <div class="rating-item">
+                        <div class="rating-top">
+                            <div class="rating-info">
+                                <h4>Limpieza</h4>
+                                <p>Cuidado y limpieza del inmueble</p>
+                            </div>
+
+                            <div class="star-group" data-category="cleanliness">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RESPETO -->
+                    <div class="rating-item">
+                        <div class="rating-top">
+                            <div class="rating-info">
+                                <h4>Respeto</h4>
+                                <p>Respeto hacia normas y convivencia</p>
+                            </div>
+
+                            <div class="star-group" data-category="respect">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMUNICACIÓN -->
+                    <div class="rating-item">
+                        <div class="rating-top">
+                            <div class="rating-info">
+                                <h4>Comunicación</h4>
+                                <p>Facilidad para comunicarse y coordinar</p>
+                            </div>
+
+                            <div class="star-group" data-category="communication">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RUIDO -->
+                    <div class="rating-item">
+                        <div class="rating-top">
+                            <div class="rating-info">
+                                <h4>Nivel de ruido</h4>
+                                <p>Ruido y convivencia con vecinos</p>
+                            </div>
+
+                            <div class="star-group" data-category="noise">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RESPONSABILIDAD -->
+                    <div class="rating-item">
+                        <div class="rating-top">
+                            <div class="rating-info">
+                                <h4>Responsabilidad</h4>
+                                <p>Cuidado general y compromiso</p>
+                            </div>
+
+                            <div class="star-group" data-category="responsibility">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXPERIENCIA GENERAL -->
+                    <div class="rating-item">
+                        <div class="rating-top">
+                            <div class="rating-info">
+                                <h4>Experiencia general</h4>
+                                <p>Satisfacción global con el arrendatario</p>
+                            </div>
+
+                            <div class="star-group" data-category="overallExperience">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMENTARIO -->
+                <textarea id="reviewComment" placeholder="Cuéntanos tu experiencia con este arrendatario..."></textarea>
+
+                <!-- BOTÓN -->
+                <button id="submitReview">
+                    <i class="bi bi-send-fill"></i>
+                    Enviar reseña
+                </button>
+            </div>
+        </section>
+
+        <!-- RESEÑAS -->
+        <section class="reviews-list-section">
+            <h2>Opiniones recientes</h2>
+            <div id="reviewsContainer"></div>
+        </section>
+    </main>
+
+    <!-- JS -->
+    <script src="js/tenantReview.js"></script>
+</body>
+
+</html>

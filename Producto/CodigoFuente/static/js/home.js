@@ -47,7 +47,6 @@ function initHeader() {
   const userData = localStorage.getItem("userData");
   const userProfile = localStorage.getItem("userProfile");
   const isLoggedIn = userData || userProfile;
-
   const registerBtn = document.querySelector(".btn-register-nav");
   const loginBtn = document.querySelector(".btn-login-nav");
   const profileBtn = document.getElementById("profileBtn");
@@ -102,10 +101,9 @@ function highlightCurrentPage() {
 }
 
 // ================= FILTROS =================
-const buscar = document.getElementById("buscar");
-const precio = document.getElementById("precio");
-const habitaciones = document.getElementById("habitaciones");
-
+const buscar = document.getElementById("searchInput");
+const precio = document.getElementById("priceFilter");
+const habitaciones = document.getElementById("bedroomsFilter");
 const cards = document.querySelectorAll(".card");
 
 function filtrar() {
@@ -115,8 +113,8 @@ function filtrar() {
 
   cards.forEach((card) => {
     const nombre = card.querySelector("h3").textContent.toLowerCase();
-    const precioCard = parseInt(card.dataset.precio);
-    const habCard = parseInt(card.dataset.habitaciones);
+    const precioCard = parseInt(card.dataset.price);
+    const habCard = parseInt(card.dataset.bedrooms);
 
     let mostrar = true;
 
@@ -157,8 +155,8 @@ cards.forEach((card) => {
 function guardarYRedirigir(card) {
   const data = {
     titulo: card.querySelector("h3").textContent,
-    precio: card.dataset.precio,
-    habitaciones: card.dataset.habitaciones,
+    precio: card.dataset.price,
+    habitaciones: card.dataset.bedrooms,
     img: card.querySelector("img").src,
     ubicacion: "Providencia, Santiago",
   };

@@ -1,0 +1,160 @@
+/* ========== PRIVACY POLICY STYLES ========== */
+
+/* Hero section - ANCHO COMPLETO (como el footer) */
+.page-hero {
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+    width: 100%;
+    margin: 0;
+    padding: 3rem 0;
+}
+
+.page-hero-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+    color: white;
+}
+
+.page-hero-container h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.page-hero-container p {
+    font-size: 1rem;
+    opacity: 0.9;
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+/* Contenedor principal */
+.privacy-container {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+.last-updated {
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c7f8b;
+    font-size: 0.9rem;
+}
+
+.privacy-content section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.privacy-content h2 {
+    color: #1F3B4C;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.privacy-content p {
+    color: #6c7f8b;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.privacy-content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.privacy-content li {
+    color: #6c7f8b;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.contact-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.contact-info p {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.contact-info i {
+    width: 25px;
+    color: #2C5A6E;
+}
+
+/* Toast */
+.toast-custom {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+    min-width: 260px;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-left: 3px solid #2C5A6E;
+    padding: 0.8rem 1rem;
+    display: none;
+}
+
+.toast-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.toast-body {
+    font-size: 0.85rem;
+    color: #4a6272;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-hero {
+        padding: 2rem 0;
+    }
+    
+    .page-hero-container h1 {
+        font-size: 1.6rem;
+    }
+    
+    .page-hero-container p {
+        font-size: 0.85rem;
+    }
+    
+    .privacy-container {
+        padding: 0 1rem;
+        margin: 2rem auto;
+    }
+    
+    .privacy-content section {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-hero-container {
+        padding: 0 1rem;
+    }
+}

@@ -5,7 +5,7 @@ const supabaseUrl = "https://hobokkiejfnbgglbctpk.supabase.co";
 const supabaseKey = "sb_publishable_Qn7smKJrhpGseZ0p5XXcKg_qAMiIQuB";
 
 if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Faltan variables de entorno");
+  throw new Error("Faltan variables de entorno");
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -47,7 +47,7 @@ const { data: created, error: errCreate } = await supabase
     h_walki_clos: true,
     h_pool: true,
     w_furnitor: false,
-    h_comedor: true, 
+    h_comedor: true,
     price: 120000000,
     type_publis_nbr: 1,
     type_publis_desc: "Venta",

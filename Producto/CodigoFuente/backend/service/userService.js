@@ -39,7 +39,7 @@ export class UserService {
             const mm = String(dateBirthNormalized.getMonth() + 1).padStart(2, "0");
             const dd = String(dateBirthNormalized.getDate()).padStart(2, "0");
             dateBirthNormalized = `${yyyy}-${mm}-${dd}`;
-        } 
+        }
         if (typeof dateBirthNormalized === "string" && dateBirthNormalized) {
             const isIso = /^\d{4}-\d{2}-\d{2}$/.test(dateBirthNormalized);
             if (isIso) {
@@ -83,7 +83,7 @@ export class UserService {
 
             rut: Number.isNaN(rutNumber) ? null : rutNumber,
             rut_dv: Number.isNaN(rutDvValue) ? null : rutDvValue,
-            fono: (function() {
+            fono: (function () {
                 const rawPhone = userData.phone ?? userData.fono ?? "";
                 const digits = (rawPhone).replace(/\D/g, "");
                 return digits ? Number(digits) : null;

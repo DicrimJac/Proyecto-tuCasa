@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Casa · Preguntas Frecuentes</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/faq.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- HEADER -->
+    <div id="header"></div>
+
+    <main>
+        <!-- HERO -->
+        <div class="faq-hero">
+            <div class="faq-hero-container">
+                <h1>Preguntas Frecuentes</h1>
+                <p> Encuentra respuestas a las dudas más comunes sobre nuestros servicios  </p>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR -->
+        <div class="faq-container">
+
+            <!-- CATEGORÍAS -->
+            <div class="faq-categories-container">
+                <button class="category-btn active" data-category="general"> General </button>
+                <button class="category-btn" data-category="properties"> Propiedades </button>
+                <button class="category-btn" data-category="account"> Mi Cuenta </button>
+            </div>
+
+            <!-- FAQ LIST -->
+            <div class="faq-list">
+
+                <!-- GENERAL -->
+                <div class="faq-category" id="category-general">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Qué es Tu Casa?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p> Tu Casa es una plataforma online que conecta a personas que buscan propiedades en arriendo o compra con dueños y corredores de propiedades. </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Cómo funciona la plataforma?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+
+                        <div class="faq-answer">
+                            <p> Puedes buscar propiedades usando filtros como ubicación, precio y número de habitaciones. </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Es gratuito usar Tu Casa?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p> Registrarse y buscar propiedades es completamente gratuito. </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROPERTIES -->
+                <div class="faq-category" id="category-properties" style="display: none;">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Cómo publico una propiedad?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p> Inicia sesión, ve a “Mis Propiedades” y selecciona “Publicar propiedad”. </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Cuánto tarda la aprobación?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>  Generalmente entre 24 y 48 horas hábiles. </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Puedo editar mi propiedad?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p> Sí, puedes modificar la información desde tu panel de propiedades. </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACCOUNT -->
+                <div class="faq-category" id="category-account" style="display: none;">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Olvidé mi contraseña</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p> Usa la opción “¿Olvidaste tu contraseña?” en el login. </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Cómo actualizo mi información?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p> Puedes editar tu perfil desde “Mi Cuenta”. </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Puedo eliminar mi cuenta?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p> Sí, puedes solicitar la eliminación desde soporte. </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <!-- TOAST -->
+    <div class="toast-custom" id="notificationToast">
+        <div class="toast-header">
+            <i class="bi bi-info-circle-fill"></i>
+            <strong>Información</strong>
+        </div>
+        <div class="toast-body"
+            id="toastMessage"></div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/headerfooter.js"></script>
+    <script src="js/faq.js"></script>
+
+</body>
+</html>

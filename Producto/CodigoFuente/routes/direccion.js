@@ -5,7 +5,7 @@ const supabaseUrl = "https://hobokkiejfnbgglbctpk.supabase.co";
 const supabaseKey = "sb_publishable_Qn7smKJrhpGseZ0p5XXcKg_qAMiIQuB";
 
 if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Faltan variables de entorno");
+  throw new Error("Faltan variables de entorno");
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);

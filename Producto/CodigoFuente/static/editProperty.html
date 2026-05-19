@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Propiedad</title>
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/editProperty.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div id="header"></div>
+
+    <!-- CONTENEDOR -->
+    <main class="edit-container">
+        <section class="edit-card">
+            <h1>Editar propiedad</h1>
+            <p class="subtitulo"> Modifica la información de tu publicación. </p>
+            <p class="info-bloqueada">Algunos datos no pueden modificarse después de publicada la propiedad.</p>
+
+            <!-- PRECIO -->
+            <div class="form-group"> 
+                <label for="propertyPrice"> Precio </label> 
+                <input type="text" id="propertyPrice" placeholder="$350.000"> 
+            </div>
+
+            <!-- DIRECCIÓN -->
+            <div class="form-group"> 
+                <label for="propertyAddress"> Dirección </label> 
+                <input type="text" id="propertyAddress" readonly> 
+            </div>
+
+            <!-- REGIÓN -->
+            <div class="form-group"> 
+                <label for="region"> Región </label> 
+                <input type="text" id="region" readonly> 
+            </div>
+
+            <!-- COMUNA -->
+            <div class="form-group"> 
+                <label for="district"> Comuna </label> 
+                <input type="text" id="district" readonly>
+            </div>
+
+            <!-- TIPO PROPIEDAD -->
+            <div class="form-group">
+                <label for="propertyType"> Tipo propiedad </label>
+                <select id="propertyType" disabled>
+                    <option> Departamento </option>
+                </select>
+
+            </div>
+
+            <!-- SUPERFICIE TERRENO -->
+            <div class="form-group"> 
+                <label for="landArea">  Superficie terreno </label> 
+                <input type="text"  id="landArea" readonly> 
+            </div>
+
+            <!-- SUPERFICIE ÚTIL -->
+            <div class="form-group"> 
+                <label for="usableArea"> Superficie útil </label> 
+                <input type="text" id="usableArea">
+            </div>
+
+            <!-- DORMITORIOS -->
+            <div class="form-group">
+                <label for="bedrooms"> Dormitorios </label>
+                <input type="number" id="bedrooms">
+            </div>
+
+            <!-- BAÑOS -->
+            <div class="form-group">
+                <label for="bathrooms"> Baños </label>
+                <input type="number" id="bathrooms">
+            </div>
+
+            <!-- ESTACIONAMIENTOS -->
+            <div class="form-group">
+                <label for="parkingSpaces"> Estacionamientos </label>
+                <input type="number"  id="parkingSpaces">
+            </div>
+
+            <!-- GASTOS COMUNES -->
+            <div class="form-group">
+                <label for="commonExpenses"> Gastos comunes </label>
+                <input type="text" id="commonExpenses">
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <div class="form-group">
+                <label for="propertyDescription"> Descripción </label>
+                <textarea id="propertyDescription" rows="6"></textarea>
+            </div>
+
+            <!-- EQUIPAMIENTO -->
+            <div class="checks-container">
+                <h3>Equipamiento</h3>
+                <div class="check-grid">
+                    <label><input type="checkbox" id="storageRoom"> Bodega</label>
+                    <label><input type="checkbox" id="parking"> Estacionamiento</label>
+                    <label><input type="checkbox" id="naturalGas"> Gas natural</label>
+                    <label><input type="checkbox" id="airConditioning"> Aire acondicionado</label>
+                    <label><input type="checkbox" id="heating"> Calefacción</label>
+                    <label><input type="checkbox" id="washerConnection"> Conexión lavadora</label>
+                    <label><input type="checkbox" id="solarEnergy"> Energía solar</label>
+                    <label><input type="checkbox" id="boiler"> Caldera</label>
+                    <label><input type="checkbox" id="waterHeater"> Calefont</label>
+                    <label><input type="checkbox" id="fireplace"> Chimenea</label>
+                    <label><input type="checkbox" id="gym"> Gimnasio</label>
+                    <label><input type="checkbox" id="visitorParking"> Estacionamiento visita</label>
+                    <label><input type="checkbox" id="elevator"> Ascensor</label>
+                    <label><input type="checkbox" id="playground"> Juegos infantiles</label>
+                    <label><input type="checkbox" id="greenAreas"> Áreas verdes</label>
+                    <label><input type="checkbox" id="multiCourt"> Multicancha</label>
+                    <label><input type="checkbox" id="eventRoom"> Salón de eventos</label>
+                    <label><input type="checkbox" id="alarm"> Alarma</label>
+                    <label><input type="checkbox" id="automaticGate"> Portón automático</label>
+                    <label><input type="checkbox" id="concierge"> Conserjería</label>
+                    <label><input type="checkbox" id="gatedCommunity"> Condominio cerrado</label>
+                    <label><input type="checkbox" id="controlledAccess"> Acceso controlado</label>
+                    <label><input type="checkbox" id="balcony"> Balcón</label>
+                    <label><input type="checkbox" id="diningRoom"> Comedor</label>
+                    <label><input type="checkbox" id="suiteBedroom"> Dormitorio en suite</label>
+                    <label><input type="checkbox" id="livingRoom"> Living</label>
+                    <label><input type="checkbox" id="yard"> Patio</label>
+                    <label><input type="checkbox" id="walkInCloset"> Walking closet</label>
+                    <label><input type="checkbox" id="laundryRoom"> Logia</label>
+                    <label><input type="checkbox" id="guestBathroom"> Baño de visita</label>
+                    <label><input type="checkbox" id="frontYard"> Antejardín</label>
+                    <label><input type="checkbox" id="barbecueArea"> Quincho</label>
+                    <label><input type="checkbox" id="pool"> Piscina</label>
+                    <label><input type="checkbox" id="terrace"> Terraza</label>
+                    <label><input type="checkbox" id="furnished"> Amoblado</label>
+                </div>
+            </div>
+
+            <!-- IMAGEN -->
+            <div class="form-group">
+                <label for="propertyImage"> Actualizar imagen </label>
+                <input type="file" id="propertyImage">
+            </div>
+
+            <!-- BOTONES -->
+            <div class="acciones">
+                <button id="saveButton"> Guardar cambios </button>
+                <a href="detail.html" class="btnCancelar"> Cancelar </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal-guardado"
+        id="savedModal">
+        <div class="modal-content">
+            <h3>Cambios guardados</h3>
+            <p>La información de la propiedad fue actualizada correctamente.</p>
+            <button id="closeModal">Entendido</button>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/headerFooter.js"></script>
+    <script src="js/editProperty.js"></script>
+</body>
+</html>

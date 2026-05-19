@@ -54,7 +54,7 @@ main {
     transform: translate(-50%, -50%);
     color: white;
     text-align: center;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     padding: 20px;
     border-radius: 8px;
 }
@@ -92,12 +92,13 @@ main {
     transition: background 0.3s;
 } */
 
-.prev, .next {
+.prev,
+.next {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    
-    background: rgba(0,0,0,0.4);
+
+    background: rgba(0, 0, 0, 0.4);
     color: white;
     border: none;
     padding: 10px 14px;
@@ -106,7 +107,8 @@ main {
     font-size: 18px;
 }
 
-.prev:hover, .next:hover {
+.prev:hover,
+.next:hover {
     background: rgba(0, 0, 0, 0.8);
 }
 
@@ -238,20 +240,20 @@ main {
     main {
         padding: 1rem;
     }
-    
+
     .slide img {
         height: 300px;
     }
-    
+
     .slide-text {
         bottom: 15%;
         padding: 0.5rem 1rem;
     }
-    
+
     .slide-text p {
         font-size: 0.9rem;
     }
-    
+
     .cards-container {
         grid-template-columns: 1fr;
     }
@@ -261,7 +263,7 @@ main {
     .filtros {
         flex-direction: column;
     }
-    
+
     .slide img {
         height: 250px;
     }

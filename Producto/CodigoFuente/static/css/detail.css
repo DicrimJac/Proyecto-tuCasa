@@ -1,53 +1,485 @@
-/* CONTENEDOR */
-.detalle {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 20px;
-}
+/* ========== DETALLE DE PROPIEDAD - ESTILO TU CASA ========== */
 
-/* IMAGEN */
-.detalle img {
+/* Hero section */
+.page-hero {
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
     width: 100%;
-    border-radius: 12px;
-    margin-bottom: 20px;
+    margin: 0;
+    padding: 2rem 0;
 }
 
-/* TÍTULO */
-.detalle h2 {
-    color: #1F3B4C;
-    margin-bottom: 10px;
-}
-
-/* PRECIO */
-.detalle .precio {
-    font-size: 20px;
-    font-weight: bold;
-    color: #2C5A6E;
-    margin-bottom: 10px;
-}
-
-/* INFO */
-.detalle .info {
-    color: #6c7f8b;
-    margin-bottom: 20px;
-}
-
-/* BOTÓN VOLVER */
-.btn-volver {
-    display: inline-block;
-    padding: 10px 20px;
-    background: #2C5A6E;
+.page-hero-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
     color: white;
-    border-radius: 8px;
+}
+
+.page-hero-container h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.page-hero-container p {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+/* ========== CONTENEDOR PRINCIPAL ========== */
+.detail-container {
+    max-width: 1280px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* ========== IMAGEN ========== */
+.imagen-box {
+    background: #f8f9fa;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.imagen-box img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.imagen-box img:hover {
+    transform: scale(1.02);
+}
+
+/* ========== INFORMACIÓN ========== */
+.info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Título */
+.info-box h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1F3B4C;
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Precio */
+.precio {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2C5A6E;
+    background: #f0f7fa;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    width: fit-content;
+}
+
+/* Ubicación */
+.ubicacion {
+    font-size: 0.95rem;
+    color: #6c7f8b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ubicacion i {
+    color: #2C5A6E;
+    font-size: 1rem;
+}
+
+/* ========== GRID DE DATOS ========== */
+.datos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 0.5rem 0;
+}
+
+/* Tarjetas de datos */
+.dato-card {
+    background: #f8f9fa;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+}
+
+.dato-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #2C5A6E;
+}
+
+.dato-card span {
+    color: #6c7f8b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dato-card strong {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1F3B4C;
+}
+
+.dato-card i {
+    color: #2C5A6E;
+    margin-right: 0.3rem;
+}
+
+/* ========== DESCRIPCIÓN ========== */
+.descripcion-box {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.descripcion-box h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1F3B4C;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.descripcion-box h3 i {
+    color: #2C5A6E;
+}
+
+.descripcion-box p {
+    line-height: 1.7;
+    color: #5a6e7a;
+    font-size: 0.95rem;
+}
+
+/* ========== BOTONES DE ACCIÓN ========== */
+.acciones {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.btn-whatsapp {
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+    color: white;
+    border: none;
+    padding: 0.9rem 1.5rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.btn-whatsapp i {
+    font-size: 1.2rem;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(44, 90, 110, 0.3);
+    filter: brightness(1.05);
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     text-decoration: none;
+    background: #f0f2f5;
+    color: #4a6272;
+    padding: 0.9rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    flex: 1;
 }
 
 .btn-volver:hover {
-    background: #1F3B4C;
+    background: #e4e7eb;
+    transform: translateY(-2px);
+    color: #1F3B4C;
+}
+
+/* ========== MAPA ========== */
+.mapa-section {
+    max-width: 1280px;
+    margin: 0 auto 3rem;
+    padding: 0 2rem;
+}
+
+.mapa-section h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1F3B4C;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mapa-section h3 i {
+    color: #2C5A6E;
 }
 
 .mapa {
-    margin-top: 20px;
-    border-radius: 12px;
     overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.mapa iframe {
+    width: 100%;
+    height: 300px;
+    border: none;
+}
+
+/* ========== MODAL WHATSAPP ========== */
+.modal-whatsapp {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-whatsapp.active {
+    display: flex;
+}
+
+/* Contenido modal */
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    padding: 2rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: relative;
+    animation: fadeInScale 0.25s ease;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Cerrar modal */
+.cerrar-modal {
+    position: absolute;
+    top: 0.8rem;
+    right: 1.2rem;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #a0b3c2;
+    transition: all 0.2s ease;
+}
+
+.cerrar-modal:hover {
+    color: #dc3545;
+}
+
+/* Título modal */
+.modal-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1F3B4C;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-content h3 i {
+    color: #25D366;
+    font-size: 1.5rem;
+}
+
+/* Mensaje modal */
+.mensaje-modal {
+    line-height: 1.7;
+    color: #5a6e7a;
+    font-size: 0.95rem;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border-left: 3px solid #25D366;
+}
+
+/* Botón modal */
+.btn-modal {
+    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
+    color: white;
+    border: none;
+    padding: 0.9rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-modal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 90, 110, 0.3);
+}
+
+/* Enlace WhatsApp en modal */
+.whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #25D366;
+    color: white;
+    text-decoration: none;
+    padding: 0.9rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.whatsapp-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    color: white;
+}
+
+/* Toast */
+.toast-custom {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+    min-width: 260px;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-left: 3px solid #2C5A6E;
+    padding: 0.8rem 1rem;
+    display: none;
+}
+
+.toast-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.toast-body {
+    font-size: 0.85rem;
+    color: #4a6272;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 992px) {
+    .detail-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .imagen-box img {
+        height: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-hero {
+        padding: 1.5rem 0;
+    }
+    
+    .page-hero-container h1 {
+        font-size: 1.6rem;
+    }
+    
+    .detail-container {
+        padding: 0 1rem;
+        margin: 1.5rem auto;
+    }
+    
+    .info-box h1 {
+        font-size: 1.5rem;
+    }
+    
+    .precio {
+        font-size: 1.5rem;
+    }
+    
+    .datos-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .acciones {
+        flex-direction: column;
+    }
+    
+    .btn-whatsapp,
+    .btn-volver {
+        width: 100%;
+    }
+    
+    .mapa-section {
+        padding: 0 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .mapa iframe {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .imagen-box img {
+        height: 250px;
+    }
+    
+    .modal-content {
+        padding: 1.5rem;
+    }
 }
