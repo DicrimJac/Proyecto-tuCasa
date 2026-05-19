@@ -409,7 +409,7 @@ form.addEventListener('submit', async (e) => {
     };
     
     // Enviar datos al endpoint /api/users/register 
-    fetch("http://localhost:3000/api/users/register", {
+    fetch("/api/users/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -422,15 +422,25 @@ form.addEventListener('submit', async (e) => {
             showToast("Registro exitoso");
             // Guardar en localStorage
             localStorage.setItem("user_last_register", JSON.stringify(data));
+            localStorage.setItem("userData", JSON.stringify(data.data ?? userData));
             // Resetear formulario
             form.reset();
+            updateButtonState();
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 2000);
         } else {
             showToast(data?.error ?? "Error al registrar", true);
+            submitBtn.innerHTML = '<i class="bi bi-person-plus"></i> CREAR CUENTA';
+            updateButtonState();
         }
     })
     .catch((err) => {
         showToast("Error de red: " + (err?.message ?? err), true);
+        submitBtn.innerHTML = '<i class="bi bi-person-plus"></i> CREAR CUENTA';
+        updateButtonState();
     });
+    return;
     
     localStorage.setItem('userData', JSON.stringify(userData));
     
