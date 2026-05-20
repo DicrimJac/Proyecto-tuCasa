@@ -96,6 +96,165 @@ let currentReviewFilter = "all";
 let currentReviewSearch = "";
 let currentSelectedReviewId = null;
 
+// ===================== DATOS DEL GRÁFICO =====================
+// Datos simulados de visualizaciones e interesados por propiedad
+let propertyStats = [
+    { id: 1, title: "Casa en Santiago Centro", views: 245, interested: 12 },
+    { id: 2, title: "Departamento Moderno", views: 189, interested: 8 },
+    { id: 3, title: "Casa Familiar", views: 312, interested: 15 },
+    { id: 4, title: "Loft Industrial", views: 156, interested: 5 },
+    { id: 5, title: "Oficina El Golf", views: 98, interested: 3 }
+];
+
+let chartInstance = null;
+
+// Función para inicializar el gráfico
+function initPropertiesChart() {
+    const ctx = document.getElementById('propertiesChart');
+    if (!ctx) return;
+    
+    // Destruir gráfico anterior si existe
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
+    // Obtener datos actualizados desde localStorage
+    const savedStats = localStorage.getItem('propertyStats');
+    if (savedStats) {
+        propertyStats = JSON.parse(savedStats);
+    }
+    
+    const propertyNames = propertyStats.map(stat => stat.title);
+    const viewsData = propertyStats.map(stat => stat.views);
+    const interestedData = propertyStats.map(stat => stat.interested);
+    
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: propertyNames,
+            datasets: [
+                {
+                    label: 'Visualizaciones',
+                    data: viewsData,
+                    backgroundColor: '#2C5A6E',
+                    borderColor: '#1F3B4C',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Interesados',
+                    data: interestedData,
+                    backgroundColor: '#ff9800',
+                    borderColor: '#e68900',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 12
+                        },
+                        usePointStyle: true,
+                        boxWidth: 10
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#1F3B4C',
+                    titleColor: '#fff',
+                    bodyColor: '#e9f0f5',
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            let value = context.raw;
+                            return `${label}: ${value.toLocaleString()}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#eef2f5'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Cantidad',
+                        color: '#6c7f8b'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45,
+                        font: {
+                            size: 10
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Función para actualizar estadísticas del gráfico (simula nuevos datos)
+function updatePropertyStats(propertyId, viewsIncrement = 0, interestedIncrement = 0) {
+    const property = propertyStats.find(p => p.id === propertyId);
+    if (property) {
+        if (viewsIncrement) property.views += viewsIncrement;
+        if (interestedIncrement) property.interested += interestedIncrement;
+        localStorage.setItem('propertyStats', JSON.stringify(propertyStats));
+        initPropertiesChart(); // Recargar gráfico
+    }
+}
+
+// Función para simular datos aleatorios (demostración)
+function simulateRandomData() {
+    propertyStats = propertyStats.map(prop => ({
+        ...prop,
+        views: prop.views + Math.floor(Math.random() * 20) - 5,
+        interested: prop.interested + Math.floor(Math.random() * 3) - 1
+    }));
+    // Asegurar que no haya valores negativos
+    propertyStats.forEach(prop => {
+        if (prop.views < 0) prop.views = 0;
+        if (prop.interested < 0) prop.interested = 0;
+    });
+    localStorage.setItem('propertyStats', JSON.stringify(propertyStats));
+    initPropertiesChart();
+}
+
+// Opcional: Actualizar datos cada 30 segundos (simulación)
+let intervalSimulation = null;
+
+function startSimulation() {
+    if (intervalSimulation) clearInterval(intervalSimulation);
+    intervalSimulation = setInterval(() => {
+        simulateRandomData();
+    }, 30000); // Cada 30 segundos
+}
+
+function stopSimulation() {
+    if (intervalSimulation) {
+        clearInterval(intervalSimulation);
+        intervalSimulation = null;
+    }
+}
+
 // ===================== INICIALIZAR =====================
 function initAdmin() {
     loadDataFromStorage();
@@ -106,6 +265,18 @@ function initAdmin() {
     renderReviews();
     initNavigation();
     initEventListeners();
+    initPropertiesChart(); 
+    loadPropertyStats();    
+}
+
+// Función para cargar estadísticas guardadas
+function loadPropertyStats() {
+    const savedStats = localStorage.getItem('propertyStats');
+    if (savedStats) {
+        propertyStats = JSON.parse(savedStats);
+    } else {
+        localStorage.setItem('propertyStats', JSON.stringify(propertyStats));
+    }
 }
 
 // Cargar datos desde localStorage
