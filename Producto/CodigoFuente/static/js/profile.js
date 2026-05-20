@@ -27,6 +27,89 @@ let currentPageProperties = 1;
 const itemsPerPage = 6;
 let filteredDashboardProperties = [...userProperties];
 
+// ===================== FUNCIONES UTILITARIAS =====================
+function getStoredJson(key) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function getCurrentUser() {
+    return getStoredJson("userData") || getStoredJson("userProfile") || null;
+}
+
+function valueOrFallback(value, fallback = "No registrado") {
+    if (value === undefined || value === null || value === "") return fallback;
+    return String(value);
+}
+
+function buildFullName(user) {
+    const names = [
+        user?.first_name,
+        user?.second_name,
+        user?.first_last_name,
+        user?.second_last_name,
+    ].filter(Boolean);
+
+    if (names.length > 0) return names.join(" ");
+    return user?.fullName || user?.name || user?.nombre || user?.userName ||
+        localStorage.getItem("userName") || "Usuario";
+}
+
+function getEmail(user) {
+    return user?.mail || user?.email || user?.correo ||
+        localStorage.getItem("userEmail") || "Sin correo registrado";
+}
+
+function formatPhone(user) {
+    const rawPhone = user?.fono || user?.phone || user?.telefono;
+    if (!rawPhone) return "No registrado";
+
+    const digits = String(rawPhone).replace(/\D/g, "");
+    if (digits.startsWith("56") && digits.length >= 11) {
+        return `+${digits.slice(0, 2)} ${digits.slice(2, 3)} ${digits.slice(3, 7)} ${digits.slice(7)}`;
+    }
+    if (digits.length === 9) {
+        return `+56 ${digits.slice(0, 1)} ${digits.slice(1, 5)} ${digits.slice(5)}`;
+    }
+    if (digits.length === 8) {
+        return `+56 ${digits.slice(0, 4)} ${digits.slice(4)}`;
+    }
+    return String(rawPhone);
+}
+
+function formatDateValue(value) {
+    if (!value) return "No registrada";
+
+    if (typeof value === "string") {
+        const isoDate = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (isoDate) {
+            return `${isoDate[3]}-${isoDate[2]}-${isoDate[1]}`;
+        }
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return date.toLocaleDateString("es-CL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+}
+
+function avatarUrl(name, avatar) {
+    if (avatar) return avatar;
+    return `https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=120&bold=true&name=${encodeURIComponent(name)}`;
+}
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
+
 // ===================== ACTUALIZAR ESTADÍSTICAS =====================
 function updateStats() {
     const totalProperties = userProperties.length;
@@ -46,7 +129,7 @@ function updateStats() {
     }
 }
 
-// ===================== VALIDAR TELÉFONO (SOLO NÚMEROS) =====================
+// ===================== VALIDAR TELÉFONO =====================
 function validatePhoneNumber(input) {
     let value = input.value;
     value = value.replace(/[^0-9]/g, '');
@@ -57,6 +140,44 @@ function validatePhoneNumber(input) {
         value = '9' + value;
     }
     input.value = value;
+}
+
+// ===================== ACTUALIZAR PERFIL =====================
+function updateProfileDisplay(user) {
+    const fullName = buildFullName(user);
+    const email = getEmail(user);
+    const phone = formatPhone(user);
+    const birthdate = formatDateValue(user?.date_birth || user?.birthDate || user?.birthdate);
+    const address = valueOrFallback(user?.address || user?.direccion);
+    const avatar = avatarUrl(fullName, user?.avatar || user?.picture);
+
+    setText("userNameDisplay", fullName);
+    setText("userEmailDisplay", email);
+    setText("fullName", fullName);
+    setText("email", email);
+    setText("phone", phone);
+    setText("birthdate", birthdate);
+    setText("address", address);
+
+    const badge = document.querySelector(".badge-member");
+    if (badge) {
+        const createdAt = user?.created_at || user?.createdAt || user?.fecha_creacion;
+        const year = createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear();
+        badge.innerHTML = `<i class="bi bi-calendar-check me-1"></i> Miembro desde ${Number.isNaN(year) ? new Date().getFullYear() : year}`;
+    }
+
+    const avatarImg = document.getElementById("avatarImg");
+    const avatarPreview = document.getElementById("avatarPreview");
+    if (avatarImg) avatarImg.src = avatar;
+    if (avatarPreview) avatarPreview.src = avatar;
+}
+
+function loadUserData() {
+    const savedData = localStorage.getItem('userProfile') || localStorage.getItem('userData');
+    if (savedData) {
+        const userData = JSON.parse(savedData);
+        updateProfileDisplay(userData);
+    }
 }
 
 // ===================== RENDERIZAR DASHBOARD =====================
@@ -397,30 +518,6 @@ function initNavigation() {
     });
 }
 
-// ===================== FUNCIONES UTILITARIAS DE PERFIL =====================
-function updateProfileDisplay(userData) {
-    document.getElementById('userNameDisplay').textContent = userData.fullName || 'María González';
-    document.getElementById('userEmailDisplay').textContent = userData.email || 'maria.gonzalez@example.com';
-    document.getElementById('fullName').textContent = userData.fullName || 'María González';
-    document.getElementById('email').textContent = userData.email || 'maria.gonzalez@example.com';
-    document.getElementById('phone').textContent = userData.phone || '+56 9 1234 5678';
-    document.getElementById('birthdate').textContent = userData.birthdate || '15/03/1990';
-    document.getElementById('address').textContent = userData.address || 'Av. Los Condes 1234, Santiago';
-
-    if (userData.avatar) {
-        document.getElementById('avatarImg').src = userData.avatar;
-        document.getElementById('avatarPreview').src = userData.avatar;
-    }
-}
-
-function loadUserData() {
-    const savedData = localStorage.getItem('userProfile');
-    if (savedData) {
-        const userData = JSON.parse(savedData);
-        updateProfileDisplay(userData);
-    }
-}
-
 // ===================== TOAST UNIFICADA =====================
 function showToast(message, isError = false) {
     const toast = document.getElementById('notificationToast');
@@ -610,6 +707,8 @@ if (logoutBtn) {
     logoutBtn.addEventListener('click', function() {
         if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
             localStorage.removeItem('currentUser');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userProfile');
             window.location.href = 'home.html';
         }
     });

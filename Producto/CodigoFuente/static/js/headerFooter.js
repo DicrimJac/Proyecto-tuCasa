@@ -9,7 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     .then((data) => {
-      document.getElementById("header").innerHTML = data;
+      const header = document.getElementById("header");
+      if (!header) return;
+
+      header.innerHTML = data;
       initHeader();
       highlightCurrentPage();
     })
@@ -24,7 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
       return response.text();
     })
     .then((data) => {
-      document.getElementById("footer").innerHTML = data;
+      const footer = document.getElementById("footer");
+      if (footer) footer.innerHTML = data;
     })
     .catch((error) => console.error("Error:", error));
 });

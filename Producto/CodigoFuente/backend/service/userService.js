@@ -213,12 +213,75 @@ export class UserService {
         if (!existing) {
             return { success: false, error: `Usuario con mail ${mail} no encontrado` };
         }
-        const updated = await this.userRepository.update(existing.id || existing.id_propi || existing.id_user, userData);
+        const allowedPayload = {};
+        const allowedFields = [
+            "first_name",
+            "second_name",
+            "first_last_name",
+            "second_last_name",
+            "fono",
+            "mail",
+            "nacionalidad",
+            "date_birth",
+            "gender_nbr",
+            "gender_desc",
+        ];
+
+        for (const field of allowedFields) {
+            if (userData[field] !== undefined) {
+                allowedPayload[field] = userData[field];
+            }
+        }
+
+        if (allowedPayload.fono !== undefined && allowedPayload.fono !== null && allowedPayload.fono !== "") {
+            const digits = String(allowedPayload.fono).replace(/\D/g, "");
+            allowedPayload.fono = digits ? Number(digits) : null;
+        }
+
+        if (allowedPayload.date_birth === "") {
+            allowedPayload.date_birth = null;
+        }
+
+        if (Object.keys(allowedPayload).length === 0) {
+            if (existing.pass) delete existing.pass;
+            return { success: true, data: existing };
+        }
+
+        const updated = await this.userRepository.updateByUserRecord(existing, allowedPayload);
         if (updated && updated.pass) delete updated.pass;
         return { success: true, data: updated };
     }
 
     // Eliminar usuario por mail (identificador lógico)
+    async changePasswordByMail(mail, passwordData) {
+        const currentPassword = passwordData?.currentPassword ?? "";
+        const newPassword = passwordData?.newPassword ?? "";
+
+        if (!currentPassword || !newPassword) {
+            return { success: false, error: "ContraseÃ±a actual y nueva contraseÃ±a son requeridas" };
+        }
+
+        if (newPassword.length < 6) {
+            return { success: false, error: "La nueva contraseÃ±a debe tener al menos 6 caracteres" };
+        }
+
+        const existing = await this.userRepository.findByEmail(mail);
+        if (!existing) {
+            return { success: false, error: `Usuario con mail ${mail} no encontrado` };
+        }
+
+        if (existing.pass !== currentPassword) {
+            return { success: false, error: "La contraseÃ±a actual no es correcta" };
+        }
+
+        const updated = await this.userRepository.updateByUserRecord(existing, {
+            pass: newPassword,
+        });
+
+        if (updated && updated.pass) delete updated.pass;
+        return { success: true, data: updated };
+    }
+
     async deleteUserByMail(mail) {
         const user = await this.userRepository.findByEmail(mail);
         if (!user) {
