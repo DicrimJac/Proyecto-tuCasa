@@ -41,8 +41,8 @@ export class UserController {
       // Si el login es exitoso, crear una sesión y persistirla en una cookie HttpOnly
       if (result.success) {
         const sessionRepo = new SessionRepository();
-        const userId = result.data?.id || result.data?.id_user ||
-          result.data?.user_id;
+        const userId = result.data?.id_usuario || result.data?.id ||
+          result.data?.id_user || result.data?.user_id;
         const token = sessionRepo.createSession(userId);
         // Establecer cookie HttpOnly para mantener la sesión
         setCookie(c, "session_id", token, {
@@ -254,6 +254,22 @@ export class UserController {
       const mail = c.req.param("mail");
       const payload = await c.req.json();
       const result = await this.userService.updateUserByMail(mail, payload);
+      const status = result?.success ? 200 : 400;
+      return c.json(result, status);
+    } catch (error) {
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
+    }
+  }
+
+  async changePasswordByMail(c) {
+    try {
+      const mail = c.req.param("mail");
+      const payload = await c.req.json();
+      const result = await this.userService.changePasswordByMail(mail, payload);
       const status = result?.success ? 200 : 400;
       return c.json(result, status);
     } catch (error) {

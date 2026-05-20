@@ -11,8 +11,11 @@ userRoute.get("/", requireAuth, (c) => userController.getAllUsers(c));
 // POST /api/users - Crear usuario
 userRoute.post("/", requireAuth, (c) => userController.createUser(c));
 
+// PUT /api/users/:mail/password - Cambiar contraseÃ±a
+userRoute.put("/:mail/password", (c) => userController.changePasswordByMail(c));
+
 // PUT /api/users/:mail - Actualizar usuario por mail
-userRoute.put("/:mail", requireAuth, (c) => userController.updateUserByMail(c));
+userRoute.put("/:mail", (c) => userController.updateUserByMail(c));
 
 // DELETE /api/users/:mail - Eliminar usuario por mail
 userRoute.delete(
