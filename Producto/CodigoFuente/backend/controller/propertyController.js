@@ -30,7 +30,44 @@ export class PropertyController {
     async createProperty(c) {
         try {
             const payload = await c.req.json();
-            const data = await this.propertyService.createProperty(payload);
+            const { direccion, propiedad, caracteristica } = payload || {};
+
+            // Validaciones mínimas del payload
+            if (!direccion || !propiedad || !caracteristica) {
+                return c.json({
+                    success: false,
+                    error: "Payload inválido",
+                    message: "Se requieren los objetos direccion, propiedad y caracteristica",
+                }, 400);
+            }
+
+            if (!direccion.street || !direccion.number || !direccion.comuna || !direccion.city || !direccion.state) {
+                return c.json({
+                    success: false,
+                    error: "Datos de dirección incompletos",
+                }, 400);
+            }
+
+            if (typeof propiedad.type_nbr === "undefined") {
+                return c.json({
+                    success: false,
+                    error: "Falta type_nbr en propiedad",
+                }, 400);
+            }
+
+            if (typeof caracteristica.total_mtr === "undefined" || typeof caracteristica.price === "undefined") {
+                return c.json({
+                    success: false,
+                    error: "Faltan campos obligatorios en caracteristica (total_mtr, price)",
+                }, 400);
+            }
+
+            const data = await this.propertyService.createPropertyWithAll({
+                direccion,
+                propiedad,
+                caracteristica,
+            });
+
             return c.json({ success: true, data }, 201);
         } catch (error) {
             return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);

@@ -236,7 +236,12 @@ async function logout() {
 function initLogout() {
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
-        logoutBtn.addEventListener("click", logout);
+        // En lugar de cerrar sesión directamente desde el perfil,
+        // redirigimos a logout.html, donde está toda la lógica de confirmación
+        // y cierre de sesión (js/logout.js).
+        logoutBtn.addEventListener("click", () => {
+            window.location.href = "logout.html";
+        });
     }
 }
 
