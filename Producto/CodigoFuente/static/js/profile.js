@@ -298,22 +298,15 @@ function renderAllProperties() {
     });
 }
 
-// ===================== RENDERIZAR FAVORITOS =====================
-function renderFavorites() {
-    const grid = document.getElementById('favoritesGrid');
-    if (!grid) return;
-
-    const favorites = userProperties.filter(prop => prop.favorite === true);
-
-    if (favorites.length === 0) {
-        grid.innerHTML = `
-            <div class="col-12 text-center text-muted py-5">
-                <i class="bi bi-heart fs-1"></i>
-                <p>No tienes propiedades favoritas aún</p>
-                <p class="small">Explora tus propiedades y haz clic en el corazón para agregarlas aquí</p>
-            </div>
-        `;
-        return;
+function initLogout() {
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        // En lugar de cerrar sesión directamente desde el perfil,
+        // redirigimos a logout.html, donde está toda la lógica de confirmación
+        // y cierre de sesión (js/logout.js).
+        logoutBtn.addEventListener("click", () => {
+            window.location.href = "logout.html";
+        });
     }
 
     grid.innerHTML = favorites.map(prop => `
