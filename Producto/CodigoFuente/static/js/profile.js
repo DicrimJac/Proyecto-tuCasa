@@ -1,9 +1,38 @@
+// ===================== DATOS SIMULADOS =====================
+let userProperties = [
+    { id: 1, title: "Casa en Santiago Centro", location: "Santiago Centro", price: 500000, rooms: 3, image: "assets/image/casa1.png", favorite: true, createdAt: "2024-03-15" },
+    { id: 2, title: "Departamento Moderno", location: "Providencia", price: 350000, rooms: 2, image: "assets/image/casa2.png", favorite: false, createdAt: "2024-03-20" },
+    { id: 3, title: "Casa Familiar", location: "Las Condes", price: 600000, rooms: 4, image: "assets/image/casa3.png", favorite: false, createdAt: "2024-04-01" },
+    { id: 4, title: "Loft Industrial", location: "Ñuñoa", price: 420000, rooms: 1, image: "assets/image/casa4.png", favorite: false, createdAt: "2024-04-10" },
+    { id: 5, title: "Casa en Vitacura", location: "Vitacura", price: 800000, rooms: 5, image: "assets/image/casa1.png", favorite: false, createdAt: "2024-04-15" }
+];
+
+// Cargar desde localStorage
+if (localStorage.getItem('userProperties')) {
+    userProperties = JSON.parse(localStorage.getItem('userProperties'));
+} else {
+    localStorage.setItem('userProperties', JSON.stringify(userProperties));
+}
+
+// Mensajes simulados
+let userMessages = [
+    { id: 1, name: "Juan Pérez", date: "Hace 2 horas", subject: "Interesado en la propiedad", message: "Hola, estoy interesado en la propiedad de Santiago Centro. ¿Podríamos coordinar una visita?", unread: true },
+    { id: 2, name: "María López", date: "Ayer", subject: "Consulta disponibilidad", message: "Me gustaría saber si la propiedad aún está disponible para arriendo.", unread: true },
+    { id: 3, name: "Carlos Ruiz", date: "Hace 3 días", subject: "Precio negociable", message: "¿El precio es negociable? Me interesa mucho la propiedad.", unread: true }
+];
+
+// Variables de paginación
+let currentPageDashboard = 1;
+let currentPageProperties = 1;
+const itemsPerPage = 6;
+let filteredDashboardProperties = [...userProperties];
+
+// ===================== FUNCIONES UTILITARIAS =====================
 function getStoredJson(key) {
     try {
         const value = localStorage.getItem(key);
         return value ? JSON.parse(value) : null;
     } catch (error) {
-        console.error(`Error leyendo ${key}:`, error);
         return null;
     }
 }
@@ -19,25 +48,24 @@ function valueOrFallback(value, fallback = "No registrado") {
 
 function buildFullName(user) {
     const names = [
-        user.first_name,
-        user.second_name,
-        user.first_last_name,
-        user.second_last_name,
+        user?.first_name,
+        user?.second_name,
+        user?.first_last_name,
+        user?.second_last_name,
     ].filter(Boolean);
 
     if (names.length > 0) return names.join(" ");
-
-    return user.fullName || user.name || user.nombre || user.userName ||
+    return user?.fullName || user?.name || user?.nombre || user?.userName ||
         localStorage.getItem("userName") || "Usuario";
 }
 
 function getEmail(user) {
-    return user.mail || user.email || user.correo ||
+    return user?.mail || user?.email || user?.correo ||
         localStorage.getItem("userEmail") || "Sin correo registrado";
 }
 
 function formatPhone(user) {
-    const rawPhone = user.fono || user.phone || user.telefono;
+    const rawPhone = user?.fono || user?.phone || user?.telefono;
     if (!rawPhone) return "No registrado";
 
     const digits = String(rawPhone).replace(/\D/g, "");
@@ -50,11 +78,10 @@ function formatPhone(user) {
     if (digits.length === 8) {
         return `+56 ${digits.slice(0, 4)} ${digits.slice(4)}`;
     }
-
     return String(rawPhone);
 }
 
-function formatDate(value) {
+function formatDateValue(value) {
     if (!value) return "No registrada";
 
     if (typeof value === "string") {
@@ -66,7 +93,6 @@ function formatDate(value) {
 
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return String(value);
-
     return date.toLocaleDateString("es-CL", {
         day: "2-digit",
         month: "2-digit",
@@ -79,65 +105,51 @@ function avatarUrl(name, avatar) {
     return `https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=120&bold=true&name=${encodeURIComponent(name)}`;
 }
 
-function splitFullName(fullName, currentUser) {
-    const parts = fullName.trim().split(/\s+/).filter(Boolean);
-
-    if (parts.length === 0) {
-        return {
-            first_name: currentUser.first_name || "",
-            second_name: currentUser.second_name || "",
-            first_last_name: currentUser.first_last_name || "",
-            second_last_name: currentUser.second_last_name || "",
-        };
-    }
-
-    if (parts.length === 1) {
-        return {
-            first_name: parts[0],
-            second_name: "",
-            first_last_name: "",
-            second_last_name: "",
-        };
-    }
-
-    if (parts.length === 2) {
-        return {
-            first_name: parts[0],
-            second_name: "",
-            first_last_name: parts[1],
-            second_last_name: "",
-        };
-    }
-
-    if (parts.length === 3) {
-        return {
-            first_name: parts[0],
-            second_name: "",
-            first_last_name: parts[1],
-            second_last_name: parts[2],
-        };
-    }
-
-    return {
-        first_name: parts[0],
-        second_name: parts.slice(1, -2).join(" "),
-        first_last_name: parts[parts.length - 2],
-        second_last_name: parts[parts.length - 1],
-    };
-}
-
 function setText(id, value) {
     const element = document.getElementById(id);
     if (element) element.textContent = value;
 }
 
+// ===================== ACTUALIZAR ESTADÍSTICAS =====================
+function updateStats() {
+    const totalProperties = userProperties.length;
+    const totalMessages = userMessages.length;
+    const unreadMessages = userMessages.filter(m => m.unread).length;
+
+    const totalPropertiesEl = document.getElementById('totalProperties');
+    const totalMessagesEl = document.getElementById('totalMessages');
+    const unreadBadge = document.getElementById('unreadBadge');
+
+    if (totalPropertiesEl) totalPropertiesEl.innerText = totalProperties;
+    if (totalMessagesEl) totalMessagesEl.innerText = totalMessages;
+
+    if (unreadBadge) {
+        unreadBadge.innerText = unreadMessages;
+        unreadBadge.style.display = unreadMessages > 0 ? 'inline-block' : 'none';
+    }
+}
+
+// ===================== VALIDAR TELÉFONO =====================
+function validatePhoneNumber(input) {
+    let value = input.value;
+    value = value.replace(/[^0-9]/g, '');
+    if (value.length > 15) {
+        value = value.slice(0, 15);
+    }
+    if (value.length === 9 && !value.startsWith('9')) {
+        value = '9' + value;
+    }
+    input.value = value;
+}
+
+// ===================== ACTUALIZAR PERFIL =====================
 function updateProfileDisplay(user) {
     const fullName = buildFullName(user);
     const email = getEmail(user);
     const phone = formatPhone(user);
-    const birthdate = formatDate(user.date_birth || user.birthDate || user.birthdate);
-    const address = valueOrFallback(user.address || user.direccion);
-    const avatar = avatarUrl(fullName, user.avatar || user.picture);
+    const birthdate = formatDateValue(user?.date_birth || user?.birthDate || user?.birthdate);
+    const address = valueOrFallback(user?.address || user?.direccion);
+    const avatar = avatarUrl(fullName, user?.avatar || user?.picture);
 
     setText("userNameDisplay", fullName);
     setText("userEmailDisplay", email);
@@ -149,7 +161,7 @@ function updateProfileDisplay(user) {
 
     const badge = document.querySelector(".badge-member");
     if (badge) {
-        const createdAt = user.created_at || user.createdAt || user.fecha_creacion;
+        const createdAt = user?.created_at || user?.createdAt || user?.fecha_creacion;
         const year = createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear();
         badge.innerHTML = `<i class="bi bi-calendar-check me-1"></i> Miembro desde ${Number.isNaN(year) ? new Date().getFullYear() : year}`;
     }
@@ -160,77 +172,130 @@ function updateProfileDisplay(user) {
     if (avatarPreview) avatarPreview.src = avatar;
 }
 
-function requireSession() {
-    const user = getCurrentUser();
-    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
-
-    if (!user && !isLoggedIn) {
-        window.location.href = "login.html";
-        return null;
+function loadUserData() {
+    const savedData = localStorage.getItem('userProfile') || localStorage.getItem('userData');
+    if (savedData) {
+        const userData = JSON.parse(savedData);
+        updateProfileDisplay(userData);
     }
-
-    return user || {
-        first_name: localStorage.getItem("userName"),
-        mail: localStorage.getItem("userEmail"),
-    };
 }
 
-function showToast(message, isError = false) {
-    const toast = document.getElementById("notificationToast");
-    const toastMessage = document.getElementById("toastMessage");
-    const toastHeader = toast?.querySelector(".toast-header");
+// ===================== RENDERIZAR DASHBOARD =====================
+function renderDashboard() {
+    const grid = document.getElementById('propertiesGrid');
+    if (!grid) return;
 
-    if (!toast || !toastMessage) {
-        if (isError) console.error(message);
+    const searchTerm = document.getElementById('searchFilter')?.value.toLowerCase() || '';
+    const maxPrice = parseInt(document.getElementById('priceFilter')?.value) || Infinity;
+    const minRooms = parseInt(document.getElementById('filterRooms')?.value) || 0;
+
+    filteredDashboardProperties = userProperties.filter(prop => {
+        const matchSearch = prop.title.toLowerCase().includes(searchTerm) || prop.location.toLowerCase().includes(searchTerm);
+        const matchPrice = prop.price <= maxPrice;
+        const matchRooms = prop.rooms >= minRooms;
+        return matchSearch && matchPrice && matchRooms;
+    });
+
+    const totalPages = Math.ceil(filteredDashboardProperties.length / itemsPerPage);
+    const start = (currentPageDashboard - 1) * itemsPerPage;
+    const paginated = filteredDashboardProperties.slice(start, start + itemsPerPage);
+
+    if (paginated.length === 0) {
+        grid.innerHTML = `<div class="col-12 text-center text-muted py-5">
+            <i class="bi bi-building fs-1"></i>
+            <p>No se encontraron propiedades</p>
+        </div>`;
+        const paginationControls = document.getElementById('paginationControls');
+        if (paginationControls) paginationControls.innerHTML = '';
         return;
     }
 
-    toastMessage.textContent = message;
-    toast.style.borderLeftColor = isError ? "#dc3545" : "#2C5A6E";
+    grid.innerHTML = paginated.map(prop => `
+        <div class="col-md-6 col-lg-4">
+            <div class="property-card">
+                <img src="${prop.image || 'assets/image/default-house.jpg'}" class="property-img" alt="${prop.title}">
+                <div class="property-body">
+                    <h5 class="property-title">${prop.title}</h5>
+                    <div class="property-location"><i class="bi bi-geo-alt"></i> ${prop.location}</div>
+                    <div class="property-price">$${prop.price.toLocaleString()} <span>/mes</span></div>
+                    <div class="property-actions">
+                        <button class="btn-sm-outline" onclick="toggleFavorite(${prop.id})">
+                            <i class="bi bi-heart${prop.favorite ? '-fill' : ''}"></i> ${prop.favorite ? 'Favorito' : 'Favoritos'}
+                        </button>
+                        <button class="btn-sm-outline" onclick="editProperty(${prop.id})"><i class="bi bi-pencil"></i> Editar</button>
+                        <button class="btn-sm-danger" onclick="deleteProperty(${prop.id})"><i class="bi bi-trash"></i> Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
 
-    if (toastHeader) {
-        const icon = toastHeader.querySelector("i");
-        const title = toastHeader.querySelector("strong");
-        if (icon) {
-            icon.className = isError ? "bi bi-exclamation-triangle-fill" : "bi bi-check-circle-fill";
-            icon.style.color = isError ? "#dc3545" : "#2C5A6E";
-        }
-        if (title) title.textContent = isError ? "Error" : "Exito";
+    let paginationHtml = `<ul class="pagination justify-content-center">`;
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHtml += `<li class="page-item ${i === currentPageDashboard ? 'active' : ''}"><button class="page-link" data-page-dash="${i}">${i}</button></li>`;
     }
+    paginationHtml += `</ul>`;
+    const paginationControls = document.getElementById('paginationControls');
+    if (paginationControls) paginationControls.innerHTML = paginationHtml;
 
-    toast.style.display = "block";
-    setTimeout(() => {
-        toast.style.display = "none";
-    }, 3000);
-}
-
-function clearSessionData() {
-    [
-        "userData",
-        "userProfile",
-        "userEmail",
-        "userName",
-        "user_last_register",
-    ].forEach((key) => localStorage.removeItem(key));
-
-    sessionStorage.removeItem("isLoggedIn");
-}
-
-async function logout() {
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) logoutBtn.style.pointerEvents = "none";
-
-    try {
-        await fetch("/api/users/logout", {
-            method: "POST",
-            credentials: "same-origin",
+    document.querySelectorAll('[data-page-dash]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentPageDashboard = parseInt(e.target.dataset.pageDash);
+            renderDashboard();
         });
-    } catch (error) {
-        console.error("Error cerrando sesion en backend:", error);
-    } finally {
-        clearSessionData();
-        window.location.href = "home.html";
+    });
+}
+
+// ===================== RENDERIZAR MIS PROPIEDADES =====================
+function renderAllProperties() {
+    const grid = document.getElementById('allPropertiesGrid');
+    if (!grid) return;
+
+    const totalPages = Math.ceil(userProperties.length / itemsPerPage);
+    const start = (currentPageProperties - 1) * itemsPerPage;
+    const paginated = userProperties.slice(start, start + itemsPerPage);
+
+    if (paginated.length === 0) {
+        grid.innerHTML = `<div class="col-12 text-center text-muted py-5">No tienes propiedades publicadas</div>`;
+        const allPaginationControls = document.getElementById('allPaginationControls');
+        if (allPaginationControls) allPaginationControls.innerHTML = '';
+        return;
     }
+
+    grid.innerHTML = paginated.map(prop => `
+        <div class="col-md-6 col-lg-4">
+            <div class="property-card">
+                <img src="${prop.image || 'assets/image/default-house.jpg'}" class="property-img">
+                <div class="property-body">
+                    <h5 class="property-title">${prop.title}</h5>
+                    <div class="property-location"><i class="bi bi-geo-alt"></i> ${prop.location}</div>
+                    <div class="property-price">$${prop.price.toLocaleString()} <span>/mes</span></div>
+                    <div class="property-actions">
+                        <button class="btn-sm-outline" onclick="toggleFavorite(${prop.id})">
+                            <i class="bi bi-heart${prop.favorite ? '-fill' : ''}"></i> ${prop.favorite ? 'Favorito' : 'Favoritos'}
+                        </button>
+                        <button class="btn-sm-outline" onclick="editProperty(${prop.id})">Editar</button>
+                        <button class="btn-sm-danger" onclick="deleteProperty(${prop.id})">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    let paginationHtml = `<ul class="pagination justify-content-center">`;
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHtml += `<li class="page-item ${i === currentPageProperties ? 'active' : ''}"><button class="page-link" data-page-prop="${i}">${i}</button></li>`;
+    }
+    paginationHtml += `</ul>`;
+    const allPaginationControls = document.getElementById('allPaginationControls');
+    if (allPaginationControls) allPaginationControls.innerHTML = paginationHtml;
+
+    document.querySelectorAll('[data-page-prop]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentPageProperties = parseInt(e.target.dataset.pageProp);
+            renderAllProperties();
+        });
+    });
 }
 
 function initLogout() {
@@ -243,206 +308,455 @@ function initLogout() {
             window.location.href = "logout.html";
         });
     }
+
+    grid.innerHTML = favorites.map(prop => `
+        <div class="col-md-6 col-lg-4">
+            <div class="property-card">
+                <img src="${prop.image || 'assets/image/default-house.jpg'}" class="property-img">
+                <div class="property-body">
+                    <h5 class="property-title">${prop.title}</h5>
+                    <div class="property-location"><i class="bi bi-geo-alt"></i> ${prop.location}</div>
+                    <div class="property-price">$${prop.price.toLocaleString()} <span>/mes</span></div>
+                    <div class="property-actions">
+                        <button class="btn-sm-outline" onclick="toggleFavorite(${prop.id})">
+                            <i class="bi bi-heart-fill"></i> Quitar de favoritos
+                        </button>
+                        <button class="btn-sm-outline" onclick="editProperty(${prop.id})">Ver detalles</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
+// ===================== TOGGLE FAVORITO =====================
+window.toggleFavorite = function (id) {
+    const property = userProperties.find(p => p.id === id);
+    if (property) {
+        property.favorite = !property.favorite;
+        localStorage.setItem('userProperties', JSON.stringify(userProperties));
+
+        const activeSection = document.querySelector('.panel-section.active');
+        if (activeSection) {
+            if (activeSection.id === 'dashboard-section') {
+                renderDashboard();
+            } else if (activeSection.id === 'properties-section') {
+                renderAllProperties();
+            } else if (activeSection.id === 'favorites-section') {
+                renderFavorites();
+            }
+        }
+
+        const message = property.favorite ? 'Agregado a favoritos' : 'Eliminado de favoritos';
+        showToast(message);
+    }
+};
+
+// ===================== AGREGAR PROPIEDAD =====================
+const addPropertyForm = document.getElementById('addPropertyForm');
+if (addPropertyForm) {
+    addPropertyForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const newProp = {
+            id: Date.now(),
+            title: document.getElementById('propertyTitle').value,
+            location: document.getElementById('propertyLocation').value,
+            price: parseInt(document.getElementById('propertyPrice').value),
+            rooms: parseInt(document.getElementById('propertyRooms').value) || 2,
+            description: document.getElementById('propertyDesc').value,
+            image: 'assets/image/default-house.jpg',
+            favorite: false,
+            createdAt: new Date().toISOString().split('T')[0]
+        };
+
+        userProperties.unshift(newProp);
+        localStorage.setItem('userProperties', JSON.stringify(userProperties));
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addPropertyModal'));
+        if (modal) modal.hide();
+
+        addPropertyForm.reset();
+
+        const activeSection = document.querySelector('.panel-section.active');
+        if (activeSection) {
+            if (activeSection.id === 'dashboard-section') {
+                renderDashboard();
+            } else if (activeSection.id === 'properties-section') {
+                renderAllProperties();
+            }
+        }
+        updateStats();
+        showToast('Propiedad publicada correctamente');
+    });
+}
+
+// ===================== ELIMINAR PROPIEDAD =====================
+window.deleteProperty = function (id) {
+    if (confirm('¿Eliminar esta propiedad permanentemente?')) {
+        userProperties = userProperties.filter(p => p.id !== id);
+        localStorage.setItem('userProperties', JSON.stringify(userProperties));
+
+        const activeSection = document.querySelector('.panel-section.active');
+        if (activeSection) {
+            if (activeSection.id === 'dashboard-section') {
+                renderDashboard();
+            } else if (activeSection.id === 'properties-section') {
+                renderAllProperties();
+            } else if (activeSection.id === 'favorites-section') {
+                renderFavorites();
+            }
+        }
+        updateStats();
+        showToast('Propiedad eliminada');
+    }
+};
+
+// ===================== EDITAR PROPIEDAD =====================
+window.editProperty = function (id) {
+    showToast('Funcionalidad de edición próximamente');
+};
+
+// ===================== MENSAJES =====================
+function loadMessages() {
+    const messagesList = document.getElementById('messagesList');
+    if (!messagesList) return;
+
+    if (userMessages.length === 0) {
+        messagesList.innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-envelope fs-1"></i>
+                <p>No tienes mensajes</p>
+            </div>
+        `;
+        return;
+    }
+
+    messagesList.innerHTML = userMessages.map(msg => `
+        <div class="message-item ${msg.unread ? 'unread' : ''}" onclick="markAsRead(${msg.id})">
+            <div class="message-avatar">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <strong>${msg.name}</strong>
+                    <span class="message-date">${msg.date}</span>
+                </div>
+                <div class="message-subject">${msg.subject}</div>
+                <div class="message-preview">${msg.message.substring(0, 100)}${msg.message.length > 100 ? '...' : ''}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Marcar mensaje como leído
+window.markAsRead = function (id) {
+    const message = userMessages.find(m => m.id === id);
+    if (message && message.unread) {
+        message.unread = false;
+        updateStats();
+        loadMessages();
+        showToast(`Mensaje de ${message.name} marcado como leído`);
+    }
+};
+
+// ===================== NAVEGACIÓN ENTRE SECCIONES =====================
 function initNavigation() {
-    const navLinks = document.querySelectorAll(".nav-link[data-section]");
-    const sections = document.querySelectorAll(".panel-section");
+    const navLinks = document.querySelectorAll('.nav-link[data-section]');
+    const sections = document.querySelectorAll('.panel-section');
 
-    navLinks.forEach((link) => {
-        link.addEventListener("click", () => {
-            const sectionName = link.dataset.section;
-
-            navLinks.forEach((item) => item.classList.remove("active"));
-            link.classList.add("active");
-
-            sections.forEach((section) => section.classList.remove("active"));
-            document.getElementById(`${sectionName}-section`)?.classList.add("active");
-        });
+    sections.forEach(section => {
+        section.classList.remove('active');
     });
-}
 
-function initEmptyDashboard() {
-    setText("totalProperties", "0");
-    setText("totalMessages", "0");
-    setText("unreadBadge", "0");
+    const dashboardSection = document.getElementById('dashboard-section');
+    if (dashboardSection) dashboardSection.classList.add('active');
 
-    const emptyBlocks = {
-        propertiesGrid: "No tienes propiedades publicadas.",
-        allPropertiesGrid: "No tienes propiedades publicadas.",
-        favoritesGrid: "No tienes propiedades favoritas.",
-        messagesList: "No tienes mensajes.",
-    };
+    const dashboardLink = document.querySelector('.nav-link[data-section="dashboard"]');
+    if (dashboardLink) dashboardLink.classList.add('active');
 
-    Object.entries(emptyBlocks).forEach(([id, message]) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.innerHTML = `<div class="col-12 text-center text-muted py-5">${message}</div>`;
-        }
-    });
-}
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
 
-function initEditProfile(user) {
-    const editProfileModal = document.getElementById("editProfileModal");
-    const editProfileForm = document.getElementById("editProfileForm");
-    let currentUser = { ...user };
+            const sectionId = link.getAttribute('data-section');
+            const targetSection = document.getElementById(`${sectionId}-section`);
 
-    if (editProfileModal) {
-        editProfileModal.addEventListener("show.bs.modal", () => {
-            const fullName = buildFullName(currentUser);
-            document.getElementById("editFullName").value = fullName;
-            document.getElementById("editEmail").value = getEmail(currentUser);
-            document.getElementById("editPhone").value = valueOrFallback(currentUser.fono || currentUser.phone || "", "");
-            document.getElementById("editBirthdate").value = (currentUser.date_birth || "").toString().slice(0, 10);
-            document.getElementById("editAddress").value = valueOrFallback(currentUser.address || currentUser.direccion || "", "");
-        });
-    }
+            if (!targetSection) return;
 
-    if (editProfileForm) {
-        editProfileForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            const submitButton = editProfileForm.querySelector('button[type="submit"]');
-            const originalText = submitButton?.innerHTML;
-            if (submitButton) {
-                submitButton.disabled = true;
-                submitButton.innerHTML = "Guardando...";
-            }
-
-            const nameFields = splitFullName(document.getElementById("editFullName").value, currentUser);
-            const currentEmail = getEmail(currentUser);
-            const address = document.getElementById("editAddress").value.trim();
-            const payload = {
-                ...nameFields,
-                mail: document.getElementById("editEmail").value.trim(),
-                fono: document.getElementById("editPhone").value.trim(),
-                date_birth: document.getElementById("editBirthdate").value,
-            };
-
-            try {
-                const response = await fetch(`/api/users/${encodeURIComponent(currentEmail)}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: "same-origin",
-                    body: JSON.stringify(payload),
-                });
-
-                const result = await response.json().catch(() => null);
-
-                if (!response.ok || !result?.success) {
-                    showToast(result?.error || result?.message || "No se pudo actualizar el perfil", true);
-                    return;
-                }
-
-                currentUser = {
-                    ...currentUser,
-                    ...result.data,
-                    date_birth: result.data?.date_birth || payload.date_birth,
-                    birthDate: result.data?.date_birth || payload.date_birth,
-                    birthdate: result.data?.date_birth || payload.date_birth,
-                    address,
-                };
-
-                localStorage.setItem("userData", JSON.stringify(currentUser));
-                localStorage.setItem("userEmail", getEmail(currentUser));
-                localStorage.setItem("userName", currentUser.first_name || buildFullName(currentUser));
-                updateProfileDisplay(currentUser);
-                showToast("Perfil actualizado correctamente");
-
-                bootstrap.Modal.getInstance(document.getElementById("editProfileModal"))?.hide();
-            } catch (error) {
-                console.error("Error actualizando perfil:", error);
-                showToast("Error al conectar con el servidor", true);
-            } finally {
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalText;
-                }
-            }
-        });
-    }
-}
-
-function initPasswordChange(user) {
-    const passwordChangeForm = document.getElementById("passwordChangeForm");
-    if (!passwordChangeForm) return;
-
-    let currentUser = { ...user };
-
-    passwordChangeForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const currentPassword = document.getElementById("currentPassword").value;
-        const newPassword = document.getElementById("newPass").value;
-        const confirmPassword = document.getElementById("confirmNewPass").value;
-
-        if (newPassword !== confirmPassword) {
-            showToast("Las contraseñas nuevas no coinciden", true);
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            showToast("La nueva contraseña debe tener al menos 6 caracteres", true);
-            return;
-        }
-
-        const submitButton = passwordChangeForm.querySelector('button[type="submit"]');
-        const originalText = submitButton?.innerHTML;
-        if (submitButton) {
-            submitButton.disabled = true;
-            submitButton.innerHTML = "Actualizando...";
-        }
-
-        try {
-            const response = await fetch(`/api/users/${encodeURIComponent(getEmail(currentUser))}/password`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "same-origin",
-                body: JSON.stringify({
-                    currentPassword,
-                    newPassword,
-                }),
+            sections.forEach(section => {
+                section.classList.remove('active');
             });
 
-            const result = await response.json().catch(() => null);
+            targetSection.classList.add('active');
 
-            if (!response.ok || !result?.success) {
-                showToast(result?.error || result?.message || "No se pudo actualizar la contraseña", true);
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            link.classList.add('active');
+
+            switch (sectionId) {
+                case 'favorites':
+                    renderFavorites();
+                    break;
+                case 'messages':
+                    loadMessages();
+                    break;
+                case 'properties':
+                    renderAllProperties();
+                    break;
+                case 'dashboard':
+                    renderDashboard();
+                    break;
+            }
+        });
+    });
+}
+
+// ===================== TOAST UNIFICADA =====================
+function showToast(message, isError = false) {
+    const toast = document.getElementById('notificationToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastHeader = toast?.querySelector('.toast-header');
+
+    if (!toast || !toastMessage) return;
+    
+    toastMessage.textContent = message;
+
+    if (isError) {
+        toast.style.borderLeftColor = '#dc3545';
+        if (toastHeader) {
+            const icon = toastHeader.querySelector('i');
+            if (icon) {
+                icon.className = 'bi bi-exclamation-triangle-fill';
+                icon.style.color = '#dc3545';
+            }
+            const strong = toastHeader.querySelector('strong');
+            if (strong) strong.textContent = 'Error';
+        }
+    } else {
+        toast.style.borderLeftColor = '#2C5A6E';
+        if (toastHeader) {
+            const icon = toastHeader.querySelector('i');
+            if (icon) {
+                icon.className = 'bi bi-check-circle-fill';
+                icon.style.color = '#2C5A6E';
+            }
+            const strong = toastHeader.querySelector('strong');
+            if (strong) strong.textContent = 'Éxito';
+        }
+    }
+
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+// ===================== EDITAR PERFIL =====================
+const editProfileForm = document.getElementById('editProfileForm');
+if (editProfileForm) {
+    editProfileForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const phoneInput = document.getElementById('editPhone');
+        let phoneValue = phoneInput.value;
+
+        const phoneRegex = /^[0-9]+$/;
+        if (!phoneRegex.test(phoneValue)) {
+            showToast('El teléfono solo puede contener números', true);
+            return;
+        }
+
+        if (phoneValue.length < 8) {
+            showToast('El teléfono debe tener al menos 8 dígitos', true);
+            return;
+        }
+
+        const userData = {
+            fullName: document.getElementById('editFullName').value,
+            email: document.getElementById('editEmail').value,
+            phone: phoneValue,
+            birthdate: document.getElementById('editBirthdate').value,
+            address: document.getElementById('editAddress').value,
+            avatar: document.getElementById('avatarImg').src
+        };
+
+        if (userData.birthdate) {
+            const date = new Date(userData.birthdate);
+            userData.birthdate = date.toLocaleDateString('es-ES');
+        }
+
+        updateProfileDisplay(userData);
+        localStorage.setItem('userProfile', JSON.stringify(userData));
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
+        if (modal) modal.hide();
+        showToast('Perfil actualizado correctamente');
+    });
+}
+
+// ===================== CAMBIAR CONTRASEÑA =====================
+const passwordChangeForm = document.getElementById('passwordChangeForm');
+if (passwordChangeForm) {
+    passwordChangeForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const newPass = document.getElementById('newPass').value;
+        const confirmPass = document.getElementById('confirmNewPass').value;
+
+        if (newPass !== confirmPass) {
+            showToast('Las contraseñas no coinciden', true);
+            return;
+        }
+
+        if (newPass.length < 6) {
+            showToast('La contraseña debe tener al menos 6 caracteres', true);
+            return;
+        }
+
+        showToast('Contraseña actualizada correctamente');
+        this.reset();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('passwordModal'));
+        if (modal) modal.hide();
+    });
+}
+
+// ===================== NOTIFICACIONES =====================
+const saveNotifications = document.getElementById('saveNotifications');
+if (saveNotifications) {
+    saveNotifications.addEventListener('click', function () {
+        const emailNotifications = document.getElementById('emailNotifications');
+        const smsNotifications = document.getElementById('smsNotifications');
+        const preferences = {
+            email: emailNotifications?.checked || false,
+            sms: smsNotifications?.checked || false
+        };
+        localStorage.setItem('notificationPreferences', JSON.stringify(preferences));
+        showToast('Preferencias de notificaciones guardadas');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('notificationsModal'));
+        if (modal) modal.hide();
+    });
+}
+
+// ===================== AVATAR =====================
+const saveAvatar = document.getElementById('saveAvatar');
+if (saveAvatar) {
+    saveAvatar.addEventListener('click', function () {
+        const fileInput = document.getElementById('avatarUpload');
+        const file = fileInput.files[0];
+
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('La imagen no debe superar los 2MB', true);
                 return;
             }
 
-            currentUser = {
-                ...currentUser,
-                ...result.data,
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const avatarUrl = e.target.result;
+                document.getElementById('avatarImg').src = avatarUrl;
+                document.getElementById('avatarPreview').src = avatarUrl;
+
+                const savedData = localStorage.getItem('userProfile');
+                if (savedData) {
+                    const userData = JSON.parse(savedData);
+                    userData.avatar = avatarUrl;
+                    localStorage.setItem('userProfile', JSON.stringify(userData));
+                }
+
+                showToast('Foto de perfil actualizada');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
+                if (modal) modal.hide();
             };
-            localStorage.setItem("userData", JSON.stringify(currentUser));
-            passwordChangeForm.reset();
-            showToast("Contraseña actualizada correctamente");
-            bootstrap.Modal.getInstance(document.getElementById("passwordModal"))?.hide();
-        } catch (error) {
-            console.error("Error cambiando contraseÃ±a:", error);
-            showToast("Error al conectar con el servidor", true);
-        } finally {
-            if (submitButton) {
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalText;
+            reader.readAsDataURL(file);
+        } else {
+            showToast('Selecciona una imagen primero', true);
+        }
+    });
+}
+
+const removeAvatar = document.getElementById('removeAvatar');
+if (removeAvatar) {
+    removeAvatar.addEventListener('click', function () {
+        const name = document.getElementById('userNameDisplay').textContent;
+        const defaultAvatar = `https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=120&bold=true&name=${encodeURIComponent(name)}`;
+        document.getElementById('avatarImg').src = defaultAvatar;
+        document.getElementById('avatarPreview').src = defaultAvatar;
+
+        const savedData = localStorage.getItem('userProfile');
+        if (savedData) {
+            const userData = JSON.parse(savedData);
+            userData.avatar = defaultAvatar;
+            localStorage.setItem('userProfile', JSON.stringify(userData));
+        }
+
+        showToast('Foto de perfil eliminada');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
+        if (modal) modal.hide();
+    });
+}
+
+// ===================== CERRAR SESIÓN =====================
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userProfile');
+            window.location.href = 'home.html';
+        }
+    });
+}
+
+// ===================== PRECARGAR DATOS EN MODAL DE EDICIÓN =====================
+const editProfileModal = document.getElementById('editProfileModal');
+if (editProfileModal) {
+    editProfileModal.addEventListener('show.bs.modal', function() {
+        document.getElementById('editFullName').value = document.getElementById('fullName').textContent;
+        document.getElementById('editEmail').value = document.getElementById('email').textContent;
+        document.getElementById('editPhone').value = document.getElementById('phone').textContent;
+        document.getElementById('editAddress').value = document.getElementById('address').textContent;
+
+        const phoneInput = document.getElementById('editPhone');
+        if (phoneInput) {
+            phoneInput.removeEventListener('input', phoneInput._validationHandler);
+            phoneInput._validationHandler = function() {
+                validatePhoneNumber(this);
+            };
+            phoneInput.addEventListener('input', phoneInput._validationHandler);
+        }
+
+        const birthdateText = document.getElementById('birthdate').textContent;
+        if (birthdateText && birthdateText !== 'No especificada') {
+            const parts = birthdateText.split('/');
+            if (parts.length === 3) {
+                const date = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (!isNaN(date.getTime())) {
+                    document.getElementById('editBirthdate').value = date.toISOString().split('T')[0];
+                }
             }
         }
     });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const user = requireSession();
-    if (!user) return;
+// ===================== CARGAR PREFERENCIAS GUARDADAS =====================
+const savedNotifPrefs = localStorage.getItem('notificationPreferences');
+if (savedNotifPrefs) {
+    const notif = JSON.parse(savedNotifPrefs);
+    const emailNotif = document.getElementById('emailNotifications');
+    const smsNotif = document.getElementById('smsNotifications');
+    if (emailNotif) emailNotif.checked = notif.email;
+    if (smsNotif) smsNotif.checked = notif.sms;
+}
 
-    updateProfileDisplay(user);
+// ===================== INICIALIZAR =====================
+document.addEventListener('DOMContentLoaded', () => {
+    loadUserData();
+    updateStats();
+    renderDashboard();
+    renderAllProperties();
     initNavigation();
-    initEmptyDashboard();
-    initEditProfile(user);
-    initPasswordChange(user);
-    initLogout();
+    
+    if (document.getElementById('messages-section')) {
+        loadMessages();
+    }
 });

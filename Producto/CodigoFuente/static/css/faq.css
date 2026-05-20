@@ -1,4 +1,4 @@
-/* ========== FAQ PAGE - BARRA AZUL COMO EL FOOTER ========== */
+/* ========== FAQ PAGE - MISMO ESTILO QUE TERMS.HTML ========== */
 
 * {
     margin: 0;
@@ -11,16 +11,15 @@ body {
     padding: 0;
 }
 
-/* Hero section - ANCHO COMPLETO (como footer) */
-.faq-hero {
+/* Hero section - ANCHO COMPLETO (como terms.html) */
+.page-hero {
     background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
     width: 100%;
     margin: 0;
     padding: 3rem 0;
 }
 
-/* Contenedor interno - centra el contenido */
-.faq-hero-container {
+.page-hero-container {
     max-width: 1280px;
     margin: 0 auto;
     padding: 0 2rem;
@@ -28,65 +27,93 @@ body {
     color: white;
 }
 
-.faq-hero-container h1 {
+.page-hero-container h1 {
     font-size: 2.2rem;
     margin-bottom: 0.75rem;
     font-weight: 700;
 }
 
-.faq-hero-container p {
+.page-hero-container p {
     font-size: 1rem;
     opacity: 0.9;
     max-width: 550px;
     margin: 0 auto;
 }
 
-/* Contenedor principal */
+/* Contenedor principal - igual que terms */
 .faq-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
-}
-
-/* Categorías */
-.faq-categories {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
     display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
+    gap: 3rem;
 }
 
-.category-btn {
-    background: #f0f2f5;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 2rem;
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: #4a6272;
-    cursor: pointer;
-    transition: all 0.2s ease;
+/* Sidebar - idéntico al de terms */
+.faq-sidebar {
+    width: 250px;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
 }
 
-.category-btn.active {
+.faq-sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.faq-sidebar li {
+    margin-bottom: 0.5rem;
+}
+
+.faq-sidebar a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #5a6e7a;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.faq-sidebar a:hover {
+    background: #f8f9fa;
+    color: #2C5A6E;
+}
+
+.faq-sidebar a.active {
     background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
     color: white;
 }
 
-.category-btn:hover:not(.active) {
-    background: #e4e7eb;
-    transform: translateY(-2px);
+/* Contenido principal */
+.faq-content {
+    flex: 1;
 }
 
-/* Preguntas */
+/* Secciones de categorías */
+.faq-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.faq-section h2 {
+    color: #1F3B4C;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+/* Acordeón de preguntas */
 .faq-item {
     background: white;
     border-radius: 0.75rem;
     margin-bottom: 0.75rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
     border: 1px solid #eef2f5;
+    overflow: hidden;
 }
 
 .faq-question {
@@ -119,14 +146,14 @@ body {
     overflow: hidden;
     transition: max-height 0.3s ease;
     padding: 0 1.25rem;
-    color: #5a6e7a;
-    font-size: 0.9rem;
+    color: #6c7f8b;
+    font-size: 0.95rem;
     line-height: 1.6;
 }
 
 .faq-item.active .faq-answer {
     max-height: 300px;
-    padding: 0 1.25rem 1rem;
+    padding: 0 1.25rem 1rem 1.25rem;
 }
 
 /* Toast */
@@ -158,28 +185,44 @@ body {
     color: #4a6272;
 }
 
-/* Responsive */
+/* Responsive - igual que terms */
 @media (max-width: 768px) {
-    .faq-hero {
+    .page-hero {
         padding: 2rem 0;
     }
     
-    .faq-hero-container h1 {
+    .page-hero-container h1 {
         font-size: 1.6rem;
     }
     
-    .faq-hero-container p {
+    .page-hero-container p {
         font-size: 0.85rem;
     }
     
     .faq-container {
+        flex-direction: column;
         padding: 0 1rem;
-        margin: 1.5rem auto;
+        margin: 2rem auto;
     }
     
-    .category-btn {
-        padding: 0.4rem 0.9rem;
-        font-size: 0.8rem;
+    .faq-sidebar {
+        width: 100%;
+        position: static;
+        margin-bottom: 1rem;
+    }
+    
+    .faq-sidebar ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .faq-sidebar li {
+        margin-bottom: 0;
+    }
+    
+    .faq-section {
+        padding: 1.5rem;
     }
     
     .faq-question {
@@ -189,7 +232,11 @@ body {
 }
 
 @media (max-width: 576px) {
-    .faq-hero-container {
+    .page-hero-container {
         padding: 0 1rem;
+    }
+    
+    .faq-sidebar ul {
+        justify-content: center;
     }
 }
