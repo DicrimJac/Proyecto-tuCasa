@@ -268,3 +268,54 @@ main {
         height: 250px;
     }
 }
+
+/* ========== ESTILOS PARA CATEGORÍA Y CONDICIÓN ========== */
+.categoria, .condicion {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.categoria {
+    background: #eef2f5;
+    color: #2C5A6E;
+}
+
+.categoria i {
+    margin-right: 0.3rem;
+    font-size: 0.6rem;
+}
+
+.condicion {
+    background: #f0f7fa;
+    color: #1F3B4C;
+}
+
+.condicion i {
+    margin-right: 0.3rem;
+    font-size: 0.6rem;
+}
+
+/* Para la condición "Nueva" */
+.condicion.nueva {
+    background: #d4edda;
+    color: #155724;
+}
+
+/* Para la condición "Usada" */
+.condicion.usada {
+    background: #f8f9fa;
+    color: #6c7f8b;
+}
+
+/* Contenedor de etiquetas en la tarjeta */
+.card-tags {
+    margin: 0.5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}

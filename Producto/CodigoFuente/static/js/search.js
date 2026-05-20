@@ -1,4 +1,5 @@
-// ========== SEARCH PAGE - DATOS SIMULADOS ==========
+// ========== SEARCH PAGE - RECIBIR FILTROS DE HOME ==========
+
 let allProperties = [
     {
         id: 1,
@@ -169,10 +170,11 @@ let allProperties = [
 
 // Variables de estado
 let currentPage = 1;
-let filteredProperties = [...allProperties];
+let filteredProperties = [];
+let searchFilters = null;
 const itemsPerPage = 6;
 
-// Mapeo de categorías para mostrar en español
+// Mapeo de categorías
 const categoryNames = {
     'casa': 'Casa',
     'departamento': 'Departamento',
@@ -187,59 +189,63 @@ const conditionNames = {
     'usada': 'Usada'
 };
 
-// ========== FUNCIONES PRINCIPALES ==========
-function loadProperties() {
-    // Cargar favoritos desde localStorage
-    const savedFavorites = localStorage.getItem('favoriteProperties');
-    if (savedFavorites) {
-        const favorites = JSON.parse(savedFavorites);
-        allProperties.forEach(prop => {
-            prop.favorite = favorites.includes(prop.id);
+// ========== CARGAR FILTROS DESDE LOCALSTORAGE ==========
+function loadFiltersFromStorage() {
+    const savedFilters = localStorage.getItem('searchFilters');
+    console.log('Filtros guardados:', savedFilters);
+    
+    if (savedFilters) {
+        searchFilters = JSON.parse(savedFilters);
+        
+        // Aplicar filtros
+        filteredProperties = allProperties.filter(prop => {
+            // Filtro ubicación
+            if (searchFilters.location && !prop.location.toLowerCase().includes(searchFilters.location)) {
+                return false;
+            }
+            // Filtro precio mínimo
+            if (searchFilters.priceMin && prop.price < searchFilters.priceMin) {
+                return false;
+            }
+            // Filtro precio máximo
+            if (searchFilters.priceMax && prop.price > searchFilters.priceMax) {
+                return false;
+            }
+            // Filtro habitaciones
+            if (searchFilters.rooms && prop.rooms < parseInt(searchFilters.rooms)) {
+                return false;
+            }
+            // Filtro baños
+            if (searchFilters.bathrooms && prop.bathrooms < parseInt(searchFilters.bathrooms)) {
+                return false;
+            }
+            // Filtro categoría
+            if (searchFilters.category && prop.category !== searchFilters.category) {
+                return false;
+            }
+            // Filtro condición
+            if (searchFilters.condition && prop.condition !== searchFilters.condition) {
+                return false;
+            }
+            return true;
         });
-        filteredProperties.forEach(prop => {
-            prop.favorite = favorites.includes(prop.id);
-        });
+        
+        console.log('Propiedades filtradas:', filteredProperties.length);
+        
+        // Limpiar localStorage después de usarlo
+        localStorage.removeItem('searchFilters');
+    } else {
+        // Si no hay filtros, mostrar todas las propiedades
+        filteredProperties = [...allProperties];
     }
     
-    applyFilters();
-}
-
-function applyFilters() {
-    const location = document.getElementById('filterLocation').value.toLowerCase().trim();
-    const priceMin = parseInt(document.getElementById('priceMin').value) || 0;
-    const priceMax = parseInt(document.getElementById('priceMax').value) || Infinity;
-    const rooms = document.getElementById('filterRooms').value;
-    const bathrooms = document.getElementById('filterBathrooms').value;
-    const category = document.getElementById('filterCategory').value;
-    const condition = document.getElementById('filterCondition').value;
-    
-    filteredProperties = allProperties.filter(prop => {
-        // Filtro ubicación
-        if (location && !prop.location.toLowerCase().includes(location)) return false;
-        
-        // Filtro precio
-        if (prop.price < priceMin || prop.price > priceMax) return false;
-        
-        // Filtro habitaciones
-        if (rooms && prop.rooms < parseInt(rooms)) return false;
-        
-        // Filtro baños
-        if (bathrooms && prop.bathrooms < parseInt(bathrooms)) return false;
-        
-        // NUEVO: Filtro categoría
-        if (category && prop.category !== category) return false;
-        
-        // NUEVO: Filtro estado (nueva/usada)
-        if (condition && prop.condition !== condition) return false;
-        
-        return true;
-    });
-    
+    // Aplicar ordenamiento por defecto
     applySorting();
 }
 
+// ========== ORDENAMIENTO ==========
 function applySorting() {
-    const sortBy = document.getElementById('sortBy').value;
+    const sortBy = document.getElementById('sortBy')?.value || 'relevance';
     
     switch(sortBy) {
         case 'price-asc':
@@ -253,22 +259,23 @@ function applySorting() {
             break;
         default:
             // Relevancia: mantener orden original
+            filteredProperties.sort((a, b) => a.id - b.id);
             break;
     }
     
+    currentPage = 1;
     renderResults();
 }
 
+// ========== RENDERIZAR RESULTADOS ==========
 function renderResults() {
     const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedProperties = filteredProperties.slice(start, start + itemsPerPage);
     
-    // Actualizar contador
     const resultsCount = document.getElementById('resultsCount');
     resultsCount.textContent = `${filteredProperties.length} propiedades encontradas`;
     
-    // Renderizar grid
     const grid = document.getElementById('propertiesGrid');
     
     if (paginatedProperties.length === 0) {
@@ -277,44 +284,50 @@ function renderResults() {
                 <i class="fas fa-home"></i>
                 <h3>No se encontraron propiedades</h3>
                 <p>Intenta con otros filtros de búsqueda</p>
+                <a href="home.html" class="btn-primary" style="margin-top: 1rem; display: inline-block; background: linear-gradient(135deg, #1F3B4C, #2C5A6E); color: white; padding: 0.5rem 1rem; border-radius: 2rem; text-decoration: none;">Volver al inicio</a>
             </div>
         `;
         document.getElementById('pagination').innerHTML = '';
         return;
     }
     
-    grid.innerHTML = paginatedProperties.map(prop => `
-        <div class="property-card" onclick="viewPropertyDetail(${prop.id})">
-            <div class="property-image">
-                <img src="${prop.image || 'assets/image/default-house.jpg'}" alt="${prop.title}">
-                <span class="property-type">${prop.type === 'arriendo' ? 'Arriendo' : 'Venta'}</span>
-                <div class="property-favorite" onclick="toggleFavorite(event, ${prop.id})">
-                    <i class="${prop.favorite ? 'fas fa-heart' : 'far fa-heart'}"></i>
+    grid.innerHTML = paginatedProperties.map(prop => {
+        const condicionClass = prop.condition === 'nueva' ? 'nueva' : 'usada';
+        return `
+            <div class="property-card" onclick="viewPropertyDetail(${prop.id})">
+                <div class="property-image">
+                    <img src="${prop.image || 'assets/image/default-house.jpg'}" alt="${prop.title}">
+                    <span class="property-type">${prop.type === 'arriendo' ? 'Arriendo' : 'Venta'}</span>
+                    <div class="property-favorite" onclick="toggleFavorite(event, ${prop.id})">
+                        <i class="${prop.favorite ? 'fas fa-heart' : 'far fa-heart'}"></i>
+                    </div>
+                </div>
+                <div class="property-info">
+                    <h3 class="property-title">${prop.title}</h3>
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i> ${prop.location}
+                    </div>
+                    <div class="property-price">
+                        $${prop.price.toLocaleString()} ${prop.type === 'arriendo' ? '/mes' : ''}
+                    </div>
+                    <div class="property-features">
+                        <span><i class="fas fa-bed"></i> ${prop.rooms} hab.</span>
+                        <span><i class="fas fa-bath"></i> ${prop.bathrooms} baños</span>
+                    </div>
+                    <div class="card-tags" style="margin: 0.5rem 0; display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                        <span class="categoria" style="background: #eef2f5; color: #2C5A6E; padding: 0.2rem 0.6rem; border-radius: 2rem; font-size: 0.7rem;"><i class="fas fa-building"></i> ${categoryNames[prop.category] || prop.category}</span>
+                        <span class="condicion ${condicionClass}" style="padding: 0.2rem 0.6rem; border-radius: 2rem; font-size: 0.7rem; ${prop.condition === 'nueva' ? 'background: #d4edda; color: #155724;' : 'background: #f8f9fa; color: #6c7f8b;'}"><i class="fas fa-star"></i> ${conditionNames[prop.condition] || prop.condition}</span>
+                    </div>
+                    <div class="property-footer">
+                        <span class="property-date">${formatDate(prop.date)}</span>
+                        <button class="btn-contact" onclick="contactProperty(event, ${prop.id})">
+                            <i class="fas fa-envelope"></i> Contactar
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="property-info">
-                <h3 class="property-title">${prop.title}</h3>
-                <div class="property-location">
-                    <i class="fas fa-map-marker-alt"></i> ${prop.location}
-                </div>
-                <div class="property-price">
-                    $${prop.price.toLocaleString()} ${prop.type === 'arriendo' ? '/mes' : ''}
-                </div>
-                <div class="property-features">
-                    <span><i class="fas fa-bed"></i> ${prop.rooms} hab.</span>
-                    <span><i class="fas fa-bath"></i> ${prop.bathrooms} baños</span>
-                    <span><i class="fas fa-building"></i> ${categoryNames[prop.category] || prop.category}</span>
-                    <span><i class="fas fa-star"></i> ${conditionNames[prop.condition] || prop.condition}</span>
-                </div>
-                <div class="property-footer">
-                    <span class="property-date">Publicado: ${formatDate(prop.date)}</span>
-                    <button class="btn-contact" onclick="contactProperty(event, ${prop.id})">
-                        <i class="fas fa-envelope"></i> Contactar
-                    </button>
-                </div>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
     
     renderPagination(totalPages);
 }
@@ -356,20 +369,7 @@ function changePage(page) {
     window.scrollTo({ top: 400, behavior: 'smooth' });
 }
 
-function clearFilters() {
-    document.getElementById('filterLocation').value = '';
-    document.getElementById('priceMin').value = '';
-    document.getElementById('priceMax').value = '';
-    document.getElementById('filterRooms').value = '';
-    document.getElementById('filterBathrooms').value = '';
-    document.getElementById('filterCategory').value = '';
-    document.getElementById('filterCondition').value = '';
-    document.getElementById('sortBy').value = 'relevance';
-    
-    currentPage = 1;
-    applyFilters();
-}
-
+// ========== FAVORITOS ==========
 function toggleFavorite(event, propertyId) {
     event.stopPropagation();
     
@@ -380,15 +380,21 @@ function toggleFavorite(event, propertyId) {
         const favorites = allProperties.filter(p => p.favorite).map(p => p.id);
         localStorage.setItem('favoriteProperties', JSON.stringify(favorites));
         
-        applyFilters();
+        // Actualizar en filteredProperties también
+        const propIndex = filteredProperties.findIndex(p => p.id === propertyId);
+        if (propIndex !== -1) {
+            filteredProperties[propIndex].favorite = property.favorite;
+        }
+        
+        renderResults();
         
         const message = property.favorite ? 'Agregado a favoritos ❤️' : 'Eliminado de favoritos 💔';
         showToast(message);
     }
 }
 
+// ========== VER DETALLE ==========
 function viewPropertyDetail(propertyId) {
-    // Guardar la propiedad seleccionada en localStorage para la página de detalle
     const property = allProperties.find(p => p.id === propertyId);
     if (property) {
         localStorage.setItem('selectedProperty', JSON.stringify(property));
@@ -404,22 +410,16 @@ function contactProperty(event, propertyId) {
     }
 }
 
+// ========== FUNCIONES AUXILIARES ==========
 function formatDate(dateString) {
     const date = new Date(dateString);
-    const now = new Date();
-    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return 'Hoy';
-    if (diffDays === 1) return 'Ayer';
-    if (diffDays < 7) return `Hace ${diffDays} días`;
-    if (diffDays < 30) return `Hace ${Math.floor(diffDays / 7)} semanas`;
-    return `Hace ${Math.floor(diffDays / 30)} meses`;
+    return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function showToast(message, isError = false) {
     const toast = document.getElementById('notificationToast');
     const toastMessage = document.getElementById('toastMessage');
-    const toastHeader = toast.querySelector('.toast-header');
+    const toastHeader = toast?.querySelector('.toast-header');
     
     if (toastMessage) toastMessage.textContent = message;
     
@@ -446,35 +446,33 @@ function showToast(message, isError = false) {
     toast.style.display = 'block';
     setTimeout(() => {
         toast.style.display = 'none';
-        if (toastHeader) {
-            const icon = toastHeader.querySelector('i');
-            if (icon) icon.className = 'bi bi-info-circle-fill';
-            const strong = toastHeader.querySelector('strong');
-            if (strong) strong.textContent = 'Información';
-            toast.style.borderLeftColor = '#2C5A6E';
-        }
     }, 3000);
+}
+
+// ========== CARGAR FAVORITOS ==========
+function loadFavorites() {
+    const savedFavorites = localStorage.getItem('favoriteProperties');
+    if (savedFavorites) {
+        const favorites = JSON.parse(savedFavorites);
+        allProperties.forEach(prop => {
+            prop.favorite = favorites.includes(prop.id);
+        });
+    }
 }
 
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', function() {
-    loadProperties();
+    // Cargar favoritos
+    loadFavorites();
     
-    document.getElementById('searchBtn').addEventListener('click', () => {
-        currentPage = 1;
-        applyFilters();
-    });
+    // Cargar filtros y aplicar
+    loadFiltersFromStorage();
     
-    document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
-    document.getElementById('sortBy').addEventListener('change', applySorting);
+    // Event listener para ordenamiento
+    const sortBySelect = document.getElementById('sortBy');
+    if (sortBySelect) {
+        sortBySelect.addEventListener('change', applySorting);
+    }
     
-    const inputs = ['filterLocation', 'priceMin', 'priceMax'];
-    inputs.forEach(id => {
-        document.getElementById(id).addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                currentPage = 1;
-                applyFilters();
-            }
-        });
-    });
+    console.log('Search page initialized');
 });
