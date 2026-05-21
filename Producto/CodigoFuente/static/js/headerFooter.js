@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
       header.innerHTML = data;
       initHeader();
       highlightCurrentPage();
+      // Actualizar navbar según estado de sesión
+      updateHeaderSessionState();
     })
     .catch((error) => console.error("Error:", error));
 
@@ -58,4 +60,44 @@ function highlightCurrentPage() {
       link.classList.add("active");
     }
   });
+}
+
+// Actualiza el navbar según si hay sesión guardada en localStorage
+function updateHeaderSessionState() {
+  const userData = localStorage.getItem("userData");
+  const userProfile = localStorage.getItem("userProfile");
+  const isLoggedIn = !!(userData || userProfile);
+
+  const registerBtn = document.querySelector(".btn-register-nav");
+  const loginBtn = document.querySelector(".btn-login-nav");
+  const greetingLink = document.getElementById("userGreeting");
+  const greetingTextSpan = greetingLink
+    ? greetingLink.querySelector(".user-greeting-text")
+    : null;
+
+  let firstName = "";
+  if (isLoggedIn) {
+    try {
+      const data = userData ? JSON.parse(userData) : JSON.parse(userProfile);
+      firstName = data.first_name || data.firstName || data.nombre || data.name || "";
+    } catch (e) {
+      console.error("Error parseando userData/userProfile", e);
+    }
+  }
+
+  if (isLoggedIn) {
+    if (greetingLink && greetingTextSpan) {
+      greetingTextSpan.textContent = firstName ? `Hola! ${firstName}` : "Hola!";
+      greetingLink.style.display = "inline-flex";
+    }
+    if (registerBtn) registerBtn.style.display = "none";
+    if (loginBtn) loginBtn.style.display = "none";
+  } else {
+    if (greetingLink && greetingTextSpan) {
+      greetingTextSpan.textContent = "";
+      greetingLink.style.display = "none";
+    }
+    if (registerBtn) registerBtn.style.display = "flex";
+    if (loginBtn) loginBtn.style.display = "flex";
+  }
 }
