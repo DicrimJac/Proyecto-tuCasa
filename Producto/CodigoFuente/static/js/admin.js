@@ -113,12 +113,10 @@ function initPropertiesChart() {
     const ctx = document.getElementById('propertiesChart');
     if (!ctx) return;
     
-    // Destruir gráfico anterior si existe
     if (chartInstance) {
         chartInstance.destroy();
     }
     
-    // Obtener datos actualizados desde localStorage
     const savedStats = localStorage.getItem('propertyStats');
     if (savedStats) {
         propertyStats = JSON.parse(savedStats);
@@ -162,9 +160,7 @@ function initPropertiesChart() {
                 legend: {
                     position: 'top',
                     labels: {
-                        font: {
-                            size: 12
-                        },
+                        font: { size: 12 },
                         usePointStyle: true,
                         boxWidth: 10
                     }
@@ -185,9 +181,7 @@ function initPropertiesChart() {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: {
-                        color: '#eef2f5'
-                    },
+                    grid: { color: '#eef2f5' },
                     title: {
                         display: true,
                         text: 'Cantidad',
@@ -195,15 +189,11 @@ function initPropertiesChart() {
                     }
                 },
                 x: {
-                    grid: {
-                        display: false
-                    },
+                    grid: { display: false },
                     ticks: {
                         maxRotation: 45,
                         minRotation: 45,
-                        font: {
-                            size: 10
-                        }
+                        font: { size: 10 }
                     }
                 }
             }
@@ -211,41 +201,33 @@ function initPropertiesChart() {
     });
 }
 
-// Función para actualizar estadísticas del gráfico (simula nuevos datos)
 function updatePropertyStats(propertyId, viewsIncrement = 0, interestedIncrement = 0) {
     const property = propertyStats.find(p => p.id === propertyId);
     if (property) {
         if (viewsIncrement) property.views += viewsIncrement;
         if (interestedIncrement) property.interested += interestedIncrement;
         localStorage.setItem('propertyStats', JSON.stringify(propertyStats));
-        initPropertiesChart(); // Recargar gráfico
+        initPropertiesChart();
     }
 }
 
-// Función para simular datos aleatorios (demostración)
 function simulateRandomData() {
     propertyStats = propertyStats.map(prop => ({
         ...prop,
-        views: prop.views + Math.floor(Math.random() * 20) - 5,
-        interested: prop.interested + Math.floor(Math.random() * 3) - 1
+        views: Math.max(0, prop.views + Math.floor(Math.random() * 20) - 5),
+        interested: Math.max(0, prop.interested + Math.floor(Math.random() * 3) - 1)
     }));
-    // Asegurar que no haya valores negativos
-    propertyStats.forEach(prop => {
-        if (prop.views < 0) prop.views = 0;
-        if (prop.interested < 0) prop.interested = 0;
-    });
     localStorage.setItem('propertyStats', JSON.stringify(propertyStats));
     initPropertiesChart();
 }
 
-// Opcional: Actualizar datos cada 30 segundos (simulación)
 let intervalSimulation = null;
 
 function startSimulation() {
     if (intervalSimulation) clearInterval(intervalSimulation);
     intervalSimulation = setInterval(() => {
         simulateRandomData();
-    }, 30000); // Cada 30 segundos
+    }, 30000);
 }
 
 function stopSimulation() {
@@ -269,7 +251,6 @@ function initAdmin() {
     loadPropertyStats();    
 }
 
-// Función para cargar estadísticas guardadas
 function loadPropertyStats() {
     const savedStats = localStorage.getItem('propertyStats');
     if (savedStats) {
@@ -279,7 +260,6 @@ function loadPropertyStats() {
     }
 }
 
-// Cargar datos desde localStorage
 function loadDataFromStorage() {
     if (localStorage.getItem('adminUsers')) {
         adminUsers = JSON.parse(localStorage.getItem('adminUsers'));
@@ -292,7 +272,6 @@ function loadDataFromStorage() {
     }
 }
 
-// Guardar datos en localStorage
 function saveUsers() {
     localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
 }
@@ -341,6 +320,7 @@ function renderRecentProperties() {
 }
 
 // ===================== RENDERIZAR USUARIOS =====================
+// Se eliminó el botón de visualizar (ojo)
 function renderUsers() {
     const container = document.getElementById('usersTable');
     if (!container) return;
@@ -369,7 +349,7 @@ function renderUsers() {
             <td>${formatDate(user.joined)}</td>
             <td><span class="status-badge status-${user.status}">${user.status === 'active' ? 'Activo' : 'Inactivo'}</span></td>
             <td class="action-btns">
-                <button class="btn-icon btn-view" onclick="viewUser(${user.id})"><i class="bi bi-eye"></i></button>
+                <!-- Botón de visualizar ELIMINADO -->
                 <button class="btn-icon ${user.status === 'active' ? 'btn-block' : 'btn-approve'}" onclick="toggleUserStatus(${user.id})">
                     <i class="bi bi-${user.status === 'active' ? 'ban' : 'check-circle'}"></i>
                 </button>
@@ -382,6 +362,7 @@ function renderUsers() {
 }
 
 // ===================== RENDERIZAR PROPIEDADES =====================
+// Se eliminaron los botones de aprobar y rechazar
 function renderProperties() {
     const container = document.getElementById('propertiesTable');
     if (!container) return;
@@ -413,11 +394,7 @@ function renderProperties() {
             <td>${formatDate(prop.date)}</td>
             <td><span class="status-badge status-${prop.status}">${getStatusText(prop.status)}</span></td>
             <td class="action-btns">
-                <button class="btn-icon btn-view" onclick="viewProperty(${prop.id})"><i class="bi bi-eye"></i></button>
-                ${prop.status === 'pending' ? `
-                    <button class="btn-icon btn-approve" onclick="approveProperty(${prop.id})"><i class="bi bi-check-lg"></i></button>
-                    <button class="btn-icon btn-reject" onclick="rejectProperty(${prop.id})"><i class="bi bi-x-lg"></i></button>
-                ` : ''}
+                <!-- Botones de aprobar y rechazar ELIMINADOS -->
                 <button class="btn-icon btn-delete" onclick="deleteProperty(${prop.id})"><i class="bi bi-trash"></i></button>
             </td>
         </tr>
@@ -427,6 +404,7 @@ function renderProperties() {
 }
 
 // ===================== RENDERIZAR EVALUACIONES =====================
+// Se eliminaron los botones de aprobar y rechazar
 function renderReviews() {
     const container = document.getElementById('reviewsList');
     if (!container) return;
@@ -446,7 +424,7 @@ function renderReviews() {
     // Actualizar resumen
     const totalReviews = adminReviews.length;
     const pendingReviews = adminReviews.filter(r => r.status === "pending").length;
-    const avgRating = (adminReviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1);
+    const avgRating = totalReviews > 0 ? (adminReviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1) : 0;
     
     document.getElementById('totalReviewsCount').textContent = totalReviews;
     document.getElementById('pendingReviewsCount').textContent = pendingReviews;
@@ -490,12 +468,7 @@ function renderReviews() {
                 <span class="review-status-badge status-${review.status}-badge">
                     ${review.status === 'pending' ? 'Pendiente' : review.status === 'approved' ? 'Aprobada' : 'Rechazada'}
                 </span>
-                <div class="review-actions" onclick="event.stopPropagation()">
-                    ${review.status === 'pending' ? `
-                        <button class="btn-sm-approve" onclick="approveReview(${review.id})"><i class="bi bi-check-lg"></i> Aprobar</button>
-                        <button class="btn-sm-reject" onclick="rejectReview(${review.id})"><i class="bi bi-x-lg"></i> Rechazar</button>
-                    ` : ''}
-                </div>
+                <!-- Botones de aprobar/rechazar ELIMINADOS -->
             </div>
         </div>
     `).join('');
@@ -564,30 +537,6 @@ window.viewProperty = function(id) {
     new bootstrap.Modal(document.getElementById('propertyModal')).show();
 };
 
-window.approveProperty = function(id) {
-    const property = adminProperties.find(p => p.id === id);
-    if (property && property.status === 'pending') {
-        property.status = 'active';
-        saveProperties();
-        renderProperties();
-        renderRecentProperties();
-        updateStats();
-        showToast('Propiedad aprobada correctamente');
-    }
-};
-
-window.rejectProperty = function(id) {
-    const property = adminProperties.find(p => p.id === id);
-    if (property && property.status === 'pending') {
-        property.status = 'rejected';
-        saveProperties();
-        renderProperties();
-        renderRecentProperties();
-        updateStats();
-        showToast('Propiedad rechazada');
-    }
-};
-
 window.deleteProperty = function(id) {
     if (confirm('¿Eliminar esta propiedad permanentemente?')) {
         adminProperties = adminProperties.filter(p => p.id !== id);
@@ -621,54 +570,19 @@ window.openReviewModal = function(id) {
             </div>
             <p><strong>Comentario:</strong></p>
             <p class="review-full-comment">${review.comment}</p>
-            <p><strong>Estado actual:</strong> <span class="review-status-badge status-${review.status}-badge">${review.status}</span></p>
+            <p><strong>Estado actual:</strong> <span class="review-status-badge status-${review.status}-badge">${review.status === 'pending' ? 'Pendiente' : review.status === 'approved' ? 'Aprobada' : 'Rechazada'}</span></p>
         </div>
     `;
     
     const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
     
-    // Configurar botones del modal
+    // Ocultar botones del modal porque ya no se necesita aprobar/rechazar
     const approveBtn = document.getElementById('approveReviewBtn');
     const rejectBtn = document.getElementById('rejectReviewBtn');
-    
-    const newApproveBtn = approveBtn.cloneNode(true);
-    const newRejectBtn = rejectBtn.cloneNode(true);
-    approveBtn.parentNode.replaceChild(newApproveBtn, approveBtn);
-    rejectBtn.parentNode.replaceChild(newRejectBtn, rejectBtn);
-    
-    newApproveBtn.onclick = () => {
-        approveReview(id);
-        modal.hide();
-    };
-    
-    newRejectBtn.onclick = () => {
-        rejectReview(id);
-        modal.hide();
-    };
+    if (approveBtn) approveBtn.style.display = 'none';
+    if (rejectBtn) rejectBtn.style.display = 'none';
     
     modal.show();
-};
-
-window.approveReview = function(id) {
-    const review = adminReviews.find(r => r.id === id);
-    if (review && review.status === 'pending') {
-        review.status = 'approved';
-        saveReviews();
-        renderReviews();
-        updateStats();
-        showToast('Evaluación aprobada y publicada');
-    }
-};
-
-window.rejectReview = function(id) {
-    const review = adminReviews.find(r => r.id === id);
-    if (review && review.status === 'pending') {
-        review.status = 'rejected';
-        saveReviews();
-        renderReviews();
-        updateStats();
-        showToast('Evaluación rechazada');
-    }
 };
 
 // ===================== FUNCIONES UTILITARIAS =====================
