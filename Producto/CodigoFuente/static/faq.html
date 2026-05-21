@@ -18,36 +18,38 @@
     <div id="header"></div>
 
     <main>
-        <!-- HERO -->
-        <div class="faq-hero">
-            <div class="faq-hero-container">
+        <!-- Hero section - BARRA AZUL DE ANCHO COMPLETO (como terms.html) -->
+        <div class="page-hero">
+            <div class="page-hero-container">
                 <h1>Preguntas Frecuentes</h1>
-                <p> Encuentra respuestas a las dudas más comunes sobre nuestros servicios  </p>
+                <p>Encuentra respuestas a las dudas más comunes sobre nuestros servicios</p>
             </div>
         </div>
 
-        <!-- CONTENEDOR -->
+        <!-- Contenedor principal con sidebar y contenido (como terms.html) -->
         <div class="faq-container">
-
-            <!-- CATEGORÍAS -->
-            <div class="faq-categories-container">
-                <button class="category-btn active" data-category="general"> General </button>
-                <button class="category-btn" data-category="properties"> Propiedades </button>
-                <button class="category-btn" data-category="account"> Mi Cuenta </button>
+            <!-- Sidebar de categorías (similar al sidebar de términos) -->
+            <div class="faq-sidebar">
+                <ul>
+                    <li><a href="#general" class="active" data-category="general">General</a></li>
+                    <li><a href="#properties" data-category="properties">Propiedades</a></li>
+                    <li><a href="#account" data-category="account">Mi Cuenta</a></li>
+                </ul>
             </div>
 
-            <!-- FAQ LIST -->
-            <div class="faq-list">
-
-                <!-- GENERAL -->
-                <div class="faq-category" id="category-general">
+            <!-- Contenido principal con acordeón -->
+            <div class="faq-content">
+                <!-- CATEGORÍA GENERAL -->
+                <section id="general" class="faq-section">
+                    <h2>General</h2>
+                    
                     <div class="faq-item">
                         <div class="faq-question">
                             <span>¿Qué es Tu Casa?</span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p> Tu Casa es una plataforma online que conecta a personas que buscan propiedades en arriendo o compra con dueños y corredores de propiedades. </p>
+                            <p>Tu Casa es una plataforma online que conecta a personas que buscan propiedades en arriendo o compra con dueños y corredores de propiedades.</p>
                         </div>
                     </div>
 
@@ -56,9 +58,8 @@
                             <span>¿Cómo funciona la plataforma?</span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
-
                         <div class="faq-answer">
-                            <p> Puedes buscar propiedades usando filtros como ubicación, precio y número de habitaciones. </p>
+                            <p>Puedes buscar propiedades usando filtros como ubicación, precio y número de habitaciones. Los resultados te mostrarán las opciones disponibles y podrás contactar directamente al propietario.</p>
                         </div>
                     </div>
 
@@ -68,20 +69,32 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p> Registrarse y buscar propiedades es completamente gratuito. </p>
+                            <p>Registrarse y buscar propiedades es completamente gratuito. Solo aplican cargos por servicios premium como destacar propiedades.</p>
                         </div>
                     </div>
-                </div>
 
-                <!-- PROPERTIES -->
-                <div class="faq-category" id="category-properties" style="display: none;">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Cómo sé que las propiedades son reales?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Verificamos cada propiedad publicada y contamos con un sistema de calificaciones de usuarios para garantizar la autenticidad.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CATEGORÍA PROPIEDADES -->
+                <section id="properties" class="faq-section">
+                    <h2>Propiedades</h2>
+                    
                     <div class="faq-item">
                         <div class="faq-question">
                             <span>¿Cómo publico una propiedad?</span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p> Inicia sesión, ve a “Mis Propiedades” y selecciona “Publicar propiedad”. </p>
+                            <p>Inicia sesión, ve a "Mis Propiedades" y selecciona "Publicar propiedad". Completa el formulario con los datos de tu inmueble y espera la aprobación.</p>
                         </div>
                     </div>
 
@@ -91,7 +104,7 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p>  Generalmente entre 24 y 48 horas hábiles. </p>
+                            <p>Generalmente entre 24 y 48 horas hábiles. Recibirás una notificación cuando tu propiedad esté activa.</p>
                         </div>
                     </div>
 
@@ -101,20 +114,32 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p> Sí, puedes modificar la información desde tu panel de propiedades. </p>
+                            <p>Sí, puedes modificar la información desde tu panel de propiedades. Los cambios serán revisados nuevamente.</p>
                         </div>
                     </div>
-                </div>
 
-                <!-- ACCOUNT -->
-                <div class="faq-category" id="category-account" style="display: none;">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Qué hago si mi propiedad ya se arrendó?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Puedes marcar la propiedad como "No disponible" o eliminarla directamente desde tu panel de control.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CATEGORÍA MI CUENTA -->
+                <section id="account" class="faq-section">
+                    <h2>Mi Cuenta</h2>
+                    
                     <div class="faq-item">
                         <div class="faq-question">
                             <span>Olvidé mi contraseña</span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p> Usa la opción “¿Olvidaste tu contraseña?” en el login. </p>
+                            <p>Usa la opción "¿Olvidaste tu contraseña?" en el login. Recibirás un enlace para restablecerla en tu correo electrónico.</p>
                         </div>
                     </div>
 
@@ -124,7 +149,7 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p> Puedes editar tu perfil desde “Mi Cuenta”. </p>
+                            <p>Puedes editar tu perfil desde "Mi Perfil" → "Información personal". No olvides guardar los cambios.</p>
                         </div>
                     </div>
 
@@ -134,10 +159,20 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p> Sí, puedes solicitar la eliminación desde soporte. </p>
+                            <p>Sí, puedes solicitar la eliminación desde soporte o enviando un correo a contacto@tucasa.cl con el asunto "Eliminar cuenta".</p>
                         </div>
                     </div>
-                </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>¿Cómo cambio mi correo electrónico?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Desde tu perfil, en la sección "Editar perfil", puedes modificar tu correo. Se enviará una verificación al nuevo email.</p>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     </main>
@@ -151,14 +186,13 @@
             <i class="bi bi-info-circle-fill"></i>
             <strong>Información</strong>
         </div>
-        <div class="toast-body"
-            id="toastMessage"></div>
+        <div class="toast-body" id="toastMessage"></div>
     </div>
 
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/headerfooter.js"></script>
     <script src="js/faq.js"></script>
-
 </body>
+
 </html>

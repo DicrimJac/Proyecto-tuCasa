@@ -1,4 +1,4 @@
-// ========== FAQ PAGE ==========
+// ========== FAQ PAGE - MISMA LÓGICA QUE TERMS.JS ==========
 document.addEventListener('DOMContentLoaded', function() {
     
     // ========== ACORDEÓN DE PREGUNTAS ==========
@@ -8,8 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const question = item.querySelector('.faq-question');
         
         question.addEventListener('click', () => {
-            // Cerrar otros items abiertos
-            faqItems.forEach(otherItem => {
+            // Cerrar otros items abiertos dentro de la misma sección
+            const parentSection = item.closest('.faq-section');
+            const itemsInSection = parentSection.querySelectorAll('.faq-item');
+            
+            itemsInSection.forEach(otherItem => {
                 if (otherItem !== item && otherItem.classList.contains('active')) {
                     otherItem.classList.remove('active');
                 }
@@ -20,26 +23,49 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // ========== FILTRO POR CATEGORÍAS ==========
-    const categoryBtns = document.querySelectorAll('.category-btn');
-    const categories = document.querySelectorAll('.faq-category');
+    // ========== NAVEGACIÓN POR SIDEBAR (como terms.js) ==========
+    const navLinks = document.querySelectorAll('.faq-sidebar a');
+    const sections = document.querySelectorAll('.faq-section');
     
-    categoryBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const category = btn.getAttribute('data-category');
+    function updateActiveLink() {
+        const scrollPosition = window.scrollY + 120;
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionBottom = sectionTop + section.offsetHeight;
             
-            // Actualizar botón activo
-            categoryBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                const id = section.getAttribute('id');
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${id}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', updateActiveLink);
+    updateActiveLink();
+    
+    // Scroll suave al hacer clic en los enlaces del sidebar
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
             
-            // Mostrar categoría seleccionada
-            categories.forEach(cat => {
-                if (cat.id === `category-${category}`) {
-                    cat.style.display = 'block';
-                } else {
-                    cat.style.display = 'none';
-                }
-            });
+            if (targetSection) {
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+            
+            // Actualizar clase activa
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
         });
     });
     
