@@ -7,7 +7,11 @@ export class UserService {
 
     async getAllUsers() {
         try {
-            const users = await this.userRepository.findAll();
+            const users = (await this.userRepository.findAll()).map((user) => {
+                const safeUser = { ...user };
+                delete safeUser.pass;
+                return safeUser;
+            });
 
             return {
                 success: true,
@@ -287,7 +291,7 @@ export class UserService {
         if (!user) {
             return { success: false, error: `Usuario con mail ${mail} no encontrado` };
         }
-        const deleted = await this.userRepository.delete(user.id || user.id_propi || user.id_user);
+        const deleted = await this.userRepository.deleteByUserRecord(user);
         return { success: true, data: deleted };
     }
 }
