@@ -43,12 +43,14 @@ export class UserController {
         const sessionRepo = new SessionRepository();
         const userId = result.data?.id_usuario || result.data?.id ||
           result.data?.id_user || result.data?.user_id;
-        const token = sessionRepo.createSession(userId);
+        const token = await sessionRepo.createSession(userId);
         // Establecer cookie HttpOnly para mantener la sesión
         setCookie(c, "session_id", token, {
           httpOnly: true,
           path: "/",
           sameSite: "Lax",
+          secure: new URL(c.req.url).protocol === "https:",
+          maxAge: sessionRepo.maxAge,
         });
       }
       return c.json(result, status);
@@ -172,11 +174,13 @@ export class UserController {
         "Usuario";
 
       const sessionRepo = new SessionRepository();
-      const token = sessionRepo.createSession(googleUser.sub || email);
+      const token = await sessionRepo.createSession(googleUser.sub || email);
       setCookie(c, "session_id", token, {
         httpOnly: true,
         path: "/",
         sameSite: "Lax",
+        secure: new URL(c.req.url).protocol === "https:",
+        maxAge: sessionRepo.maxAge,
       });
 
       const userData = {
