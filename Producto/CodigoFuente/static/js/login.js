@@ -6,6 +6,7 @@
   const mailErrorDiv = document.getElementById("mailError");
   const passErrorDiv = document.getElementById("passError");
   const messageContainer = document.getElementById("loginMessage");
+  const adminEmail = "admin@duoc.cl";
   const loginRedirectUrl = "home.html";
 
   // Dominios permitidos
@@ -220,7 +221,9 @@
       showMessage("Inicio de sesión exitoso, redirigiendo...", "success");
 
       setTimeout(() => {
-        window.location.href = loginRedirectUrl;
+        window.location.href = mail.toLowerCase() === adminEmail
+          ? "admin.html"
+          : loginRedirectUrl;
       }, 800);
     } catch (error) {
       console.error("Error al iniciar sesión:", error);

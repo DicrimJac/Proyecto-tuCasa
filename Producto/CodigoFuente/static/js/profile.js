@@ -702,6 +702,8 @@ if (logoutBtn) {
             localStorage.removeItem('currentUser');
             localStorage.removeItem('userData');
             localStorage.removeItem('userProfile');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
             window.location.href = 'home.html';
         }
     });

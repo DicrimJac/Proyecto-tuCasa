@@ -207,7 +207,7 @@ export class UserController {
       localStorage.setItem("userEmail", userData.mail || userData.email || "");
       localStorage.setItem("userName", userData.first_name || userData.name || "");
       sessionStorage.setItem("isLoggedIn", "true");
-      window.location.replace("/home.html");
+      window.location.replace((userData.mail || userData.email || "").toLowerCase() === "admin@duoc.cl" ? "/admin.html" : "/home.html");
     </script>
   </body>
 </html>`);

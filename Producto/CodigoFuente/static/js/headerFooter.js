@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Cargar header
-  fetch("components/header.html")
+  fetch("components/header.html?v=admin-nav-3")
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Error cargando header: ${response.status}`);
@@ -62,34 +62,63 @@ function highlightCurrentPage() {
   });
 }
 
+function getStoredSessionData(userData, userProfile) {
+  try {
+    if (userData) return JSON.parse(userData);
+    if (userProfile) return JSON.parse(userProfile);
+  } catch (e) {
+    console.error("Error parseando userData/userProfile", e);
+  }
+
+  return {};
+}
+
+function getStoredUserEmail(data) {
+  return (
+    data.mail ||
+    data.email ||
+    data.correo ||
+    localStorage.getItem("userEmail") ||
+    ""
+  ).trim().toLowerCase();
+}
+
 // Actualiza el navbar según si hay sesión guardada en localStorage
 function updateHeaderSessionState() {
+  const adminEmail = "admin@duoc.cl";
   const userData = localStorage.getItem("userData");
   const userProfile = localStorage.getItem("userProfile");
   const isLoggedIn = !!(userData || userProfile);
 
   const registerBtn = document.querySelector(".btn-register-nav");
   const loginBtn = document.querySelector(".btn-login-nav");
+  const publicNavItems = document.querySelectorAll(".public-nav-item");
+  const adminNavItem = document.getElementById("adminNavItem");
   const greetingLink = document.getElementById("userGreeting");
   const greetingTextSpan = greetingLink
     ? greetingLink.querySelector(".user-greeting-text")
     : null;
 
   let firstName = "";
+  let email = "";
   if (isLoggedIn) {
-    try {
-      const data = userData ? JSON.parse(userData) : JSON.parse(userProfile);
-      firstName = data.first_name || data.firstName || data.nombre || data.name || "";
-    } catch (e) {
-      console.error("Error parseando userData/userProfile", e);
-    }
+    const data = getStoredSessionData(userData, userProfile);
+    firstName = data.first_name || data.firstName || data.nombre || data.name || "";
+    email = getStoredUserEmail(data);
   }
+
+  const isAdmin = email === adminEmail;
 
   if (isLoggedIn) {
     if (greetingLink && greetingTextSpan) {
       greetingTextSpan.textContent = firstName ? `Hola! ${firstName}` : "Hola!";
-      greetingLink.style.display = "inline-flex";
+      greetingLink.href = isAdmin ? "admin.html" : "profile.html";
+      greetingLink.style.display = isAdmin ? "none" : "inline-flex";
     }
+    if (adminNavItem) adminNavItem.style.display = isAdmin ? "list-item" : "none";
+    publicNavItems.forEach((item) => {
+      item.style.display = isAdmin ? "none" : "list-item";
+    });
     if (registerBtn) registerBtn.style.display = "none";
     if (loginBtn) loginBtn.style.display = "none";
   } else {
@@ -97,6 +126,10 @@ function updateHeaderSessionState() {
       greetingTextSpan.textContent = "";
       greetingLink.style.display = "none";
     }
+    if (adminNavItem) adminNavItem.style.display = "none";
+    publicNavItems.forEach((item) => {
+      item.style.display = "list-item";
+    });
     if (registerBtn) registerBtn.style.display = "flex";
     if (loginBtn) loginBtn.style.display = "flex";
   }

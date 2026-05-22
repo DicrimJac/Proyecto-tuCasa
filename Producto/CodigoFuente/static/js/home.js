@@ -70,19 +70,21 @@ function filterPropertiesForHome() {
 }
 
 function renderProperties() {
+  const destacadasContainer = document.getElementById('propiedadesDestacadas');
+  const ultimasContainer = document.getElementById('ultimasPropiedades');
+  if (!destacadasContainer || !ultimasContainer) return;
+
   const filtered = filterPropertiesForHome();
   
   const destacadas = filtered.filter(p => p.destacada);
   const ultimas = filtered.filter(p => !p.destacada).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  const destacadasContainer = document.getElementById('propiedadesDestacadas');
   if (destacadas.length === 0) {
     destacadasContainer.innerHTML = '<div class="empty-state">No hay propiedades destacadas</div>';
   } else {
     destacadasContainer.innerHTML = destacadas.map(prop => renderCard(prop)).join('');
   }
 
-  const ultimasContainer = document.getElementById('ultimasPropiedades');
   if (ultimas.length === 0) {
     ultimasContainer.innerHTML = '<div class="empty-state">No hay propiedades disponibles</div>';
   } else {
@@ -139,6 +141,8 @@ function verPropiedad(id) {
 // ========== CARRUSEL ==========
 function initCarousel() {
   const track = document.querySelector('.carousel-track');
+  if (!track) return;
+
   const slides = Array.from(track.children);
   const prevButton = document.querySelector('.prev');
   const nextButton = document.querySelector('.next');
@@ -180,7 +184,29 @@ function initCarousel() {
 }
 
 // ========== HEADER ==========
+function getStoredSessionData(userData, userProfile) {
+  try {
+    if (userData) return JSON.parse(userData);
+    if (userProfile) return JSON.parse(userProfile);
+  } catch (e) {
+    console.error("Error parsing userData", e);
+  }
+
+  return {};
+}
+
+function getStoredUserEmail(data) {
+  return (
+    data.mail ||
+    data.email ||
+    data.correo ||
+    localStorage.getItem("userEmail") ||
+    ""
+  ).trim().toLowerCase();
+}
+
 function initHeader() {
+  const adminEmail = "admin@duoc.cl";
   const navToggle = document.getElementById("navToggle");
   if (navToggle) {
     navToggle.addEventListener("click", () => {
@@ -196,24 +222,31 @@ function initHeader() {
 
   const registerBtn = document.querySelector(".btn-register-nav");
   const loginBtn = document.querySelector(".btn-login-nav");
+  const publicNavItems = document.querySelectorAll(".public-nav-item");
+  const adminNavItem = document.getElementById("adminNavItem");
   const profileBtn = document.getElementById("profileBtn");
   const greetingSpan = document.getElementById("userGreeting");
   const greetingTextSpan = greetingSpan ? greetingSpan.querySelector(".user-greeting-text") : null;
 
   if (isLoggedIn) {
     let firstName = "";
-    try {
-      const data = userData ? JSON.parse(userData) : JSON.parse(userProfile);
-      firstName = data.first_name || data.firstName || data.nombre || data.name || "";
-    } catch (e) {
-      console.error("Error parsing userData", e);
-    }
+    let email = "";
+    const data = getStoredSessionData(userData, userProfile);
+    firstName = data.first_name || data.firstName || data.nombre || data.name || "";
+    email = getStoredUserEmail(data);
+
+    const isAdmin = email === adminEmail;
 
     if (greetingSpan && greetingTextSpan) {
       greetingTextSpan.textContent = firstName ? `Hola! ${firstName}` : "Hola!";
-      greetingSpan.style.display = "inline-flex";
+      greetingSpan.href = isAdmin ? "admin.html" : "profile.html";
+      greetingSpan.style.display = isAdmin ? "none" : "inline-flex";
     }
 
+    if (adminNavItem) adminNavItem.style.display = isAdmin ? "list-item" : "none";
+    publicNavItems.forEach((item) => {
+      item.style.display = isAdmin ? "none" : "list-item";
+    });
     if (registerBtn) registerBtn.style.display = "none";
     if (loginBtn) loginBtn.style.display = "none";
     if (profileBtn) profileBtn.style.display = "flex";
@@ -221,6 +254,10 @@ function initHeader() {
     if (greetingSpan && greetingTextSpan) {
       greetingSpan.style.display = "none";
     }
+    if (adminNavItem) adminNavItem.style.display = "none";
+    publicNavItems.forEach((item) => {
+      item.style.display = "list-item";
+    });
     if (registerBtn) registerBtn.style.display = "flex";
     if (loginBtn) loginBtn.style.display = "flex";
     if (profileBtn) profileBtn.style.display = "none";
@@ -273,22 +310,6 @@ function showToast(message, isError = false) {
 
 // ========== CARGAR COMPONENTES Y EVENTOS ==========
 document.addEventListener("DOMContentLoaded", function () {
-  // Cargar header
-  fetch("components/header.html")
-    .then(response => response.ok ? response.text() : Promise.reject('Error loading header'))
-    .then(data => {
-      document.getElementById("header").innerHTML = data;
-      initHeader();
-      highlightCurrentPage();
-    })
-    .catch(error => console.error("Error loading header:", error));
-
-  // Cargar footer
-  fetch("components/footer.html")
-    .then(response => response.ok ? response.text() : Promise.reject('Error loading footer'))
-    .then(data => document.getElementById("footer").innerHTML = data)
-    .catch(error => console.error("Error loading footer:", error));
-
   // Inicializar carrusel
   initCarousel();
   
@@ -296,6 +317,6 @@ document.addEventListener("DOMContentLoaded", function () {
   renderProperties();
   
   // Event listeners
-  document.getElementById('searchBtn').addEventListener('click', buscarYRedirigir);
-  document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+  document.getElementById('searchBtn')?.addEventListener('click', buscarYRedirigir);
+  document.getElementById('clearFiltersBtn')?.addEventListener('click', clearFilters);
 });
