@@ -1,4 +1,58 @@
 // ===================== ADMIN PANEL =====================
+const ADMIN_EMAIL = "admin@duoc.cl";
+
+function getLoggedUserEmail() {
+    const savedData = localStorage.getItem("userData") || localStorage.getItem("userProfile");
+
+    if (savedData) {
+        try {
+            const userData = JSON.parse(savedData);
+            return (userData.mail || userData.email || "").trim().toLowerCase();
+        } catch (error) {
+            console.error("Error parseando datos de usuario admin", error);
+        }
+    }
+
+    return (localStorage.getItem("userEmail") || "").trim().toLowerCase();
+}
+
+function requireAdminSession() {
+    if (getLoggedUserEmail() !== ADMIN_EMAIL) {
+        window.location.replace("home.html");
+        return false;
+    }
+
+    return true;
+}
+
+function clearAdminSessionData() {
+    localStorage.removeItem("userData");
+    localStorage.removeItem("userProfile");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    sessionStorage.removeItem("isLoggedIn");
+
+    document.cookie.split(";").forEach((cookie) => {
+        document.cookie = cookie.replace(/^ +/, "").replace(
+            /=.*/,
+            "=;expires=" + new Date().toUTCString() + ";path=/",
+        );
+    });
+}
+
+async function logoutAdmin() {
+    try {
+        await fetch("/api/users/logout", {
+            method: "POST",
+            credentials: "same-origin",
+        });
+    } catch (error) {
+        console.error("Error cerrando sesion admin:", error);
+    } finally {
+        clearAdminSessionData();
+        window.location.replace("home.html");
+    }
+}
 
 // Datos simulados - Usuarios
 let adminUsers = [
@@ -688,7 +742,7 @@ function initEventListeners() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            window.location.href = 'logout.html';
+            logoutAdmin();
         });
     }
 }
@@ -727,5 +781,7 @@ function showToast(message, isError = false) {
 
 // ===================== INICIALIZAR =====================
 document.addEventListener('DOMContentLoaded', () => {
-    initAdmin();
+    if (requireAdminSession()) {
+        initAdmin();
+    }
 });
