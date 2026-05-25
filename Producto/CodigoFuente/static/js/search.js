@@ -167,12 +167,14 @@ let allProperties = [
         date: "2024-05-10"
     }
 ];
+allProperties = [];
 
 // Variables de estado
 let currentPage = 1;
 let filteredProperties = [];
 let searchFilters = null;
 const itemsPerPage = 6;
+const DEFAULT_PROPERTY_IMAGE = "assets/image/casa1.png";
 
 // Mapeo de categorías
 const categoryNames = {
@@ -188,6 +190,84 @@ const conditionNames = {
     'nueva': 'Nueva',
     'usada': 'Usada'
 };
+
+function normalizeText(value) {
+    return String(value || "")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .trim()
+        .toLowerCase();
+}
+
+function getPropertyCategory(property) {
+    const typeText = normalizeText(property.type_desc || property.category || property.categoria);
+    if (typeText.includes("departamento")) return "departamento";
+    if (typeText.includes("pieza")) return "pieza";
+    if (typeText.includes("suite")) return "suite";
+    if (typeText.includes("mansion")) return "mansion";
+    if (typeText.includes("bodega")) return "bodega";
+    return "casa";
+}
+
+function getPropertyCondition(property) {
+    const typeText = normalizeText(property.type_desc || property.condition || property.condicion);
+    return typeText.includes("nueva") || typeText.includes("nuevo") ? "nueva" : "usada";
+}
+
+function getPropertyLocation(property) {
+    const address = property.direccion || property.address || {};
+    const parts = [
+        property.location,
+        property.ubicacion,
+        address.comuna,
+        address.city,
+    ].filter(Boolean);
+
+    return [...new Set(parts)].join(", ") || "Sin ubicación";
+}
+
+function normalizeProperty(property, index) {
+    const characteristic = property.caracteristica || property.characteristic || {};
+    const id = property.id_propi || property.id || property.property_id || index + 1;
+    const category = getPropertyCategory(property);
+
+    return {
+        id,
+        title: property.title || property.titulo || property.name || property.type_desc || `Propiedad ${id}`,
+        location: getPropertyLocation(property),
+        price: Number(characteristic.price ?? property.price ?? property.precio ?? 0),
+        type: normalizeText(property.operation_desc || property.operation || property.type_operation).includes("venta") ? "venta" : "arriendo",
+        category,
+        condition: getPropertyCondition(property),
+        rooms: Number(characteristic.qty_room ?? property.rooms ?? property.habitaciones ?? 0),
+        bathrooms: Number(characteristic.qty_bath ?? property.bathrooms ?? property.banos ?? 0),
+        area: Number(characteristic.total_mtr ?? property.area ?? property.superficie ?? 0),
+        image: property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
+        favorite: false,
+        date: property.date_register || property.created_at || property.createdAt || property.date_created || property.date || "",
+        raw: property,
+    };
+}
+
+async function loadPropertiesFromDatabase() {
+    const grid = document.getElementById('propertiesGrid');
+    if (grid) {
+        grid.innerHTML = `<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><h3>Cargando propiedades</h3></div>`;
+    }
+
+    const response = await fetch("/api/properties", {
+        method: "GET",
+        credentials: "same-origin",
+    });
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result?.message || result?.error || "No se pudieron cargar las propiedades");
+    }
+
+    const properties = Array.isArray(result.data) ? result.data : [];
+    allProperties = properties.map(normalizeProperty);
+}
 
 // ========== CARGAR FILTROS DESDE LOCALSTORAGE ==========
 function loadFiltersFromStorage() {
@@ -296,7 +376,7 @@ function renderResults() {
         return `
             <div class="property-card" onclick="viewPropertyDetail(${prop.id})">
                 <div class="property-image">
-                    <img src="${prop.image || 'assets/image/default-house.jpg'}" alt="${prop.title}">
+                    <img src="${prop.image || DEFAULT_PROPERTY_IMAGE}" alt="${prop.title}" onerror="this.src='${DEFAULT_PROPERTY_IMAGE}'">
                     <span class="property-type">${prop.type === 'arriendo' ? 'Arriendo' : 'Venta'}</span>
                     <div class="property-favorite" onclick="toggleFavorite(event, ${prop.id})">
                         <i class="${prop.favorite ? 'fas fa-heart' : 'far fa-heart'}"></i>
@@ -397,8 +477,9 @@ function toggleFavorite(event, propertyId) {
 function viewPropertyDetail(propertyId) {
     const property = allProperties.find(p => p.id === propertyId);
     if (property) {
+        localStorage.removeItem('selectedProperty');
         localStorage.setItem('selectedProperty', JSON.stringify(property));
-        window.location.href = `detail.html?id=${propertyId}`;
+        window.location.href = `detail.html?id=${encodeURIComponent(propertyId)}&t=${Date.now()}`;
     }
 }
 
@@ -412,7 +493,9 @@ function contactProperty(event, propertyId) {
 
 // ========== FUNCIONES AUXILIARES ==========
 function formatDate(dateString) {
+    if (!dateString) return "Sin fecha";
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "Sin fecha";
     return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
@@ -461,18 +544,27 @@ function loadFavorites() {
 }
 
 // ========== INICIALIZACIÓN ==========
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar favoritos
-    loadFavorites();
-    
-    // Cargar filtros y aplicar
-    loadFiltersFromStorage();
-    
-    // Event listener para ordenamiento
-    const sortBySelect = document.getElementById('sortBy');
-    if (sortBySelect) {
-        sortBySelect.addEventListener('change', applySorting);
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        await loadPropertiesFromDatabase();
+
+        // Cargar favoritos
+        loadFavorites();
+        
+        // Cargar filtros y aplicar
+        loadFiltersFromStorage();
+        
+        // Event listener para ordenamiento
+        const sortBySelect = document.getElementById('sortBy');
+        if (sortBySelect) {
+            sortBySelect.addEventListener('change', applySorting);
+        }
+        
+        console.log('Search page initialized');
+    } catch (error) {
+        console.error("Error inicializando busqueda:", error);
+        filteredProperties = [];
+        renderResults();
+        showToast(error.message || "No se pudieron cargar las propiedades", true);
     }
-    
-    console.log('Search page initialized');
 });

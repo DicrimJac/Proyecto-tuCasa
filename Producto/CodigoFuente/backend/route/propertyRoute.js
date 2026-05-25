@@ -6,9 +6,9 @@ const propertyRoute = new Hono();
 const propertyController = new PropertyController();
 
 // GET /api/properties
-propertyRoute.get("/", requireAuth, (c) => propertyController.getAllProperties(c));
+propertyRoute.get("/", (c) => propertyController.getAllProperties(c));
 // GET /api/properties/:id
-propertyRoute.get("/:id", requireAuth, (c) => propertyController.getPropertyById(c));
+propertyRoute.get("/:id", (c) => propertyController.getPropertyById(c));
 // POST /api/properties
 propertyRoute.post("/", requireAuth, (c) => propertyController.createProperty(c));
 // PUT /api/properties/:id
