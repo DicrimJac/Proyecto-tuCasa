@@ -184,7 +184,7 @@ function normalizeUser(user, index) {
         name: getUserFullName(user),
         email: user.mail || user.email || user.correo || "Sin correo",
         phone: user.fono || user.phone || user.telefono || "Sin telefono",
-        joined: user.created_at || user.createdAt || user.date_created || user.joined || "",
+        joined: user.date_register || user.created_at || user.createdAt || user.date_created || user.joined || "",
         status: user.status || user.estado || "active",
     };
 }
