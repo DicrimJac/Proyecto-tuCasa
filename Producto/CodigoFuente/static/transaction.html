@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Casa · Finalizar Transacción</title>
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/transaction.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div id="header"></div>
+
+    <main>
+        <!-- Hero section -->
+        <div class="page-hero">
+            <div class="page-hero-container">
+                <h1>Finalizar Transacción</h1>
+                <p>Completa el pago de tu plan Premium</p>
+            </div>
+        </div>
+
+        <div class="transaction-container">
+            <div class="transaction-grid">
+                <!-- Resumen del plan -->
+                <div class="plan-summary">
+                    <div class="plan-badge">
+                        <i class="fas fa-crown"></i>
+                        <span>Plan Premium</span>
+                    </div>
+                    <div class="plan-price-large">
+                        $500.000
+                        <span>por año</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check-circle"></i> Duración 1 año</li>
+                        <li><i class="fas fa-check-circle"></i> Republicación gratis</li>
+                        <li><i class="fas fa-check-circle"></i> Mayor visibilidad</li>
+                        <li><i class="fas fa-check-circle"></i> Publicación destacada</li>
+                        <li><i class="fas fa-check-circle"></i> Soporte prioritario 24/7</li>
+                    </ul>
+                </div>
+
+                <!-- Formulario de pago -->
+                <div class="payment-form">
+                    <h2><i class="fas fa-credit-card"></i> Datos de pago</h2>
+                    
+                    <form id="paymentForm">
+                        <!-- Método de pago -->
+                        <div class="form-group">
+                            <label>Método de pago</label>
+                            <div class="payment-methods">
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="credit" checked>
+                                    <i class="fab fa-cc-visa"></i>
+                                    <span>Tarjeta de crédito</span>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="debit">
+                                    <i class="fab fa-cc-mastercard"></i>
+                                    <span>Tarjeta de débito</span>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="transfer">
+                                    <i class="fas fa-university"></i>
+                                    <span>Transferencia bancaria</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Número de tarjeta -->
+                        <div class="form-group">
+                            <label>Número de tarjeta</label>
+                            <div class="card-input-wrapper">
+                                <i class="fas fa-credit-card"></i>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                        </div>
+
+                        <div class="row-2cols">
+                            <div class="form-group">
+                                <label>Fecha de expiración</label>
+                                <input type="text" id="expiryDate" placeholder="MM/AA" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label>Código CVV</label>
+                                <input type="text" id="cvv" placeholder="123" maxlength="4">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nombre en la tarjeta</label>
+                            <input type="text" id="cardName" placeholder="Como aparece en la tarjeta">
+                        </div>
+
+                        <!-- Total -->
+                        <div class="total-amount">
+                            <span>Total a pagar:</span>
+                            <strong>$500.000 CLP</strong>
+                        </div>
+
+                        <!-- Checkbox términos -->
+                        <label class="checkbox-terms">
+                            <input type="checkbox" id="acceptTerms">
+                            <span>Acepto los <a href="terms.html" target="_blank">términos y condiciones</a> y autorizo el cargo</span>
+                        </label>
+
+                        <!-- Botones -->
+                        <div class="action-buttons">
+                            <button type="button" class="btn-cancel" onclick="window.history.back()">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn-pay" id="payButton">
+                                <i class="fas fa-lock"></i> Pagar $500.000
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <!-- Modal de éxito -->
+    <div class="modal-success" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>¡Pago exitoso!</h3>
+            <p>Tu transacción ha sido procesada correctamente. El plan Premium ya está activo en tu cuenta.</p>
+            <div class="transaction-details">
+                <p><strong>Plan:</strong> Premium</p>
+                <p><strong>Monto:</strong> $500.000 CLP</p>
+                <p><strong>ID Transacción:</strong> <span id="transactionId"></span></p>
+                <p><strong>Fecha:</strong> <span id="transactionDate"></span></p>
+            </div>
+            <button class="btn-continue" onclick="goToProfile()">
+                <i class="fas fa-arrow-right"></i> Ir a mi perfil
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast de error -->
+    <div class="toast-custom" id="notificationToast">
+        <div class="toast-header">
+            <i class="bi bi-info-circle-fill"></i>
+            <strong>Información</strong>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/headerfooter.js"></script>
+    <script src="js/transaction.js"></script>
+</body>
+</html>
