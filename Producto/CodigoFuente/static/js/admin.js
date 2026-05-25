@@ -57,14 +57,8 @@ async function logoutAdmin() {
 // Usuarios cargados desde la base de datos
 let adminUsers = [];
 
-// Datos simulados - Propiedades
-let adminProperties = [
-    { id: 1, title: "Casa en Santiago Centro", location: "Santiago Centro", owner: "María González", ownerId: 1, price: 500000, date: "2024-03-15", status: "active" },
-    { id: 2, title: "Departamento Moderno", location: "Providencia", owner: "Carlos Rodríguez", ownerId: 2, price: 350000, date: "2024-03-20", status: "pending" },
-    { id: 3, title: "Casa Familiar", location: "Las Condes", owner: "Ana Martínez", ownerId: 3, price: 600000, date: "2024-04-01", status: "active" },
-    { id: 4, title: "Loft Industrial", location: "Ñuñoa", owner: "María González", ownerId: 1, price: 420000, date: "2024-04-10", status: "rejected" },
-    { id: 5, title: "Oficina El Golf", location: "Las Condes", owner: "Pedro Silva", ownerId: 4, price: 800000, date: "2024-05-01", status: "pending" }
-];
+// Propiedades cargadas desde la base de datos
+let adminProperties = [];
 
 // Datos simulados - Evaluaciones/Reseñas
 let adminReviews = [
@@ -144,6 +138,7 @@ let currentReviewFilter = "all";
 let currentReviewSearch = "";
 let currentSelectedReviewId = null;
 let usersLoadError = "";
+let propertiesLoadError = "";
 
 // ===================== DATOS DEL GRÁFICO =====================
 // Datos simulados de visualizaciones e interesados por propiedad
@@ -223,6 +218,111 @@ async function loadUsersFromDatabase() {
             container.innerHTML = `<tr><td colspan="7" class="text-center">No se pudieron cargar los usuarios registrados</td></tr>`;
         }
         showToast(usersLoadError, true);
+    }
+}
+
+// ===================== CARGAR PROPIEDADES =====================
+function normalizePropertyStatus(status) {
+    const normalized = String(status || "Disponible")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .trim()
+        .toLowerCase();
+
+    if (["pendiente", "pending"].includes(normalized)) return "pending";
+    if (["rechazada", "rechazado", "rejected"].includes(normalized)) return "rejected";
+    if (["inactiva", "inactivo", "no disponible", "vendida", "vendido", "inactive"].includes(normalized)) return "inactive";
+    return "active";
+}
+
+function getPropertyLocation(property) {
+    const address = property.direccion || property.address || {};
+    const parts = [
+        property.location,
+        property.ubicacion,
+        address.comuna,
+        address.city,
+        address.state,
+    ].filter(Boolean);
+
+    return [...new Set(parts)].join(", ") || "Sin ubicacion";
+}
+
+function getPropertyOwner(property) {
+    const user = property.usuario || property.user || property.owner || {};
+    const parts = [
+        user.first_name,
+        user.second_name,
+        user.first_last_name,
+        user.second_last_name,
+    ].filter(Boolean);
+
+    return parts.join(" ").trim()
+        || property.owner_name
+        || property.propietario
+        || user.name
+        || user.mail
+        || "Sin propietario";
+}
+
+function normalizeProperty(property, index) {
+    const characteristic = property.caracteristica || property.characteristic || {};
+    const id = property.id_propi || property.id || property.property_id || index + 1;
+    const stateText = property.state_desc || property.status_desc || property.estado || property.status || "Disponible";
+
+    return {
+        raw: property,
+        id,
+        title: property.title || property.titulo || property.name || property.type_desc || `Propiedad ${id}`,
+        location: getPropertyLocation(property),
+        owner: getPropertyOwner(property),
+        price: Number(characteristic.price ?? property.price ?? property.precio ?? 0),
+        date: property.date_register || property.created_at || property.createdAt || property.date_created || property.date || "",
+        status: normalizePropertyStatus(stateText),
+        statusText: stateText,
+        type: property.type_desc || "Sin tipo",
+        totalMeters: characteristic.total_mtr ?? null,
+        usableMeters: characteristic.surface_mtr ?? null,
+        rooms: characteristic.qty_room ?? null,
+        bathrooms: characteristic.qty_bath ?? null,
+    };
+}
+
+function showPropertiesLoading() {
+    const container = document.getElementById('propertiesTable');
+    if (container) {
+        container.innerHTML = `<tr><td colspan="7" class="text-center">Cargando propiedades...</td></tr>`;
+    }
+}
+
+async function loadPropertiesFromDatabase() {
+    showPropertiesLoading();
+    propertiesLoadError = "";
+    adminProperties = [];
+
+    try {
+        const response = await fetch("/api/properties", {
+            method: "GET",
+            credentials: "same-origin",
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudieron obtener las propiedades");
+        }
+
+        const properties = Array.isArray(result.data) ? result.data : [];
+        adminProperties = properties.map(normalizeProperty);
+    } catch (error) {
+        console.error("Error cargando propiedades desde la base de datos:", error);
+        adminProperties = [];
+        propertiesLoadError = error.message || "No se pudieron cargar las propiedades";
+        const container = document.getElementById('propertiesTable');
+        if (container) {
+            container.innerHTML = `<tr><td colspan="7" class="text-center">No se pudieron cargar las propiedades registradas</td></tr>`;
+        }
+        showToast(propertiesLoadError, true);
     }
 }
 
@@ -358,7 +458,10 @@ function stopSimulation() {
 // ===================== INICIALIZAR =====================
 async function initAdmin() {
     loadDataFromStorage();
-    await loadUsersFromDatabase();
+    await Promise.all([
+        loadUsersFromDatabase(),
+        loadPropertiesFromDatabase(),
+    ]);
     updateStats();
     renderUsers();
     renderProperties();
@@ -380,9 +483,6 @@ function loadPropertyStats() {
 }
 
 function loadDataFromStorage() {
-    if (localStorage.getItem('adminProperties')) {
-        adminProperties = JSON.parse(localStorage.getItem('adminProperties'));
-    }
     if (localStorage.getItem('adminReviews')) {
         adminReviews = JSON.parse(localStorage.getItem('adminReviews'));
     }
@@ -394,7 +494,9 @@ function saveUsers() {
 }
 
 function saveProperties() {
-    localStorage.setItem('adminProperties', JSON.stringify(adminProperties));
+    renderProperties();
+    renderRecentProperties();
+    updateStats();
 }
 
 function saveReviews() {
@@ -425,10 +527,10 @@ function renderRecentProperties() {
     
     container.innerHTML = recent.map(prop => `
         <tr>
-            <td>${prop.title}</td>
-            <td>${prop.owner}</td>
+            <td>${escapeHtml(prop.title)}</td>
+            <td>${escapeHtml(prop.owner)}</td>
             <td>${formatDate(prop.date)}</td>
-            <td><span class="status-badge status-${prop.status}">${getStatusText(prop.status)}</span></td>
+            <td><span class="status-badge status-${prop.status}">${escapeHtml(prop.statusText || getStatusText(prop.status))}</span></td>
             <td class="action-btns">
                 <button class="btn-icon btn-view" onclick="viewProperty(${prop.id})"><i class="bi bi-eye"></i></button>
             </td>
@@ -489,12 +591,19 @@ function renderUsers() {
 function renderProperties() {
     const container = document.getElementById('propertiesTable');
     if (!container) return;
+
+    if (propertiesLoadError) {
+        container.innerHTML = `<tr><td colspan="7" class="text-center">${escapeHtml(propertiesLoadError)}</td></tr>`;
+        document.getElementById('propertiesPagination').innerHTML = '';
+        return;
+    }
     
     let filtered = adminProperties.filter(prop => {
         const matchFilter = currentPropertyFilter === 'all' || prop.status === currentPropertyFilter;
-        const matchSearch = prop.title.toLowerCase().includes(currentPropertySearch.toLowerCase()) ||
-                        prop.location.toLowerCase().includes(currentPropertySearch.toLowerCase()) ||
-                        prop.owner.toLowerCase().includes(currentPropertySearch.toLowerCase());
+        const search = currentPropertySearch.toLowerCase();
+        const matchSearch = String(prop.title || "").toLowerCase().includes(search) ||
+                        String(prop.location || "").toLowerCase().includes(search) ||
+                        String(prop.owner || "").toLowerCase().includes(search);
         return matchFilter && matchSearch;
     });
     
@@ -510,14 +619,15 @@ function renderProperties() {
     
     container.innerHTML = paginated.map(prop => `
         <tr>
-            <td><strong>${prop.title}</strong></td>
-            <td>${prop.location}</td>
-            <td>${prop.owner}</td>
-            <td>$${prop.price.toLocaleString()}</td>
+            <td><strong>${escapeHtml(prop.title)}</strong></td>
+            <td>${escapeHtml(prop.location)}</td>
+            <td>${escapeHtml(prop.owner)}</td>
+            <td>$${Number(prop.price || 0).toLocaleString()}</td>
             <td>${formatDate(prop.date)}</td>
-            <td><span class="status-badge status-${prop.status}">${getStatusText(prop.status)}</span></td>
+            <td><span class="status-badge status-${prop.status}">${escapeHtml(prop.statusText || getStatusText(prop.status))}</span></td>
             <td class="action-btns">
                 <!-- Botones de aprobar y rechazar ELIMINADOS -->
+                <button class="btn-icon btn-view" onclick="viewProperty(${prop.id})"><i class="bi bi-eye"></i></button>
                 <button class="btn-icon btn-delete" onclick="deleteProperty(${prop.id})"><i class="bi bi-trash"></i></button>
             </td>
         </tr>
@@ -670,26 +780,43 @@ window.viewProperty = function(id) {
     const modalBody = document.getElementById('propertyModalBody');
     modalBody.innerHTML = `
         <div class="property-details">
-            <p><strong>Título:</strong> ${property.title}</p>
-            <p><strong>Ubicación:</strong> ${property.location}</p>
-            <p><strong>Propietario:</strong> ${property.owner}</p>
-            <p><strong>Precio:</strong> $${property.price.toLocaleString()}/mes</p>
+            <p><strong>Título:</strong> ${escapeHtml(property.title)}</p>
+            <p><strong>Tipo:</strong> ${escapeHtml(property.type)}</p>
+            <p><strong>Ubicación:</strong> ${escapeHtml(property.location)}</p>
+            <p><strong>Propietario:</strong> ${escapeHtml(property.owner)}</p>
+            <p><strong>Precio:</strong> $${Number(property.price || 0).toLocaleString()}/mes</p>
             <p><strong>Fecha publicación:</strong> ${formatDate(property.date)}</p>
-            <p><strong>Estado:</strong> <span class="status-badge status-${property.status}">${getStatusText(property.status)}</span></p>
+            <p><strong>Estado:</strong> <span class="status-badge status-${property.status}">${escapeHtml(property.statusText || getStatusText(property.status))}</span></p>
+            <p><strong>Metros totales:</strong> ${property.totalMeters ?? "Sin informacion"}</p>
+            <p><strong>Dormitorios:</strong> ${property.rooms ?? "Sin informacion"}</p>
+            <p><strong>Banos:</strong> ${property.bathrooms ?? "Sin informacion"}</p>
         </div>
     `;
     
     new bootstrap.Modal(document.getElementById('propertyModal')).show();
 };
 
-window.deleteProperty = function(id) {
+window.deleteProperty = async function(id) {
     if (confirm('¿Eliminar esta propiedad permanentemente?')) {
-        adminProperties = adminProperties.filter(p => p.id !== id);
-        saveProperties();
-        renderProperties();
-        renderRecentProperties();
-        updateStats();
-        showToast('Propiedad eliminada correctamente');
+        try {
+            const response = await fetch(`/api/properties/${encodeURIComponent(id)}`, {
+                method: "DELETE",
+                credentials: "same-origin",
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result?.message || result?.error || "No se pudo eliminar la propiedad");
+            }
+
+            adminProperties = adminProperties.filter(p => p.id !== id);
+            saveProperties();
+            showToast('Propiedad eliminada correctamente');
+        } catch (error) {
+            console.error("Error eliminando propiedad:", error);
+            showToast(error.message || "No se pudo eliminar la propiedad", true);
+        }
     }
 };
 
