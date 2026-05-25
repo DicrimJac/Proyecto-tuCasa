@@ -1,13 +1,61 @@
 // ===================== ADMIN PANEL =====================
+const ADMIN_EMAIL = "admin@duoc.cl";
 
-// Datos simulados - Usuarios
-let adminUsers = [
-    { id: 1, name: "María González", email: "maria@example.com", phone: "+56 9 1234 5678", joined: "2024-01-15", status: "active" },
-    { id: 2, name: "Carlos Rodríguez", email: "carlos@example.com", phone: "+56 9 8765 4321", joined: "2024-02-20", status: "active" },
-    { id: 3, name: "Ana Martínez", email: "ana@example.com", phone: "+56 9 1122 3344", joined: "2024-03-10", status: "inactive" },
-    { id: 4, name: "Pedro Silva", email: "pedro@example.com", phone: "+56 9 5566 7788", joined: "2024-04-05", status: "active" },
-    { id: 5, name: "Laura Fernández", email: "laura@example.com", phone: "+56 9 9988 7766", joined: "2024-05-12", status: "active" }
-];
+function getLoggedUserEmail() {
+    const savedData = localStorage.getItem("userData") || localStorage.getItem("userProfile");
+
+    if (savedData) {
+        try {
+            const userData = JSON.parse(savedData);
+            return (userData.mail || userData.email || "").trim().toLowerCase();
+        } catch (error) {
+            console.error("Error parseando datos de usuario admin", error);
+        }
+    }
+
+    return (localStorage.getItem("userEmail") || "").trim().toLowerCase();
+}
+
+function requireAdminSession() {
+    if (getLoggedUserEmail() !== ADMIN_EMAIL) {
+        window.location.replace("home.html");
+        return false;
+    }
+
+    return true;
+}
+
+function clearAdminSessionData() {
+    localStorage.removeItem("userData");
+    localStorage.removeItem("userProfile");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    sessionStorage.removeItem("isLoggedIn");
+
+    document.cookie.split(";").forEach((cookie) => {
+        document.cookie = cookie.replace(/^ +/, "").replace(
+            /=.*/,
+            "=;expires=" + new Date().toUTCString() + ";path=/",
+        );
+    });
+}
+
+async function logoutAdmin() {
+    try {
+        await fetch("/api/users/logout", {
+            method: "POST",
+            credentials: "same-origin",
+        });
+    } catch (error) {
+        console.error("Error cerrando sesion admin:", error);
+    } finally {
+        clearAdminSessionData();
+        window.location.replace("home.html");
+    }
+}
+
+// Usuarios cargados desde la base de datos
+let adminUsers = [];
 
 // Datos simulados - Propiedades
 let adminProperties = [
@@ -95,6 +143,7 @@ let currentPropertySearch = "";
 let currentReviewFilter = "all";
 let currentReviewSearch = "";
 let currentSelectedReviewId = null;
+let usersLoadError = "";
 
 // ===================== DATOS DEL GRÁFICO =====================
 // Datos simulados de visualizaciones e interesados por propiedad
@@ -107,6 +156,75 @@ let propertyStats = [
 ];
 
 let chartInstance = null;
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function getUserFullName(user) {
+    const parts = [
+        user.first_name,
+        user.second_name,
+        user.first_last_name,
+        user.second_last_name,
+    ].filter(Boolean);
+
+    return parts.join(" ").trim() || user.name || user.nombre || "Sin nombre";
+}
+
+function normalizeUser(user, index) {
+    return {
+        raw: user,
+        id: user.id_usuario || user.id || user.id_user || user.user_id || index + 1,
+        name: getUserFullName(user),
+        email: user.mail || user.email || user.correo || "Sin correo",
+        phone: user.fono || user.phone || user.telefono || "Sin telefono",
+        joined: user.created_at || user.createdAt || user.date_created || user.joined || "",
+        status: user.status || user.estado || "active",
+    };
+}
+
+function showUsersLoading() {
+    const container = document.getElementById('usersTable');
+    if (container) {
+        container.innerHTML = `<tr><td colspan="7" class="text-center">Cargando usuarios...</td></tr>`;
+    }
+}
+
+async function loadUsersFromDatabase() {
+    showUsersLoading();
+    usersLoadError = "";
+
+    try {
+        const response = await fetch("/api/users", {
+            method: "GET",
+            credentials: "same-origin",
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result?.error || "No se pudieron obtener los usuarios");
+        }
+
+        const users = Array.isArray(result.data) ? result.data : [];
+        adminUsers = users.map(normalizeUser);
+    } catch (error) {
+        console.error("Error cargando usuarios desde la base de datos:", error);
+        adminUsers = [];
+        usersLoadError = error.message || "No se pudieron cargar los usuarios";
+        const container = document.getElementById('usersTable');
+        if (container) {
+            container.innerHTML = `<tr><td colspan="7" class="text-center">No se pudieron cargar los usuarios registrados</td></tr>`;
+        }
+        showToast(usersLoadError, true);
+    }
+}
 
 // Función para inicializar el gráfico
 function initPropertiesChart() {
@@ -238,8 +356,9 @@ function stopSimulation() {
 }
 
 // ===================== INICIALIZAR =====================
-function initAdmin() {
+async function initAdmin() {
     loadDataFromStorage();
+    await loadUsersFromDatabase();
     updateStats();
     renderUsers();
     renderProperties();
@@ -261,9 +380,6 @@ function loadPropertyStats() {
 }
 
 function loadDataFromStorage() {
-    if (localStorage.getItem('adminUsers')) {
-        adminUsers = JSON.parse(localStorage.getItem('adminUsers'));
-    }
     if (localStorage.getItem('adminProperties')) {
         adminProperties = JSON.parse(localStorage.getItem('adminProperties'));
     }
@@ -273,7 +389,8 @@ function loadDataFromStorage() {
 }
 
 function saveUsers() {
-    localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+    renderUsers();
+    updateStats();
 }
 
 function saveProperties() {
@@ -324,10 +441,16 @@ function renderRecentProperties() {
 function renderUsers() {
     const container = document.getElementById('usersTable');
     if (!container) return;
+
+    if (usersLoadError) {
+        container.innerHTML = `<tr><td colspan="7" class="text-center">${escapeHtml(usersLoadError)}</td></tr>`;
+        document.getElementById('usersPagination').innerHTML = '';
+        return;
+    }
     
     let filtered = adminUsers.filter(user => 
-        user.name.toLowerCase().includes(currentUserSearch.toLowerCase()) ||
-        user.email.toLowerCase().includes(currentUserSearch.toLowerCase())
+        String(user.name || "").toLowerCase().includes(currentUserSearch.toLowerCase()) ||
+        String(user.email || "").toLowerCase().includes(currentUserSearch.toLowerCase())
     );
     
     const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -342,10 +465,10 @@ function renderUsers() {
     
     container.innerHTML = paginated.map(user => `
         <tr>
-            <td>${user.id}</td>
-            <td><strong>${user.name}</strong></td>
-            <td>${user.email}</td>
-            <td>${user.phone}</td>
+            <td>${escapeHtml(user.id)}</td>
+            <td><strong>${escapeHtml(user.name)}</strong></td>
+            <td>${escapeHtml(user.email)}</td>
+            <td>${escapeHtml(user.phone)}</td>
             <td>${formatDate(user.joined)}</td>
             <td><span class="status-badge status-${user.status}">${user.status === 'active' ? 'Activo' : 'Inactivo'}</span></td>
             <td class="action-btns">
@@ -485,9 +608,9 @@ window.viewUser = function(id) {
     modalBody.innerHTML = `
         <div class="user-details">
             <p><strong>ID:</strong> ${user.id}</p>
-            <p><strong>Nombre:</strong> ${user.name}</p>
-            <p><strong>Email:</strong> ${user.email}</p>
-            <p><strong>Teléfono:</strong> ${user.phone}</p>
+            <p><strong>Nombre:</strong> ${escapeHtml(user.name)}</p>
+            <p><strong>Email:</strong> ${escapeHtml(user.email)}</p>
+            <p><strong>Teléfono:</strong> ${escapeHtml(user.phone)}</p>
             <p><strong>Miembro desde:</strong> ${formatDate(user.joined)}</p>
             <p><strong>Estado:</strong> <span class="status-badge status-${user.status}">${user.status === 'active' ? 'Activo' : 'Inactivo'}</span></p>
         </div>
@@ -507,13 +630,35 @@ window.toggleUserStatus = function(id) {
     }
 };
 
-window.deleteUser = function(id) {
+window.deleteUser = async function(id) {
+    const user = adminUsers.find(u => u.id === id);
+    if (!user) return;
+    if (!user.email || user.email === "Sin correo") {
+        showToast("Este usuario no tiene correo para eliminarlo desde la base de datos", true);
+        return;
+    }
+
     if (confirm('¿Eliminar este usuario permanentemente?')) {
-        adminUsers = adminUsers.filter(u => u.id !== id);
-        saveUsers();
-        renderUsers();
-        updateStats();
-        showToast('Usuario eliminado correctamente');
+        try {
+            const response = await fetch(`/api/users/${encodeURIComponent(user.email)}`, {
+                method: "DELETE",
+                credentials: "same-origin",
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result?.error || "No se pudo eliminar el usuario");
+            }
+
+            adminUsers = adminUsers.filter(u => u.id !== id);
+            renderUsers();
+            updateStats();
+            showToast('Usuario eliminado correctamente');
+        } catch (error) {
+            console.error("Error eliminando usuario:", error);
+            showToast(error.message || "No se pudo eliminar el usuario", true);
+        }
     }
 };
 
@@ -587,7 +732,9 @@ window.openReviewModal = function(id) {
 
 // ===================== FUNCIONES UTILITARIAS =====================
 function formatDate(dateString) {
+    if (!dateString) return "Sin fecha";
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "Sin fecha";
     return date.toLocaleDateString('es-CL');
 }
 
@@ -688,7 +835,7 @@ function initEventListeners() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            window.location.href = 'logout.html';
+            logoutAdmin();
         });
     }
 }
@@ -727,5 +874,7 @@ function showToast(message, isError = false) {
 
 // ===================== INICIALIZAR =====================
 document.addEventListener('DOMContentLoaded', () => {
-    initAdmin();
+    if (requireAdminSession()) {
+        initAdmin();
+    }
 });

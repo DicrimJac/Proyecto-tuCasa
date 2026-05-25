@@ -135,4 +135,33 @@ export class UserRepository extends BaseRepository {
         if (error) throw new Error(`Error al eliminar usuario ${id}: ${error.message}`);
         return data;
     }
+
+    async deleteByUserRecord(existingUser) {
+        const idUsuario = existingUser?.id_usuario;
+        const id = existingUser?.id;
+        const mail = existingUser?.mail || existingUser?.email || existingUser?.correo;
+
+        let query = this.supabase
+            .from('USUARIO')
+            .delete();
+
+        let identifier = "";
+        if (idUsuario !== undefined && idUsuario !== null) {
+            query = query.eq('id_usuario', idUsuario);
+            identifier = `id_usuario ${idUsuario}`;
+        } else if (id !== undefined && id !== null) {
+            query = query.eq('id', id);
+            identifier = `id ${id}`;
+        } else if (mail) {
+            query = query.eq('mail', mail);
+            identifier = `mail ${mail}`;
+        } else {
+            throw new Error("No se pudo identificar el usuario para eliminar");
+        }
+
+        const { data, error } = await query.select().maybeSingle();
+        if (error) throw new Error(`Error al eliminar usuario con ${identifier}: ${error.message}`);
+        if (!data) throw new Error(`No se eliminó ningún usuario con ${identifier}`);
+        return data;
+    }
 }
