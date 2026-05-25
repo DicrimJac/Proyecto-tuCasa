@@ -31,9 +31,17 @@ export class PropertyService {
             characteristics.map((characteristic) => [characteristic.id_propi, characteristic]),
         );
         const userById = new Map(users.map((user) => {
-            const safeUser = { ...user };
-            delete safeUser.pass;
-            return [safeUser.id_usuario || safeUser.id || safeUser.id_user || safeUser.user_id, safeUser];
+            const id = user.id_usuario || user.id || user.id_user || user.user_id;
+            const safeUser = {
+                id_usuario: user.id_usuario,
+                id,
+                first_name: user.first_name,
+                second_name: user.second_name,
+                first_last_name: user.first_last_name,
+                second_last_name: user.second_last_name,
+                name: user.name || user.nombre,
+            };
+            return [id, safeUser];
         }));
 
         return properties.map((property) => ({
@@ -45,8 +53,17 @@ export class PropertyService {
     }
 
     async getPropertyById(id) {
-        const data = await this.repository.findById(id);
-        return data;
+        const property = await this.repository.findById(id);
+        const [addresses, characteristics] = await Promise.all([
+            property?.id_address ? this.addressRepository.findByIds([property.id_address]) : [],
+            property?.id_propi ? this.characteristicRepository.findByPropertyIds([property.id_propi]) : [],
+        ]);
+
+        return {
+            ...property,
+            direccion: addresses[0] || null,
+            caracteristica: characteristics[0] || null,
+        };
     }
 
     async createProperty(propertyData) {
