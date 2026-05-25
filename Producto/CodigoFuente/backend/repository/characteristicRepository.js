@@ -32,6 +32,22 @@ export class CharacteristicRepository extends BaseRepository {
         return data;
     }
 
+    async updateByPropertyId(propertyId, characteristicData) {
+        const { data, error } = await this.supabase
+            .from("CARACTERISTICA")
+            .update(characteristicData)
+            .eq("id_propi", propertyId)
+            .select()
+            .maybeSingle();
+
+        if (error) {
+            throw new Error(`Error al actualizar caracteristicas de propiedad ${propertyId}: ${error.message}`);
+        }
+
+        if (data) return data;
+        return this.create({ ...characteristicData, id_propi: propertyId });
+    }
+
     async deleteByPropertyId(propertyId) {
         const { data, error } = await this.supabase
             .from("CARACTERISTICA")

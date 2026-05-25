@@ -32,6 +32,21 @@ export class AddressRepository extends BaseRepository {
         return data;
     }
 
+    async update(id, addressData) {
+        const { data, error } = await this.supabase
+            .from("DIRECCION")
+            .update(addressData)
+            .eq("id_address", id)
+            .select()
+            .single();
+
+        if (error) {
+            throw new Error(`Error al actualizar direccion ${id}: ${error.message}`);
+        }
+
+        return data;
+    }
+
     async delete(id) {
         const { data, error } = await this.supabase
             .from("DIRECCION")

@@ -5,6 +5,8 @@ let selectedImages = [];
 let mainImageIndex = null;
 const PROPERTY_IMAGE_CACHE_KEY = "propertyImageCache";
 const OWNER_PROPERTY_IDS_KEY = "ownerPropertyIds";
+let editingPropertyId = null;
+let editingPropertyData = null;
 
 // INICIALIZACIÓN
 document.addEventListener("DOMContentLoaded", () => {
@@ -36,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Input imágenes
     initImages();
+    initEditMode();
 });
 
 // Nota: el header y el footer se cargan globalmente desde js/headerfooter.js,
@@ -87,7 +90,7 @@ function validateStep2() {
 
 function validateStep3() {
     const files = document.getElementById("images").files;
-    if (files.length === 0) {
+    if (files.length === 0 && !editingPropertyId) {
         showToast("Debes subir al menos una imagen", true);
         return;
     }
@@ -242,7 +245,7 @@ function savePropertyImageToCache(propertyId, imageDataUrl) {
 
     try {
         const cache = JSON.parse(localStorage.getItem(PROPERTY_IMAGE_CACHE_KEY) || "{}");
-        cache[propertyId] = imageDataUrl;
+        cache[String(propertyId)] = imageDataUrl;
         localStorage.setItem(PROPERTY_IMAGE_CACHE_KEY, JSON.stringify(cache));
     } catch (error) {
         console.error("No se pudo guardar la imagen en cache:", error);
@@ -255,10 +258,129 @@ function saveOwnerPropertyId(propertyId) {
 
     const ownerKey = getLoggedOwnerKey();
     const allOwners = JSON.parse(localStorage.getItem(OWNER_PROPERTY_IDS_KEY) || "{}");
-    const ownerIds = new Set(allOwners[ownerKey] || []);
-    ownerIds.add(propertyId);
+    const ownerIds = new Set((allOwners[ownerKey] || []).map(String));
+    ownerIds.add(String(propertyId));
     allOwners[ownerKey] = [...ownerIds];
     localStorage.setItem(OWNER_PROPERTY_IDS_KEY, JSON.stringify(allOwners));
+}
+
+function getCachedPropertyImage(propertyId) {
+    try {
+        const cache = JSON.parse(localStorage.getItem(PROPERTY_IMAGE_CACHE_KEY) || "{}");
+        return cache[String(propertyId)] || "";
+    } catch (error) {
+        console.error("Error leyendo cache de imagen:", error);
+        return "";
+    }
+}
+
+function setInputValue(id, value) {
+    const element = document.getElementById(id);
+    if (element && value !== undefined && value !== null) {
+        element.value = value;
+    }
+}
+
+function selectRadio(name, value) {
+    const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
+    if (!input) return;
+    input.checked = true;
+    const card = input.closest(".option-card");
+    const group = input.closest(".options");
+    group?.querySelectorAll(".option-card").forEach(item => item.classList.remove("selected"));
+    card?.classList.add("selected");
+}
+
+function categoryFromType(typeDesc = "") {
+    const value = typeDesc.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+    if (value.includes("departamento")) return "departamento";
+    if (value.includes("pieza")) return "pieza";
+    if (value.includes("suite")) return "suite";
+    if (value.includes("mansion")) return "mansion";
+    if (value.includes("bodega")) return "bodega";
+    return "casa";
+}
+
+function conditionFromType(typeDesc = "") {
+    const value = typeDesc.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+    return value.includes("nueva") || value.includes("nuevo") ? "nueva" : "usada";
+}
+
+function qtyYearToAge(qtyYear) {
+    if (qtyYear === 0) return "Menos de 1 aÃ±o";
+    if (qtyYear <= 5) return "1 - 5 aÃ±os";
+    if (qtyYear <= 10) return "5 - 10 aÃ±os";
+    return "10+ aÃ±os";
+}
+
+function renderCachedMainImage(propertyId) {
+    const image = getCachedPropertyImage(propertyId);
+    if (!image) return;
+
+    const mainImage = document.getElementById("mainImage");
+    const placeholder = document.getElementById("mainImagePlaceholder");
+    const summaryMainImage = document.getElementById("summaryMainImage");
+    if (mainImage) mainImage.src = image;
+    if (summaryMainImage) summaryMainImage.src = image;
+    if (placeholder) placeholder.style.display = "none";
+}
+
+async function initEditMode() {
+    const params = new URLSearchParams(window.location.search);
+    editingPropertyId = params.get("id");
+    if (!editingPropertyId) return;
+
+    try {
+        const response = await fetch(`/api/properties/${encodeURIComponent(editingPropertyId)}`, {
+            method: "GET",
+            credentials: "same-origin",
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudo cargar la propiedad");
+        }
+
+        editingPropertyData = result.data;
+        fillEditForm(editingPropertyData);
+    } catch (error) {
+        console.error("Error cargando propiedad para editar:", error);
+        showToast(error.message || "No se pudo cargar la propiedad", true);
+    }
+}
+
+function fillEditForm(property) {
+    const address = property.direccion || {};
+    const characteristic = property.caracteristica || {};
+    const typeDesc = property.type_desc || "";
+
+    document.querySelector(".page-hero-container h1").textContent = "Editar Propiedad";
+    document.querySelector(".page-hero-container p").textContent = "Actualiza la informacion de tu propiedad";
+
+    selectRadio("category", categoryFromType(typeDesc));
+    selectRadio("condition", conditionFromType(typeDesc));
+
+    setInputValue("street", address.street);
+    setInputValue("number", address.number);
+    setInputValue("comuna", address.comuna);
+    setInputValue("city", address.city);
+    setInputValue("state", address.state);
+    setInputValue("totalArea", characteristic.total_mtr);
+    setInputValue("usableArea", characteristic.surface_mtr);
+    setInputValue("bedrooms", characteristic.qty_room >= 5 ? "5+" : characteristic.qty_room);
+    setInputValue("bathrooms", characteristic.qty_bath >= 5 ? "5+" : characteristic.qty_bath);
+    setInputValue("age", qtyYearToAge(characteristic.qty_year));
+    setInputValue("floors", characteristic.qty_floor >= 5 ? "5+" : characteristic.qty_floor);
+    setInputValue("orientation", characteristic.orientation);
+    setInputValue("price", characteristic.price);
+    setInputValue("selectedPlan", characteristic.type_publis_desc || "BÃ¡sico");
+
+    document.querySelectorAll('.check-grid input[type="checkbox"][data-field]').forEach(input => {
+        input.checked = characteristic[input.dataset.field] === true;
+    });
+
+    renderCachedMainImage(property.id_propi);
+    updateMap();
 }
 
 function initDescriptionCounter() {
@@ -465,8 +587,11 @@ async function publishProperty() {
             caracteristica,
         };
 
-        const response = await fetch("/api/properties", {
-            method: "POST",
+        const endpoint = editingPropertyId
+            ? `/api/properties/${encodeURIComponent(editingPropertyId)}`
+            : "/api/properties";
+        const response = await fetch(endpoint, {
+            method: editingPropertyId ? "PUT" : "POST",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -491,11 +616,13 @@ async function publishProperty() {
             return;
         }
 
-        showToast("¡Propiedad publicada exitosamente!");
-        const createdPropertyId = result?.data?.propiedad?.id_propi || result?.data?.id_propi;
-        const cachedImage = await fileToCompressedDataUrl(getMainImageFile());
-        savePropertyImageToCache(createdPropertyId, cachedImage);
-        saveOwnerPropertyId(createdPropertyId);
+        showToast(editingPropertyId ? "Propiedad actualizada exitosamente" : "Propiedad publicada exitosamente");
+        const savedPropertyId = editingPropertyId || result?.data?.propiedad?.id_propi || result?.data?.id_propi;
+        if (selectedImages.length > 0) {
+            const cachedImage = await fileToCompressedDataUrl(getMainImageFile());
+            savePropertyImageToCache(savedPropertyId, cachedImage);
+        }
+        saveOwnerPropertyId(savedPropertyId);
 
         setTimeout(() => {
             window.location.href = "dashboardOwner.html";
