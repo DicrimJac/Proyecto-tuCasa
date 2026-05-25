@@ -12,7 +12,39 @@ const propertyArea = document.getElementById("propertyArea");
 const propertyType = document.getElementById("propertyType");
 const operationType = document.getElementById("operationType");
 const propertyDescription = document.getElementById("propertyDescription");
+const featuresBox = document.getElementById("featuresBox");
+const propertyFeatures = document.getElementById("propertyFeatures");
 const mapFrame = document.getElementById("mapFrame");
+
+const featureLabels = {
+    h_store: { label: "Bodega", icon: "fa-box" },
+    h_parkin: { label: "Estacionamiento", icon: "fa-car" },
+    h_gas: { label: "Gas natural", icon: "fa-fire" },
+    h_air: { label: "Aire acondicionado", icon: "fa-snowflake" },
+    h_heat: { label: "Calefaccion", icon: "fa-temperature-high" },
+    h_logia: { label: "Logia", icon: "fa-shirt" },
+    h_energy_solar: { label: "Energia solar", icon: "fa-solar-panel" },
+    h_bioler: { label: "Caldera", icon: "fa-fire-burner" },
+    h_cale: { label: "Calefont", icon: "fa-shower" },
+    h_fire_place: { label: "Chimenea", icon: "fa-fire-flame-curved" },
+    h_gym: { label: "Gimnasio", icon: "fa-dumbbell" },
+    h_parkin_visit: { label: "Estacionamiento visita", icon: "fa-square-parking" },
+    h_elevator: { label: "Ascensor", icon: "fa-elevator" },
+    h_place_kid: { label: "Juegos infantiles", icon: "fa-child-reaching" },
+    h_place_green: { label: "Areas verdes", icon: "fa-tree" },
+    h_salon: { label: "Salon de eventos", icon: "fa-champagne-glasses" },
+    h_alarm: { label: "Alarma", icon: "fa-bell" },
+    h_recip: { label: "Porton automatico", icon: "fa-door-closed" },
+    h_close: { label: "Condominio cerrado", icon: "fa-lock" },
+    h_control: { label: "Acceso controlado", icon: "fa-key" },
+    h_balcony: { label: "Balcon", icon: "fa-city" },
+    h_comedor: { label: "Comedor", icon: "fa-utensils" },
+    h_suite: { label: "Dormitorio en suite", icon: "fa-bed" },
+    h_yard: { label: "Patio", icon: "fa-seedling" },
+    h_walki_clos: { label: "Walking closet", icon: "fa-shirt" },
+    h_pool: { label: "Piscina", icon: "fa-water-ladder" },
+    w_furnitor: { label: "Amoblado", icon: "fa-couch" },
+};
 
 function normalizeText(value) {
     return String(value || "")
@@ -45,6 +77,16 @@ function getPropertyType(rawProperty) {
         || "Sin tipo";
 }
 
+function getCachedPropertyImage(propertyId) {
+    try {
+        const cache = JSON.parse(localStorage.getItem("propertyImageCache") || "{}");
+        return cache[propertyId] || "";
+    } catch (error) {
+        console.error("Error leyendo cache de imagenes:", error);
+        return "";
+    }
+}
+
 function getOperationType(rawProperty) {
     const operation = rawProperty.operationType
         || rawProperty.operation_desc
@@ -62,8 +104,10 @@ function normalizeProperty(rawProperty) {
     const operation = getOperationType(rawProperty);
     const area = characteristic.total_mtr ?? rawProperty.area ?? rawProperty.propertyArea ?? 0;
 
+    const id = rawProperty.id_propi || rawProperty.id || rawProperty.property_id || rawProperty.raw?.id_propi || "";
+
     return {
-        id: rawProperty.id_propi || rawProperty.id || rawProperty.property_id || rawProperty.raw?.id_propi || "",
+        id,
         title: rawProperty.title || rawProperty.titulo || rawProperty.name || rawProperty.type_desc || rawProperty.raw?.type_desc || "Propiedad",
         price: priceValue ? `$${priceValue.toLocaleString()}${operation === "Arriendo" ? " / mes" : ""}` : "Precio no disponible",
         location: getPropertyLocation(rawProperty),
@@ -74,9 +118,30 @@ function normalizeProperty(rawProperty) {
         propertyType: getPropertyType(rawProperty),
         operationType: operation,
         description: rawProperty.description || rawProperty.descripcion || characteristic.description || "Sin descripcion disponible.",
-        image: rawProperty.image || rawProperty.imagen || DEFAULT_PROPERTY_IMAGE,
+        features: Object.entries(featureLabels)
+            .filter(([field]) => characteristic[field] === true)
+            .map(([field, data]) => ({ field, ...data })),
+        image: getCachedPropertyImage(id) || rawProperty.image || rawProperty.imagen || DEFAULT_PROPERTY_IMAGE,
         raw: rawProperty,
     };
+}
+
+function renderPropertyFeatures() {
+    if (!featuresBox || !propertyFeatures || !property) return;
+
+    if (!property.features || property.features.length === 0) {
+        featuresBox.style.display = "none";
+        propertyFeatures.innerHTML = "";
+        return;
+    }
+
+    featuresBox.style.display = "block";
+    propertyFeatures.innerHTML = property.features.map((feature) => `
+        <div class="feature-item">
+            <span class="feature-icon"><i class="fas ${feature.icon}"></i></span>
+            <span>${feature.label}</span>
+        </div>
+    `).join("");
 }
 
 function renderPropertyDetail() {
@@ -99,6 +164,7 @@ function renderPropertyDetail() {
     if (propertyType) propertyType.textContent = property.propertyType;
     if (operationType) operationType.textContent = property.operationType;
     if (propertyDescription) propertyDescription.textContent = property.description;
+    renderPropertyFeatures();
 
     if (mapFrame && property.location) {
         const addressURL = encodeURIComponent(property.location);

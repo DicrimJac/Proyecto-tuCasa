@@ -3,6 +3,8 @@
 // Variables globales
 let selectedImages = [];
 let mainImageIndex = null;
+const PROPERTY_IMAGE_CACHE_KEY = "propertyImageCache";
+const OWNER_PROPERTY_IDS_KEY = "ownerPropertyIds";
 
 // INICIALIZACIÓN
 document.addEventListener("DOMContentLoaded", () => {
@@ -190,6 +192,75 @@ function setMain(index) {
 }
 
 // Contador descripción
+function getLoggedOwnerKey() {
+    const savedData = localStorage.getItem("userData") || localStorage.getItem("userProfile");
+    if (savedData) {
+        try {
+            const user = JSON.parse(savedData);
+            return (user.mail || user.email || user.correo || user.id_usuario || user.id || "owner").toString().trim().toLowerCase();
+        } catch (error) {
+            console.error("Error leyendo usuario logueado:", error);
+        }
+    }
+
+    return (localStorage.getItem("userEmail") || "owner").trim().toLowerCase();
+}
+
+function getMainImageFile() {
+    if (selectedImages.length === 0) return null;
+    return selectedImages[mainImageIndex ?? 0] || selectedImages[0];
+}
+
+function fileToCompressedDataUrl(file, maxSize = 900, quality = 0.72) {
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            resolve(null);
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("No se pudo leer la imagen"));
+        reader.onload = () => {
+            const image = new Image();
+            image.onerror = () => reject(new Error("No se pudo procesar la imagen"));
+            image.onload = () => {
+                const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.max(1, Math.round(image.width * scale));
+                canvas.height = Math.max(1, Math.round(image.height * scale));
+                canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL("image/jpeg", quality));
+            };
+            image.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function savePropertyImageToCache(propertyId, imageDataUrl) {
+    if (!propertyId || !imageDataUrl) return;
+
+    try {
+        const cache = JSON.parse(localStorage.getItem(PROPERTY_IMAGE_CACHE_KEY) || "{}");
+        cache[propertyId] = imageDataUrl;
+        localStorage.setItem(PROPERTY_IMAGE_CACHE_KEY, JSON.stringify(cache));
+    } catch (error) {
+        console.error("No se pudo guardar la imagen en cache:", error);
+        showToast("La propiedad se publico, pero la imagen no pudo guardarse en cache local", true);
+    }
+}
+
+function saveOwnerPropertyId(propertyId) {
+    if (!propertyId) return;
+
+    const ownerKey = getLoggedOwnerKey();
+    const allOwners = JSON.parse(localStorage.getItem(OWNER_PROPERTY_IDS_KEY) || "{}");
+    const ownerIds = new Set(allOwners[ownerKey] || []);
+    ownerIds.add(propertyId);
+    allOwners[ownerKey] = [...ownerIds];
+    localStorage.setItem(OWNER_PROPERTY_IDS_KEY, JSON.stringify(allOwners));
+}
+
 function initDescriptionCounter() {
     const desc = document.getElementById("description");
     const count = document.getElementById("charCount");
@@ -421,8 +492,13 @@ async function publishProperty() {
         }
 
         showToast("¡Propiedad publicada exitosamente!");
+        const createdPropertyId = result?.data?.propiedad?.id_propi || result?.data?.id_propi;
+        const cachedImage = await fileToCompressedDataUrl(getMainImageFile());
+        savePropertyImageToCache(createdPropertyId, cachedImage);
+        saveOwnerPropertyId(createdPropertyId);
+
         setTimeout(() => {
-            window.location.href = "profile.html";
+            window.location.href = "dashboardOwner.html";
         }, 2000);
     } catch (error) {
         console.error("Error publicando propiedad:", error);

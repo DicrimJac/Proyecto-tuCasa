@@ -226,6 +226,16 @@ function getPropertyLocation(property) {
     return [...new Set(parts)].join(", ") || "Sin ubicación";
 }
 
+function getCachedPropertyImage(propertyId) {
+    try {
+        const cache = JSON.parse(localStorage.getItem("propertyImageCache") || "{}");
+        return cache[propertyId] || "";
+    } catch (error) {
+        console.error("Error leyendo cache de imagenes:", error);
+        return "";
+    }
+}
+
 function normalizeProperty(property, index) {
     const characteristic = property.caracteristica || property.characteristic || {};
     const id = property.id_propi || property.id || property.property_id || index + 1;
@@ -242,7 +252,7 @@ function normalizeProperty(property, index) {
         rooms: Number(characteristic.qty_room ?? property.rooms ?? property.habitaciones ?? 0),
         bathrooms: Number(characteristic.qty_bath ?? property.bathrooms ?? property.banos ?? 0),
         area: Number(characteristic.total_mtr ?? property.area ?? property.superficie ?? 0),
-        image: property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
+        image: getCachedPropertyImage(id) || property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
         favorite: false,
         date: property.date_register || property.created_at || property.createdAt || property.date_created || property.date || "",
         raw: property,
