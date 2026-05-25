@@ -52,6 +52,16 @@ function getPropertyLocation(property) {
   return [...new Set(parts)].join(", ") || "Sin ubicacion";
 }
 
+function getCachedPropertyImage(propertyId) {
+  try {
+    const cache = JSON.parse(localStorage.getItem("propertyImageCache") || "{}");
+    return cache[propertyId] || "";
+  } catch (error) {
+    console.error("Error leyendo cache de imagenes:", error);
+    return "";
+  }
+}
+
 function normalizeProperty(property, index) {
   const characteristic = property.caracteristica || property.characteristic || {};
   const id = property.id_propi || property.id || property.property_id || index + 1;
@@ -65,7 +75,7 @@ function normalizeProperty(property, index) {
     bathrooms: Number(characteristic.qty_bath ?? property.bathrooms ?? property.banos ?? 0),
     category: getPropertyCategory(property),
     condition: getPropertyCondition(property),
-    image: property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
+    image: getCachedPropertyImage(id) || property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
     destacada: property.destacada ?? property.featured ?? index < 5,
     date: property.date_register || property.created_at || property.createdAt || property.date_created || property.date || "",
     raw: property,
@@ -126,7 +136,6 @@ function renderProperties() {
   const filtered = filterPropertiesForHome();
   const destacadas = filtered.filter((property) => property.destacada);
   const ultimas = filtered
-    .filter((property) => !property.destacada)
     .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
   destacadasContainer.innerHTML = destacadas.length
