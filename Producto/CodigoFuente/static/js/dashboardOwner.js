@@ -25,7 +25,7 @@ function getLoggedOwnerKey() {
 function getOwnerPropertyIds() {
     try {
         const allOwners = JSON.parse(localStorage.getItem("ownerPropertyIds") || "{}");
-        return new Set(allOwners[getLoggedOwnerKey()] || []);
+        return new Set((allOwners[getLoggedOwnerKey()] || []).map(String));
     } catch (error) {
         console.error("Error leyendo propiedades del usuario:", error);
         return new Set();
@@ -35,8 +35,8 @@ function getOwnerPropertyIds() {
 function removeOwnerPropertyId(propertyId) {
     const allOwners = JSON.parse(localStorage.getItem("ownerPropertyIds") || "{}");
     const ownerKey = getLoggedOwnerKey();
-    const ids = new Set(allOwners[ownerKey] || []);
-    ids.delete(propertyId);
+    const ids = new Set((allOwners[ownerKey] || []).map(String));
+    ids.delete(String(propertyId));
     allOwners[ownerKey] = [...ids];
     localStorage.setItem("ownerPropertyIds", JSON.stringify(allOwners));
 }
@@ -53,7 +53,7 @@ function getCachedPropertyImage(propertyId) {
 
 function removeCachedPropertyImage(propertyId) {
     const cache = JSON.parse(localStorage.getItem("propertyImageCache") || "{}");
-    delete cache[propertyId];
+    delete cache[String(propertyId)];
     localStorage.setItem("propertyImageCache", JSON.stringify(cache));
 }
 
@@ -98,7 +98,7 @@ async function loadOwnerProperties() {
     const ownerIds = getOwnerPropertyIds();
     const normalized = properties.map(normalizeProperty);
     ownerProperties = ownerIds.size > 0
-        ? normalized.filter((property) => ownerIds.has(property.id))
+        ? normalized.filter((property) => ownerIds.has(String(property.id)))
         : normalized;
 }
 
@@ -221,7 +221,7 @@ function renderProperties() {
 }
 
 function editProperty(id) {
-    window.location.href = `publishProperty.html?id=${id}`;
+    window.location.href = `publishProperty.html?id=${encodeURIComponent(id)}&mode=edit`;
 }
 
 async function deleteProperty(id) {

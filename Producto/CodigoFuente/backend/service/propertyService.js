@@ -72,8 +72,29 @@ export class PropertyService {
     }
 
     async updateProperty(id, propertyData) {
-        const data = await this.repository.update(id, propertyData);
-        return data;
+        const { direccion, propiedad, caracteristica } = propertyData || {};
+
+        if (!direccion && !propiedad && !caracteristica) {
+            const data = await this.repository.update(id, propertyData);
+            return data;
+        }
+
+        const currentProperty = await this.repository.findById(id);
+        const updatedAddress = direccion && currentProperty?.id_address
+            ? await this.addressRepository.update(currentProperty.id_address, direccion)
+            : null;
+        const updatedProperty = propiedad
+            ? await this.repository.update(id, propiedad)
+            : currentProperty;
+        const updatedCharacteristic = caracteristica
+            ? await this.characteristicRepository.updateByPropertyId(id, caracteristica)
+            : null;
+
+        return {
+            direccion: updatedAddress,
+            propiedad: updatedProperty,
+            caracteristica: updatedCharacteristic,
+        };
     }
 
     async deleteProperty(id) {
