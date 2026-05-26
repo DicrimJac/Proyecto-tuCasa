@@ -1,10 +1,19 @@
 import { getCookie, setCookie } from "hono/cookie";
 import { UserService } from "../service/userService.js";
+import { EmailService } from "../service/emailService.js";
 import { SessionRepository } from "../repository/sessionRepository.js";
+
+const passwordResetCodes = new Map();
+const RESET_CODE_TTL_MS = 10 * 60 * 1000;
+
+function createResetCode() {
+  return String(Math.floor(1000 + Math.random() * 9000));
+}
 
 export class UserController {
   constructor() {
     this.userService = new UserService();
+    this.emailService = new EmailService();
   }
 
   // GET /api/users
@@ -276,6 +285,82 @@ export class UserController {
       const result = await this.userService.changePasswordByMail(mail, payload);
       const status = result?.success ? 200 : 400;
       return c.json(result, status);
+    } catch (error) {
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
+    }
+  }
+
+  async requestPasswordReset(c) {
+    try {
+      const { email } = await c.req.json();
+      const normalizedEmail = String(email || "").trim().toLowerCase();
+
+      if (!normalizedEmail) {
+        return c.json({ success: false, error: "Email requerido" }, 400);
+      }
+
+      const userResult = await this.userService.validateUserEmail(normalizedEmail);
+      if (!userResult.success) {
+        return c.json(userResult, 404);
+      }
+
+      const code = createResetCode();
+      passwordResetCodes.set(normalizedEmail, {
+        code,
+        expiresAt: Date.now() + RESET_CODE_TTL_MS,
+      });
+
+      const emailResult = await this.emailService.sendPasswordResetCode(normalizedEmail, code);
+      const payload = {
+        success: true,
+        message: "Codigo de recuperacion enviado",
+        expiresInSeconds: RESET_CODE_TTL_MS / 1000,
+      };
+
+      if (emailResult.devMode) {
+        payload.devResetCode = code;
+      }
+
+      return c.json(payload, 200);
+    } catch (error) {
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
+    }
+  }
+
+  async confirmPasswordReset(c) {
+    try {
+      const { email, code, newPassword } = await c.req.json();
+      const normalizedEmail = String(email || "").trim().toLowerCase();
+      const normalizedCode = String(code || "").trim();
+      const resetData = passwordResetCodes.get(normalizedEmail);
+
+      if (!normalizedEmail || !normalizedCode || !newPassword) {
+        return c.json({ success: false, error: "Email, codigo y nueva contrasena son requeridos" }, 400);
+      }
+
+      if (!resetData || resetData.expiresAt < Date.now()) {
+        passwordResetCodes.delete(normalizedEmail);
+        return c.json({ success: false, error: "Codigo expirado o inexistente" }, 400);
+      }
+
+      if (resetData.code !== normalizedCode) {
+        return c.json({ success: false, error: "Codigo incorrecto" }, 400);
+      }
+
+      const result = await this.userService.resetPasswordByMail(normalizedEmail, newPassword);
+      if (result.success) {
+        passwordResetCodes.delete(normalizedEmail);
+      }
+
+      return c.json(result, result.success ? 200 : 400);
     } catch (error) {
       return c.json({
         success: false,

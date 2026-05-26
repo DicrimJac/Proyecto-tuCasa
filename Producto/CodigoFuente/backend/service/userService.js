@@ -286,6 +286,33 @@ export class UserService {
         return { success: true, data: updated };
     }
 
+    async validateUserEmail(mail) {
+        try {
+            const existing = await this.userRepository.findByEmail(mail);
+            return { success: true, data: { mail: existing.mail || existing.email || existing.correo || mail } };
+        } catch (_error) {
+            return { success: false, error: "No existe una cuenta registrada con ese correo" };
+        }
+    }
+
+    async resetPasswordByMail(mail, newPassword) {
+        if (!newPassword || newPassword.length < 6) {
+            return { success: false, error: "La nueva contrasena debe tener al menos 6 caracteres" };
+        }
+
+        try {
+            const existing = await this.userRepository.findByEmail(mail);
+            const updated = await this.userRepository.updateByUserRecord(existing, {
+                pass: newPassword,
+            });
+
+            if (updated && updated.pass) delete updated.pass;
+            return { success: true, data: updated };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
     async deleteUserByMail(mail) {
         const user = await this.userRepository.findByEmail(mail);
         if (!user) {

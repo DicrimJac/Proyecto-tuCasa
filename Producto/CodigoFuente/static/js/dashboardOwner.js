@@ -100,6 +100,55 @@ function normalizeProperty(property, index) {
     };
 }
 
+function getStoredRentRequests() {
+    try {
+        return JSON.parse(localStorage.getItem("rentRequests") || "[]");
+    } catch (error) {
+        console.error("Error leyendo solicitudes de arriendo:", error);
+        return [];
+    }
+}
+
+function normalizeRequestStatus(status) {
+    return {
+        pending: "pendiente",
+        approved: "aprobada",
+        rejected: "rechazada",
+    }[status] || status || "pendiente";
+}
+
+function normalizeRequest(request) {
+    return {
+        ...request,
+        propertyId: String(request.propertyId || ""),
+        applicant: request.applicant || request.fullName || "Solicitante",
+        status: normalizeRequestStatus(request.status),
+        message: request.message || "Sin mensaje",
+    };
+}
+
+function loadReceivedRequests() {
+    const ownerPropertyIds = new Set(ownerProperties.map((property) => String(property.id)));
+    const storedRequests = getStoredRentRequests().map(normalizeRequest);
+
+    receivedRequests = ownerPropertyIds.size > 0
+        ? storedRequests.filter((request) => ownerPropertyIds.has(request.propertyId))
+        : storedRequests;
+
+    recentActivity = receivedRequests.map((request) => ({
+        type: "solicitud",
+        title: `Nueva solicitud: ${request.propertyTitle}`,
+        date: request.date,
+    }));
+}
+
+function refreshReceivedRequests() {
+    loadReceivedRequests();
+    renderRecentActivity();
+    renderRequests();
+    updateStats();
+}
+
 async function loadOwnerProperties() {
     const response = await fetch("/api/properties", {
         method: "GET",
@@ -123,7 +172,7 @@ async function loadOwnerProperties() {
 function updateStats() {
     const totalProps = ownerProperties.length;
     const totalReqs = receivedRequests.length;
-    const approvedReqs = receivedRequests.filter(r => r.status === 'approved').length;
+    const approvedReqs = receivedRequests.filter(r => r.status === 'aprobada').length;
     const acceptanceRate = totalReqs > 0 ? Math.round((approvedReqs / totalReqs) * 100) : 0;
     
     let avgRating = 0;
@@ -180,13 +229,17 @@ function renderRequests() {
             </div>
             <div class="request-actions">
                 <button class="btn-view" onclick="viewRequestDetail(${r.id})">Ver</button>
+                ${r.status === 'pendiente' ? `
+                    <button class="btn-approve" onclick="updateRequestStatus(${r.id}, 'aprobada')">Aprobar</button>
+                    <button class="btn-reject" onclick="updateRequestStatus(${r.id}, 'rechazada')">Rechazar</button>
+                ` : ''}
             </div>
         </div>
     `).join('');
 }
 
 function getStatusText(status) {
-    return { pending: 'Pendiente', approved: 'Aprobada', rejected: 'Rechazada' }[status] || status;
+    return { pendiente: 'Pendiente', aprobada: 'Aprobada', rechazada: 'Rechazada' }[status] || status;
 }
 
 function viewRequestDetail(requestId) {
@@ -197,9 +250,16 @@ function viewRequestDetail(requestId) {
     modalBody.innerHTML = `
         <div class="detail-row"><span class="detail-label">Propiedad:</span><span class="detail-value">${request.propertyTitle}</span></div>
         <div class="detail-row"><span class="detail-label">Solicitante:</span><span class="detail-value">${request.applicant}</span></div>
+        <div class="detail-row"><span class="detail-label">RUT:</span><span class="detail-value">${request.rut || 'No informado'}</span></div>
         <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value">${request.email}</span></div>
         <div class="detail-row"><span class="detail-label">Telefono:</span><span class="detail-value">${request.phone}</span></div>
-        <div class="detail-row"><span class="detail-label">Fecha:</span><span class="detail-value">${formatDate(request.date)}</span></div>
+        <div class="detail-row"><span class="detail-label">Fecha solicitud:</span><span class="detail-value">${formatDate(request.date)}</span></div>
+        <div class="detail-row"><span class="detail-label">Inicio deseado:</span><span class="detail-value">${formatDate(request.startDate)}</span></div>
+        <div class="detail-row"><span class="detail-label">Duracion:</span><span class="detail-value">${request.duration || 'No informada'}</span></div>
+        <div class="detail-row"><span class="detail-label">Ocupantes:</span><span class="detail-value">${request.occupants || 'No informado'}</span></div>
+        <div class="detail-row"><span class="detail-label">Mascotas:</span><span class="detail-value">${request.pets === 'si' ? 'Si' : 'No'}</span></div>
+        <div class="detail-row"><span class="detail-label">Situacion laboral:</span><span class="detail-value">${request.employment || 'No informada'}</span></div>
+        <div class="detail-row"><span class="detail-label">Ingreso mensual:</span><span class="detail-value">$${Number(request.income || 0).toLocaleString()}</span></div>
         <div class="detail-row"><span class="detail-label">Mensaje:</span><span class="detail-value">${request.message}</span></div>
         <div class="detail-row"><span class="detail-label">Estado:</span><span class="detail-value">${getStatusText(request.status)}</span></div>
     `;
@@ -209,6 +269,67 @@ function viewRequestDetail(requestId) {
 
 function closeRequestModal() {
     document.getElementById('requestModal').classList.remove('active');
+}
+
+async function disablePropertyAfterApproval(propertyId) {
+    if (!propertyId) return;
+
+    const property = ownerProperties.find((item) => String(item.id) === String(propertyId));
+    if (property && !property.active) return;
+
+    if (property) {
+        property.active = false;
+        renderProperties();
+    }
+
+    try {
+        const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}/status`, {
+            method: "PATCH",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ active: false }),
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudo deshabilitar la propiedad");
+        }
+
+        if (property) {
+            property.raw = result.data || property.raw;
+            property.active = normalizePropertyStatus(result.data || property.raw);
+            renderProperties();
+        }
+    } catch (error) {
+        console.error("Error deshabilitando propiedad aprobada:", error);
+        if (property) {
+            property.active = true;
+            renderProperties();
+        }
+        showToast(error.message || "Solicitud aprobada, pero no se pudo deshabilitar la propiedad", true);
+    }
+}
+
+async function updateRequestStatus(requestId, nextStatus) {
+    const validStatuses = new Set(['aprobada', 'rechazada']);
+    if (!validStatuses.has(nextStatus)) return;
+
+    const storedRequests = getStoredRentRequests();
+    const requestIndex = storedRequests.findIndex((request) => Number(request.id) === Number(requestId));
+    if (requestIndex === -1) {
+        showToast('No se encontro la solicitud', true);
+        return;
+    }
+
+    storedRequests[requestIndex].status = nextStatus;
+    localStorage.setItem('rentRequests', JSON.stringify(storedRequests));
+    refreshReceivedRequests();
+
+    if (nextStatus === 'aprobada') {
+        await disablePropertyAfterApproval(storedRequests[requestIndex].propertyId);
+    }
+
+    showToast(`Solicitud ${getStatusText(nextStatus).toLowerCase()}`);
 }
 
 // ========== PROPIEDADES ==========
@@ -340,9 +461,6 @@ function showToast(message, isError = false) {
 
 // ========== INICIALIZACION ==========
 document.addEventListener('DOMContentLoaded', async () => {
-    renderRecentActivity();
-    renderRequests();
-
     try {
         await loadOwnerProperties();
     } catch (error) {
@@ -350,16 +468,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         showToast(error.message || "No se pudieron cargar tus propiedades", true);
     }
 
+    refreshReceivedRequests();
     renderProperties();
-    updateStats();
     
     document.getElementById('requestModal')?.addEventListener('click', (e) => {
         if (e.target === document.getElementById('requestModal')) closeRequestModal();
+    });
+
+    window.addEventListener('focus', refreshReceivedRequests);
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'rentRequests') refreshReceivedRequests();
     });
 });
 
 window.viewRequestDetail = viewRequestDetail;
 window.closeRequestModal = closeRequestModal;
+window.updateRequestStatus = updateRequestStatus;
 window.editProperty = editProperty;
 window.togglePropertyStatus = togglePropertyStatus;
 window.deleteProperty = deleteProperty;

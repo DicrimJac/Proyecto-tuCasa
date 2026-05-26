@@ -14,6 +14,10 @@ userRoute.post("/", requireAuth, (c) => userController.createUser(c));
 // PUT /api/users/:mail/password - Cambiar contraseÃ±a
 userRoute.put("/:mail/password", (c) => userController.changePasswordByMail(c));
 
+userRoute.post("/password-reset/request", (c) => userController.requestPasswordReset(c));
+
+userRoute.post("/password-reset/confirm", (c) => userController.confirmPasswordReset(c));
+
 // PUT /api/users/:mail - Actualizar usuario por mail
 userRoute.put("/:mail", (c) => userController.updateUserByMail(c));
 

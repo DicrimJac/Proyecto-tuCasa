@@ -268,34 +268,14 @@ async function loadPropertyDetail() {
     }
 }
 
-const whatsappButton = document.getElementById("whatsappButton");
-const whatsappModal = document.getElementById("whatsappModal");
-const closeModalButton = document.getElementById("closeModal");
-const closeButton = document.getElementById("closeButton");
+const requestRentButton = document.getElementById("requestRentButton");
 
-function openModal() {
-    if (whatsappModal) {
-        whatsappModal.classList.add("active");
-    }
+function requestRent() {
+    const idParam = property?.id ? `?id=${encodeURIComponent(property.id)}` : "";
+    window.location.href = `requestRent.html${idParam}`;
 }
 
-function closeModal() {
-    if (whatsappModal) {
-        whatsappModal.classList.remove("active");
-    }
-}
-
-if (whatsappButton) whatsappButton.addEventListener("click", openModal);
-if (closeModalButton) closeModalButton.addEventListener("click", closeModal);
-if (closeButton) closeButton.addEventListener("click", closeModal);
-
-if (whatsappModal) {
-    whatsappModal.addEventListener("click", (event) => {
-        if (event.target === whatsappModal) {
-            closeModal();
-        }
-    });
-}
+if (requestRentButton) requestRentButton.addEventListener("click", requestRent);
 
 function showToast(message, isError = false) {
     const toast = document.getElementById("notificationToast");
