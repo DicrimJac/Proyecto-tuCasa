@@ -60,69 +60,8 @@ let adminUsers = [];
 // Propiedades cargadas desde la base de datos
 let adminProperties = [];
 
-// Datos simulados - Evaluaciones/Reseñas
-let adminReviews = [
-    { 
-        id: 1, 
-        propertyId: 1, 
-        propertyTitle: "Casa en Santiago Centro", 
-        userName: "Juan Pérez", 
-        userId: 101,
-        date: "2024-05-10",
-        rating: 4.5,
-        categories: { limpieza: 5, ubicacion: 4, precio: 4, comunicacion: 5 },
-        comment: "Excelente propiedad, muy bien ubicada. El dueño fue muy amable y atento. Totalmente recomendable.",
-        status: "pending"
-    },
-    { 
-        id: 2, 
-        propertyId: 1, 
-        propertyTitle: "Casa en Santiago Centro", 
-        userName: "Marcela Rojas", 
-        userId: 102,
-        date: "2024-05-12",
-        rating: 5.0,
-        categories: { limpieza: 5, ubicacion: 5, precio: 5, comunicacion: 5 },
-        comment: "Una maravilla de casa, superó mis expectativas. Muy limpia y acogedora.",
-        status: "approved"
-    },
-    { 
-        id: 3, 
-        propertyId: 2, 
-        propertyTitle: "Departamento Moderno", 
-        userName: "Felipe González", 
-        userId: 103,
-        date: "2024-05-14",
-        rating: 3.0,
-        categories: { limpieza: 4, ubicacion: 3, precio: 2, comunicacion: 3 },
-        comment: "El departamento es bonito pero el precio me pareció un poco alto para lo que ofrece.",
-        status: "pending"
-    },
-    { 
-        id: 4, 
-        propertyId: 3, 
-        propertyTitle: "Casa Familiar", 
-        userName: "Claudia Méndez", 
-        userId: 104,
-        date: "2024-05-15",
-        rating: 5.0,
-        categories: { limpieza: 5, ubicacion: 5, precio: 5, comunicacion: 5 },
-        comment: "Casa espectacular, muy amplia y con todas las comodidades. El jardín es hermoso.",
-        status: "approved"
-    },
-    { 
-        id: 5, 
-        propertyId: 4, 
-        propertyTitle: "Loft Industrial", 
-        userName: "Andrés Castro", 
-        userId: 105,
-        date: "2024-05-16",
-        rating: 2.0,
-        categories: { limpieza: 2, ubicacion: 1, precio: 2, comunicacion: 3 },
-        comment: "El loft no estaba en las mejores condiciones. La ubicación no es tan buena como decía.",
-        status: "rejected"
-    }
-];
+// Evaluaciones cargadas desde la base de datos
+let adminReviews = [];
 
 // Variables de paginación
 let currentUsersPage = 1;
@@ -139,6 +78,7 @@ let currentReviewSearch = "";
 let currentSelectedReviewId = null;
 let usersLoadError = "";
 let propertiesLoadError = "";
+let reviewsLoadError = "";
 
 // ===================== DATOS DEL GRÁFICO =====================
 // Datos simulados de visualizaciones e interesados por propiedad
@@ -327,6 +267,52 @@ async function loadPropertiesFromDatabase() {
 }
 
 // Función para inicializar el gráfico
+function normalizeTenantReview(review) {
+    return {
+        raw: review,
+        id: review.id_review || review.id || Date.now(),
+        propertyTitle: "Evaluacion de arrendatario",
+        userName: "Arrendatario",
+        date: review.date_review || review.date || "",
+        rating: Number(review.total_rank || 0),
+        categories: {
+            pagos: Number(review.pay_rank || 0),
+            limpieza: Number(review.clean_rank || 0),
+            respeto: Number(review.respect_rank || 0),
+            comunicacion: Number(review.comunic_rank || 0),
+            ruido: Number(review.noise_rank || 0),
+            responsabilidad: Number(review.respons_rank || 0),
+            experiencia: Number(review.exp_rank || 0),
+        },
+        comment: review.comment || "Sin comentario",
+        status: "pending",
+    };
+}
+
+async function loadReviewsFromDatabase() {
+    reviewsLoadError = "";
+    adminReviews = [];
+
+    try {
+        const response = await fetch("/api/tenant-reviews", {
+            method: "GET",
+            credentials: "same-origin",
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudieron obtener las evaluaciones");
+        }
+
+        const reviews = Array.isArray(result.data) ? result.data : [];
+        adminReviews = reviews.map(normalizeTenantReview);
+    } catch (error) {
+        console.error("Error cargando evaluaciones desde la base de datos:", error);
+        adminReviews = [];
+        reviewsLoadError = error.message || "No se pudieron cargar las evaluaciones";
+        showToast(reviewsLoadError, true);
+    }
+}
 function initPropertiesChart() {
     const ctx = document.getElementById('propertiesChart');
     if (!ctx) return;
@@ -457,18 +443,19 @@ function stopSimulation() {
 
 // ===================== INICIALIZAR =====================
 async function initAdmin() {
+    initNavigation();
+    initEventListeners();
     loadDataFromStorage();
     await Promise.all([
         loadUsersFromDatabase(),
         loadPropertiesFromDatabase(),
+        loadReviewsFromDatabase(),
     ]);
     updateStats();
     renderUsers();
     renderProperties();
     renderRecentProperties();
     renderReviews();
-    initNavigation();
-    initEventListeners();
     initPropertiesChart(); 
     loadPropertyStats();    
 }
@@ -483,9 +470,6 @@ function loadPropertyStats() {
 }
 
 function loadDataFromStorage() {
-    if (localStorage.getItem('adminReviews')) {
-        adminReviews = JSON.parse(localStorage.getItem('adminReviews'));
-    }
 }
 
 function saveUsers() {
@@ -500,7 +484,6 @@ function saveProperties() {
 }
 
 function saveReviews() {
-    localStorage.setItem('adminReviews', JSON.stringify(adminReviews));
 }
 
 // ===================== ACTUALIZAR ESTADÍSTICAS =====================
@@ -641,6 +624,15 @@ function renderProperties() {
 function renderReviews() {
     const container = document.getElementById('reviewsList');
     if (!container) return;
+
+    if (reviewsLoadError) {
+        container.innerHTML = `<div class="text-center py-5">${escapeHtml(reviewsLoadError)}</div>`;
+        document.getElementById('reviewsPagination').innerHTML = '';
+        document.getElementById('totalReviewsCount').textContent = 0;
+        document.getElementById('pendingReviewsCount').textContent = 0;
+        document.getElementById('avgRating').textContent = '0.0';
+        return;
+    }
     
     let filtered = adminReviews.filter(review => {
         const matchFilter = currentReviewFilter === 'all' || review.status === currentReviewFilter;
@@ -961,20 +953,28 @@ document.getElementById('searchReview')?.addEventListener('input', (e) => {
 
 // ===================== NAVEGACIÓN =====================
 function initNavigation() {
-    const navItems = document.querySelectorAll('.nav-item');
+    const adminNav = document.querySelector('.admin-nav');
+    if (!adminNav || adminNav.dataset.initialized === 'true') return;
+
+    adminNav.dataset.initialized = 'true';
+
     const sections = document.querySelectorAll('.admin-section');
-    
-    navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const sectionId = item.getAttribute('data-section');
-            
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
-            
-            sections.forEach(section => section.classList.remove('active'));
-            document.getElementById(`${sectionId}-section`).classList.add('active');
-        });
+    const navItems = adminNav.querySelectorAll('.nav-item');
+
+    adminNav.addEventListener('click', (e) => {
+        const item = e.target.closest('.nav-item');
+        if (!item || !adminNav.contains(item)) return;
+
+        e.preventDefault();
+        const sectionId = item.getAttribute('data-section');
+        const targetSection = document.getElementById(`${sectionId}-section`);
+        if (!targetSection) return;
+
+        navItems.forEach(nav => nav.classList.remove('active'));
+        item.classList.add('active');
+
+        sections.forEach(section => section.classList.remove('active'));
+        targetSection.classList.add('active');
     });
 }
 

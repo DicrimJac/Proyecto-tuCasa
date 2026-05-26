@@ -372,8 +372,15 @@ function fillEditForm(property) {
     setInputValue("age", qtyYearToAge(characteristic.qty_year));
     setInputValue("floors", characteristic.qty_floor >= 5 ? "5+" : characteristic.qty_floor);
     setInputValue("orientation", characteristic.orientation);
+    setInputValue("description", property.describe || property.description || property.descripcion);
     setInputValue("price", characteristic.price);
     setInputValue("selectedPlan", characteristic.type_publis_desc || "BÃ¡sico");
+
+    const charCount = document.getElementById("charCount");
+    const description = document.getElementById("description");
+    if (charCount && description) {
+        charCount.textContent = `${description.value.length} / 3000`;
+    }
 
     document.querySelectorAll('.check-grid input[type="checkbox"][data-field]').forEach(input => {
         input.checked = characteristic[input.dataset.field] === true;
@@ -556,12 +563,13 @@ async function publishProperty() {
 
         // Objeto propiedad (tabla PROPIEDAD)
         // IMPORTANTE: la tabla PROPIEDAD no tiene columna address_nbr,
-        // solo recibe type_nbr, type_desc, state_nbr, state_desc e id_address.
+        // solo recibe type_nbr, type_desc, state_nbr, state_desc, describe e id_address.
         // id_address lo calcula el backend a partir de la DIRECCION creada,
         // así que aquí NO debemos enviar address_nbr para evitar error 500.
         const propiedad = {
             type_nbr,
             type_desc,
+            describe: description.trim(),
             // state_nbr y state_desc se completan en el backend (1 / "Disponible")
         };
 

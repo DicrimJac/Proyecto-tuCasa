@@ -422,7 +422,6 @@ form.addEventListener('submit', async (e) => {
             showToast("Registro exitoso");
             // Guardar en localStorage
             localStorage.setItem("user_last_register", JSON.stringify(data));
-            localStorage.setItem("userData", JSON.stringify(data.data ?? userData));
             // Resetear formulario
             form.reset();
             updateButtonState();

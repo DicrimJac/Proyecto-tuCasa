@@ -166,6 +166,27 @@
     transform: translateY(-2px);
 }
 
+.btn-open-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #4a6272;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-open-profile:hover {
+    color: #2C5A6E;
+}
+
+.btn-open-profile i {
+    font-size: 1.1rem;
+}
+
 /* Botón toggle móvil */
 .nav-toggle {
     display: none;

@@ -216,6 +216,7 @@
       // Mantener claves anteriores por compatibilidad con otras pantallas
       localStorage.setItem("userEmail", mail);
       localStorage.setItem("userName", firstName);
+      localStorage.setItem("isLoggedIn", "true");
       sessionStorage.setItem("isLoggedIn", "true");
 
       showMessage("Inicio de sesión exitoso, redirigiendo...", "success");

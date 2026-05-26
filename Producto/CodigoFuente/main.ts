@@ -4,6 +4,7 @@ import { serveDir } from "jsr:@std/http/file-server";
 import { fromFileUrl, join } from "jsr:@std/path@1";
 import userRoute from "./backend/route/userRoute.js";
 import propertyRoute from "./backend/route/propertyRoute.js";
+import tenantReviewRoute from "./backend/route/tenantReviewRoute.js";
 
 const app = new Hono();
 
@@ -36,6 +37,8 @@ app.use("*", async (c, next) => {
 app.route("/api/users", userRoute);
 // Montar rutas de propiedades
 app.route("/api/properties", propertyRoute);
+// Montar rutas de evaluaciones de arrendatarios
+app.route("/api/tenant-reviews", tenantReviewRoute);
 
 // ============================================
 // RUTAS DE ARCHIVOS ESTÁTICOS
@@ -101,5 +104,7 @@ console.log("   GET    /api/properties/:id");
 console.log("   POST   /api/properties");
 console.log("   PUT    /api/properties/:id");
 console.log("   DELETE /api/properties/:id");
+console.log("   GET    /api/tenant-reviews");
+console.log("   POST   /api/tenant-reviews");
 
 Deno.serve({ port }, app.fetch);

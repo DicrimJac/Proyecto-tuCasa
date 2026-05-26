@@ -25,6 +25,14 @@ function setText(id, value) {
     }
 }
 
+function setMemberSince(year) {
+    const badge = document.getElementById("memberSinceBadge");
+
+    if (badge) {
+        badge.innerHTML = `<i class="bi bi-calendar-check me-1"></i> Miembro desde ${year}`;
+    }
+}
+
 function buildFullName(user) {
 
     if (!user) return "Usuario";
@@ -76,6 +84,23 @@ function formatBirthdate(user) {
     );
 }
 
+function getRegisterYear(user) {
+
+    const registerDate =
+        user?.date_register ||
+        user?.dateRegister ||
+        user?.created_at ||
+        user?.createdAt ||
+        null;
+
+    if (!registerDate) return new Date().getFullYear();
+
+    const parsedDate = new Date(registerDate);
+    const year = parsedDate.getFullYear();
+
+    return Number.isNaN(year) ? new Date().getFullYear() : year;
+}
+
 function avatarUrl(name, avatar) {
 
     if (avatar) return avatar;
@@ -93,6 +118,7 @@ function updateProfileDisplay(user) {
     const email = getEmail(user);
     const phone = formatPhone(user);
     const birthdate = formatBirthdate(user);
+    const registerYear = getRegisterYear(user);
 
     // Header / Offcanvas
     setText("userNameDisplay", fullName);
@@ -103,6 +129,7 @@ function updateProfileDisplay(user) {
     setText("email", email);
     setText("phone", phone);
     setText("birthdate", birthdate);
+    setMemberSince(registerYear);
 
     const avatar = avatarUrl(fullName, user.avatar);
 
@@ -383,16 +410,7 @@ const logoutBtn =
 if (logoutBtn) {
 
     logoutBtn.addEventListener("click", () => {
-
-        const confirmLogout =
-            confirm("¿Deseas cerrar sesión?");
-
-        if (!confirmLogout) return;
-
-        localStorage.removeItem("userData");
-        localStorage.removeItem("userProfile");
-
-        window.location.href = "home.html";
+        window.location.href = "logout.html";
     });
 }
 
