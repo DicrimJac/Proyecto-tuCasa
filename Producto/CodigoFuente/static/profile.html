@@ -8,85 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="css/profile.css">
-    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/profile.css">    
 </head>
 
 <body>
-    <!-- Barra superior con logo y botón de perfil -->
-    <div class="top-bar">
-        <div class="logo-area">
-            <a href="home.html" class="navbar-brand">
-                <img src="assets/image/3.png" alt="Tu Casa" class="logo-img-header">
-            </a>
-        </div>
-        <button class="btn-open-profile" type="button" data-bs-toggle="offcanvas" data-bs-target="#profileOffcanvas">
-            <i class="bi bi-person-circle"></i>
-            <span>Mi Perfil</span>
-        </button>
-    </div>
-
-    <!-- Contenido principal (DASHBOARD y secciones) -->
-    <div class="main-content">
-        <!-- SECCIÓN DASHBOARD -->
-        <div id="dashboard-section" class="panel-section active">
-            <div class="row g-4 mb-4">
-                <div class="col-md-6">
-                    <div class="stats-card">
-                        <div class="stats-icon"><i class="bi bi-building"></i></div>
-                        <div class="stats-info">
-                            <h3 id="totalProperties">0</h3>
-                            <p>Propiedades activas</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="stats-card">
-                        <div class="stats-icon"><i class="bi bi-envelope"></i></div>
-                        <div class="stats-info">
-                            <h3 id="totalMessages">0</h3>
-                            <p>Mensajes recibidos</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5><i class="bi bi-clock-history"></i> Propiedades recientes</h5>
-                <a href="publishProperty.html" class="btn btn-sm btn-primary">
-                    <i class="bi bi-plus-circle"></i> Publicar propiedad
-                </a>
-            </div>
-            <div class="row g-4" id="propertiesGrid"></div>
-            <div class="text-center mt-4" id="paginationControls"></div>
-        </div>
-
-        <!-- SECCIÓN MIS PROPIEDADES -->
-        <div id="properties-section" class="panel-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3><i class="bi bi-building"></i> Mis Propiedades</h3>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
-                    <i class="bi bi-plus-circle"></i> Nueva propiedad
-                </button>
-            </div>
-            <div class="row g-4" id="allPropertiesGrid"></div>
-            <div class="text-center mt-4" id="allPaginationControls"></div>
-        </div>
-
-        <!-- SECCIÓN FAVORITOS -->
-        <div id="favorites-section" class="panel-section">
-            <h3><i class="bi bi-heart"></i> Propiedades Favoritas</h3>
-            <div class="row g-4" id="favoritesGrid"></div>
-        </div>
-
-        <!-- SECCIÓN MENSAJES -->
-        <div id="messages-section" class="panel-section">
-            <h3><i class="bi bi-envelope"></i> Bandeja de entrada</h3>
-            <div class="messages-list" id="messagesList"></div>
-        </div>
-    </div>
-
-    <!-- Offcanvas del perfil (contiene el MENÚ) -->
+      <!-- Offcanvas del perfil (contiene el MENÚ) -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="profileOffcanvas">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title">
@@ -119,16 +45,16 @@
                     </h6>
                     <nav class="nav flex-column nav-pills">
                         <a class="nav-link active" data-section="dashboard" data-bs-dismiss="offcanvas">
-                            <i class="bi bi-speedometer2"></i> Dashboard
+                            <i class="bi bi-speedometer2"></i> Mis Propiedades
                         </a>
                         <a class="nav-link" data-section="properties" data-bs-dismiss="offcanvas">
-                            <i class="bi bi-building"></i> Mis Propiedades
+                            <i class="bi bi-building"></i> Mis Arriendos
                         </a>
                         <a class="nav-link" data-section="favorites" data-bs-dismiss="offcanvas">
                             <i class="bi bi-heart"></i> Favoritos
                         </a>
-                        <a class="nav-link" data-section="messages" data-bs-dismiss="offcanvas">
-                            <i class="bi bi-envelope"></i> Mensajes
+                        <a class="nav-link" data-section="review" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-envelope"></i> Reseñas
                             <span class="badge bg-danger ms-2" id="unreadBadge">3</span>
                         </a>
                     </nav>
@@ -274,29 +200,6 @@
         </div>
     </div>
 
-    <!-- Modal Notificaciones -->
-    <div class="modal fade" id="notificationsModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Notificaciones</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
-                        <label class="form-check-label">Notificaciones por email</label>
-                    </div>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="smsNotifications">
-                        <label class="form-check-label">Notificaciones SMS</label>
-                    </div>
-                    <button class="btn-login" id="saveNotifications">Guardar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal Avatar -->
     <div class="modal fade" id="avatarModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -320,59 +223,9 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal Agregar Propiedad -->
-    <div class="modal fade" id="addPropertyModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Publicar nueva propiedad</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addPropertyForm">
-                        <div class="mb-3">
-                            <label class="form-label">Título *</label>
-                            <input type="text" class="form-control" id="propertyTitle" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Ubicación *</label>
-                            <input type="text" class="form-control" id="propertyLocation" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Precio mensual (CLP) *</label>
-                            <input type="number" class="form-control" id="propertyPrice" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Habitaciones</label>
-                            <input type="number" class="form-control" id="propertyRooms" value="2">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Descripción</label>
-                            <textarea class="form-control" id="propertyDesc" rows="2"></textarea>
-                        </div>
-                        <button type="submit" class="btn-login">Publicar propiedad</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast de notificaciones -->
-    <div class="toast-custom" id="notificationToast">
-        <div class="toast-header">
-            <i class="bi bi-check-circle-fill text-success"></i>
-            <strong>Éxito</strong>
-        </div>
-        <div class="toast-body" id="toastMessage"></div>
-    </div>
-
-    <!-- FOOTER (se carga dinámicamente) -->
-    <div id="footer"></div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/headerFooter.js?v=admin-nav-2"></script>
     <script src="js/profile.js"></script>
 </body>
 
 </html>
+>
