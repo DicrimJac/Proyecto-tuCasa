@@ -1,6 +1,6 @@
 // ========== SOLICITAR ARRIENDO - DATOS DE PROPIEDAD ==========
 // Simular datos de la propiedad (normalmente vendría de URL o API)
-const propertyData = {
+let propertyData = {
     id: 1,
     title: "Casa en Santiago Centro",
     location: "Santiago Centro, Santiago",
@@ -12,6 +12,104 @@ const propertyData = {
     image: "assets/image/casa1.png",
     status: "disponible"
 };
+
+function normalizeText(value) {
+    return String(value || "")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .trim()
+        .toLowerCase();
+}
+
+function isPropertyPublic(rawProperty) {
+    const stateNumber = rawProperty?.state_nbr ?? rawProperty?.status_nbr ?? rawProperty?.raw?.state_nbr;
+    const stateText = normalizeText(rawProperty?.state_desc || rawProperty?.status_desc || rawProperty?.estado || rawProperty?.status || rawProperty?.raw?.state_desc);
+
+    if (Number(stateNumber) === 0) return false;
+    if (["no disponible", "inactiva", "inactivo", "inactive", "disabled", "deshabilitada", "deshabilitado", "vendida", "vendido"].includes(stateText)) {
+        return false;
+    }
+
+    return true;
+}
+
+function getPropertyLocation(rawProperty) {
+    const address = rawProperty.direccion || rawProperty.address || rawProperty.raw?.direccion || {};
+    const parts = [
+        rawProperty.location,
+        rawProperty.ubicacion,
+        address.comuna,
+        address.city,
+    ].filter(Boolean);
+
+    return [...new Set(parts)].join(", ") || "Sin ubicacion";
+}
+
+function getPropertyFromStorage() {
+    try {
+        return JSON.parse(localStorage.getItem("selectedProperty") || "null");
+    } catch (error) {
+        console.error("Error leyendo propiedad seleccionada:", error);
+        return null;
+    }
+}
+
+function normalizeProperty(rawProperty) {
+    const characteristic = rawProperty.caracteristica || rawProperty.characteristic || rawProperty.raw?.caracteristica || {};
+    const id = rawProperty.id_propi || rawProperty.id || rawProperty.property_id || rawProperty.raw?.id_propi || propertyData.id;
+    const price = Number(characteristic.price ?? rawProperty.price ?? rawProperty.precio ?? propertyData.price ?? 0);
+
+    return {
+        id,
+        title: rawProperty.title || rawProperty.titulo || rawProperty.name || rawProperty.type_desc || propertyData.title,
+        location: getPropertyLocation(rawProperty),
+        price,
+        rooms: Number(characteristic.qty_room ?? rawProperty.rooms ?? rawProperty.habitaciones ?? propertyData.rooms ?? 0),
+        bathrooms: Number(characteristic.qty_bath ?? rawProperty.bathrooms ?? rawProperty.banos ?? propertyData.bathrooms ?? 0),
+        parking: characteristic.h_parkin ? 1 : (rawProperty.parking ?? rawProperty.parkingSpaces ?? propertyData.parking ?? 0),
+        area: Number(characteristic.total_mtr ?? rawProperty.area ?? rawProperty.propertyArea ?? propertyData.area ?? 0),
+        image: rawProperty.image || rawProperty.imagen || propertyData.image,
+        status: isPropertyPublic(rawProperty) ? "disponible" : "no disponible",
+    };
+}
+
+function setRequestFormAvailability(isAvailable) {
+    const form = document.getElementById("requestForm");
+    const submitBtn = form?.querySelector(".btn-submit");
+    if (!form || !submitBtn) return;
+
+    submitBtn.disabled = !isAvailable;
+    if (!isAvailable) {
+        submitBtn.innerHTML = '<i class="fas fa-ban"></i> Propiedad no disponible';
+    }
+}
+
+async function resolvePropertyData() {
+    const params = new URLSearchParams(window.location.search);
+    const propertyId = params.get("id");
+    const savedProperty = getPropertyFromStorage();
+
+    if (propertyId) {
+        try {
+            const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}?public=true`, {
+                method: "GET",
+                credentials: "same-origin",
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                propertyData = normalizeProperty(result.data);
+                return;
+            }
+        } catch (error) {
+            console.error("Error cargando propiedad para solicitud:", error);
+        }
+    }
+
+    if (savedProperty) {
+        propertyData = normalizeProperty(savedProperty);
+    }
+}
 
 // ========== CARGAR DATOS DE PROPIEDAD ==========
 function loadPropertyData() {
@@ -32,6 +130,8 @@ function loadPropertyData() {
         statusElement.textContent = 'No disponible';
         statusElement.classList.add('unavailable');
     }
+
+    setRequestFormAvailability(propertyData.status === 'disponible');
 }
 
 // ========== VALIDAR RUT ==========
@@ -149,7 +249,8 @@ function showToast(message, isError = false) {
 }
 
 // ========== INICIALIZACIÓN ==========
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await resolvePropertyData();
     loadPropertyData();
     
     // Validación de RUT

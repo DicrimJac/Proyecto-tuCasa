@@ -87,6 +87,26 @@ function getCachedPropertyImage(propertyId) {
     }
 }
 
+function isPropertyPublic(rawProperty) {
+    const stateNumber = rawProperty?.state_nbr ?? rawProperty?.status_nbr ?? rawProperty?.raw?.state_nbr;
+    const stateText = normalizeText(rawProperty?.state_desc || rawProperty?.status_desc || rawProperty?.estado || rawProperty?.status || rawProperty?.raw?.state_desc);
+
+    if (Number(stateNumber) === 0) return false;
+    if (["no disponible", "inactiva", "inactivo", "inactive", "disabled", "deshabilitada", "deshabilitado", "vendida", "vendido"].includes(stateText)) {
+        return false;
+    }
+
+    return true;
+}
+
+function redirectUnavailableProperty() {
+    localStorage.removeItem("selectedProperty");
+    showToast("Esta propiedad no esta disponible", true);
+    setTimeout(() => {
+        window.location.replace("search.html");
+    }, 900);
+}
+
 function getOperationType(rawProperty) {
     const operation = rawProperty.operationType
         || rawProperty.operation_desc
@@ -198,6 +218,11 @@ async function loadPropertyDetail() {
 
     if (!propertyId) {
         if (savedProperty?.id || savedProperty?.id_propi || savedProperty?.raw?.id_propi) {
+            if (!isPropertyPublic(savedProperty)) {
+                redirectUnavailableProperty();
+                return;
+            }
+
             property = normalizeProperty(savedProperty);
             renderPropertyDetail();
         } else {
@@ -208,7 +233,7 @@ async function loadPropertyDetail() {
     }
 
     try {
-        const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}`, {
+        const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}?public=true`, {
             method: "GET",
             credentials: "same-origin",
         });
@@ -219,12 +244,22 @@ async function loadPropertyDetail() {
         }
 
         property = normalizeProperty(result.data);
+        if (!isPropertyPublic(result.data)) {
+            redirectUnavailableProperty();
+            return;
+        }
+
         localStorage.setItem("selectedProperty", JSON.stringify(result.data));
         renderPropertyDetail();
     } catch (error) {
         console.error("Error cargando detalle de propiedad:", error);
 
         if (propertyMatchesId(savedProperty, propertyId)) {
+            if (!isPropertyPublic(savedProperty)) {
+                redirectUnavailableProperty();
+                return;
+            }
+
             property = normalizeProperty(savedProperty);
             renderPropertyDetail();
         }

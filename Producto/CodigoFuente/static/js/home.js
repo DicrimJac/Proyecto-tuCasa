@@ -62,6 +62,18 @@ function getCachedPropertyImage(propertyId) {
   }
 }
 
+function isPropertyPublic(property) {
+  const stateNumber = property.state_nbr ?? property.status_nbr;
+  const stateText = normalizeText(property.state_desc || property.status_desc || property.estado || property.status);
+
+  if (Number(stateNumber) === 0) return false;
+  if (["no disponible", "inactiva", "inactivo", "inactive", "disabled", "deshabilitada", "deshabilitado", "vendida", "vendido"].includes(stateText)) {
+    return false;
+  }
+
+  return true;
+}
+
 function normalizeProperty(property, index) {
   const characteristic = property.caracteristica || property.characteristic || {};
   const id = property.id_propi || property.id || property.property_id || index + 1;
@@ -83,7 +95,7 @@ function normalizeProperty(property, index) {
 }
 
 async function loadPropertiesFromDatabase() {
-  const response = await fetch("/api/properties", {
+  const response = await fetch("/api/properties?public=true", {
     method: "GET",
     credentials: "same-origin",
   });
@@ -94,7 +106,9 @@ async function loadPropertiesFromDatabase() {
   }
 
   const properties = Array.isArray(result.data) ? result.data : [];
-  allProperties = properties.map(normalizeProperty);
+  allProperties = properties
+    .filter(isPropertyPublic)
+    .map(normalizeProperty);
 }
 
 function getFilters() {

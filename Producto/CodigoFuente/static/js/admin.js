@@ -698,10 +698,14 @@ function renderReviews() {
             </div>
             <div class="review-footer">
                 <span><i class="bi bi-calendar"></i> ${formatDate(review.date)}</span>
-                <span class="review-status-badge status-${review.status}-badge">
-                    ${review.status === 'pending' ? 'Pendiente' : review.status === 'approved' ? 'Aprobada' : 'Rechazada'}
-                </span>
-                <!-- Botones de aprobar/rechazar ELIMINADOS -->
+                <div class="review-actions">
+                    <span class="review-status-badge status-${review.status}-badge">
+                        ${review.status === 'pending' ? 'Pendiente' : review.status === 'approved' ? 'Aprobada' : 'Rechazada'}
+                    </span>
+                    <button class="btn-icon btn-delete btn-review-delete" type="button" title="Eliminar evaluacion" aria-label="Eliminar evaluacion" onclick="deleteReview(event, ${review.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
             </div>
         </div>
     `).join('');
@@ -855,6 +859,23 @@ window.openReviewModal = function(id) {
     if (rejectBtn) rejectBtn.style.display = 'none';
     
     modal.show();
+};
+
+window.deleteReview = function(event, id) {
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const review = adminReviews.find(r => r.id === id);
+    if (!review) return;
+
+    if (confirm('¿Eliminar esta evaluación?')) {
+        adminReviews = adminReviews.filter(r => r.id !== id);
+        saveReviews();
+        renderReviews();
+        updateStats();
+        showToast('Evaluación eliminada correctamente');
+    }
 };
 
 // ===================== FUNCIONES UTILITARIAS =====================

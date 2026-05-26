@@ -8,7 +8,8 @@ export class PropertyController {
     // GET /api/properties
     async getAllProperties(c) {
         try {
-            const data = await this.propertyService.getAllProperties();
+            const publicOnly = c.req.query("public") === "true";
+            const data = await this.propertyService.getAllProperties({ publicOnly });
             return c.json({ success: true, data, total: data?.length ?? 0 }, 200);
         } catch (error) {
             return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
@@ -19,7 +20,11 @@ export class PropertyController {
     async getPropertyById(c) {
         try {
             const id = c.req.param("id");
-            const data = await this.propertyService.getPropertyById(id);
+            const publicOnly = c.req.query("public") === "true";
+            const data = await this.propertyService.getPropertyById(id, { publicOnly });
+            if (!data) {
+                return c.json({ success: false, error: "Propiedad no disponible" }, 404);
+            }
             return c.json({ success: true, data }, 200);
         } catch (error) {
             return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
@@ -80,6 +85,18 @@ export class PropertyController {
             const id = c.req.param("id");
             const payload = await c.req.json();
             const data = await this.propertyService.updateProperty(id, payload);
+            return c.json({ success: true, data }, 200);
+        } catch (error) {
+            return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+        }
+    }
+
+    // PATCH /api/properties/:id/status
+    async updatePropertyStatus(c) {
+        try {
+            const id = c.req.param("id");
+            const payload = await c.req.json();
+            const data = await this.propertyService.updatePropertyStatus(id, payload);
             return c.json({ success: true, data }, 200);
         } catch (error) {
             return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);

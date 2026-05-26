@@ -12,11 +12,26 @@ export class PropertyService {
         this.userRepository = new UserRepository();
     }
 
-    async getAllProperties() {
+    isPropertyAvailable(property) {
+        const stateNumber = property?.state_nbr ?? property?.status_nbr;
+        const stateText = String(property?.state_desc || property?.status_desc || property?.estado || property?.status || "")
+            .normalize("NFD")
+            .replace(/\p{Diacritic}/gu, "")
+            .trim()
+            .toLowerCase();
+
+        if (Number(stateNumber) === 0) return false;
+        return !["no disponible", "inactiva", "inactivo", "inactive", "disabled", "deshabilitada", "deshabilitado", "vendida", "vendido"].includes(stateText);
+    }
+
+    async getAllProperties({ publicOnly = false } = {}) {
         const properties = await this.repository.findAll() || [];
-        const addressIds = [...new Set(properties.map((property) => property.id_address).filter(Boolean))];
-        const propertyIds = [...new Set(properties.map((property) => property.id_propi).filter(Boolean))];
-        const ownerIds = [...new Set(properties
+        const visibleProperties = publicOnly
+            ? properties.filter((property) => this.isPropertyAvailable(property))
+            : properties;
+        const addressIds = [...new Set(visibleProperties.map((property) => property.id_address).filter(Boolean))];
+        const propertyIds = [...new Set(visibleProperties.map((property) => property.id_propi).filter(Boolean))];
+        const ownerIds = [...new Set(visibleProperties
             .map((property) => property.id_usuario || property.id_user || property.user_id || property.owner_id)
             .filter(Boolean))];
 
@@ -44,7 +59,7 @@ export class PropertyService {
             return [id, safeUser];
         }));
 
-        return properties.map((property) => ({
+        return visibleProperties.map((property) => ({
             ...property,
             direccion: addressById.get(property.id_address) || null,
             caracteristica: characteristicByPropertyId.get(property.id_propi) || null,
@@ -52,8 +67,12 @@ export class PropertyService {
         }));
     }
 
-    async getPropertyById(id) {
+    async getPropertyById(id, { publicOnly = false } = {}) {
         const property = await this.repository.findById(id);
+        if (publicOnly && !this.isPropertyAvailable(property)) {
+            return null;
+        }
+
         const [addresses, characteristics] = await Promise.all([
             property?.id_address ? this.addressRepository.findByIds([property.id_address]) : [],
             property?.id_propi ? this.characteristicRepository.findByPropertyIds([property.id_propi]) : [],
@@ -95,6 +114,18 @@ export class PropertyService {
             propiedad: updatedProperty,
             caracteristica: updatedCharacteristic,
         };
+    }
+
+    async updatePropertyStatus(id, statusData = {}) {
+        const rawStatus = statusData.active ?? statusData.enabled ?? statusData.disponible;
+        const isActive = typeof rawStatus === "string"
+            ? ["true", "1", "disponible", "active", "habilitada", "habilitado"].includes(rawStatus.trim().toLowerCase())
+            : Boolean(rawStatus);
+        const statePayload = isActive
+            ? { state_nbr: 1, state_desc: "Disponible" }
+            : { state_nbr: 0, state_desc: "No disponible" };
+
+        return this.repository.update(id, statePayload);
     }
 
     async deleteProperty(id) {
