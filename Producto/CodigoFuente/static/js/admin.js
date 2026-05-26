@@ -853,7 +853,32 @@ window.openReviewModal = function(id) {
     modal.show();
 };
 
-window.deleteReview = function(event, id) {
+async function deleteReviewFromDatabase(id) {
+    try {
+        const response = await fetch(`/api/tenant-reviews/${encodeURIComponent(id)}`, {
+            method: "DELETE",
+            credentials: "same-origin",
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudo eliminar la evaluacion");
+        }
+
+        adminReviews = adminReviews.filter(r => r.id !== id);
+        saveReviews();
+        renderReviews();
+        updateStats();
+        return true;
+    } catch (error) {
+        console.error("Error eliminando evaluacion:", error);
+        showToast(error.message || "No se pudo eliminar la evaluacion", true);
+        return false;
+    }
+}
+
+window.deleteReview = async function(event, id) {
     if (event) {
         event.stopPropagation();
     }
@@ -862,10 +887,7 @@ window.deleteReview = function(event, id) {
     if (!review) return;
 
     if (confirm('¿Eliminar esta evaluación?')) {
-        adminReviews = adminReviews.filter(r => r.id !== id);
-        saveReviews();
-        renderReviews();
-        updateStats();
+        if (!(await deleteReviewFromDatabase(id))) return;
         showToast('Evaluación eliminada correctamente');
     }
 };

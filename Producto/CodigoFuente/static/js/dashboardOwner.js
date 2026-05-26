@@ -322,6 +322,7 @@ async function updateRequestStatus(requestId, nextStatus) {
     }
 
     storedRequests[requestIndex].status = nextStatus;
+    storedRequests[requestIndex].statusUpdatedAt = new Date().toISOString();
     localStorage.setItem('rentRequests', JSON.stringify(storedRequests));
     refreshReceivedRequests();
 

@@ -212,6 +212,10 @@
     border-left: 3px solid #f59e0b;
 }
 
+.rental-card {
+    border-left-color: #28a745;
+}
+
 .request-card h4 {
     font-size: 1rem;
     font-weight: 600;
@@ -337,59 +341,6 @@
     padding: 0.2rem 0.6rem;
     border-radius: 2rem;
     color: white;
-}
-
-/* Favoritos */
-.favorites-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-}
-
-.favorite-card {
-    background: #f8f9fa;
-    border-radius: 0.75rem;
-    overflow: hidden;
-}
-
-.favorite-image {
-    height: 140px;
-    overflow: hidden;
-}
-
-.favorite-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.favorite-info {
-    padding: 0.75rem;
-}
-
-.favorite-info h4 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #1F3B4C;
-    margin: 0 0 0.2rem 0;
-}
-
-.favorite-location {
-    font-size: 0.7rem;
-    color: #6c7f8b;
-    margin-bottom: 0.25rem;
-}
-
-.favorite-price {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #2C5A6E;
-    margin-bottom: 0.5rem;
-}
-
-.favorite-actions {
-    display: flex;
-    gap: 0.5rem;
 }
 
 /* Estado vacío */
@@ -530,10 +481,6 @@
     }
     
     .requests-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .favorites-grid {
         grid-template-columns: 1fr;
     }
     

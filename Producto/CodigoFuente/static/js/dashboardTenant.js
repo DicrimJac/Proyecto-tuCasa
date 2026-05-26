@@ -1,56 +1,130 @@
 // ========== DASHBOARD ARRENDATARIO ==========
 
-// Datos simulados
-let userRequests = [
-    { id: 1, propertyTitle: "Casa en Santiago Centro", propertyLocation: "Santiago Centro", propertyPrice: 500000, status: "pendiente", date: "2024-05-10" },
-    { id: 2, propertyTitle: "Departamento Moderno", propertyLocation: "Providencia", propertyPrice: 350000, status: "aprobada", date: "2024-05-05" }
-];
+let userRequests = [];
+let userRentals = [];
+let userRatings = getStoredJson('tenantRatings', []);
+let userNotifications = [];
 
-let userRentals = [
-    { id: 1, propertyTitle: "Casa en Santiago Centro", startDate: "2024-01-01", endDate: "2024-06-01", status: "finalizado", rating: 0, rated: false },
-    { id: 2, propertyTitle: "Casa Familiar", startDate: "2023-07-01", endDate: "2024-01-01", status: "finalizado", rating: 4, rated: true }
-];
+function getStoredJson(key, fallback) {
+    try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+    } catch (error) {
+        console.error(`Error leyendo ${key}:`, error);
+        return fallback;
+    }
+}
 
-let userRatings = [
-    { id: 1, rentalId: 2, rating: 4, comment: "Buena experiencia" }
-];
+function getCurrentUserEmail() {
+    const savedData = localStorage.getItem("userData") || localStorage.getItem("userProfile");
+    if (savedData) {
+        try {
+            const user = JSON.parse(savedData);
+            return String(user.mail || user.email || user.correo || "").trim().toLowerCase();
+        } catch (error) {
+            console.error("Error leyendo usuario logueado:", error);
+        }
+    }
 
-let userNotifications = [
-    { id: 1, type: "solicitud", title: "Solicitud aprobada", message: "Tu solicitud ha sido aprobada", date: "2024-05-12", read: false },
-    { id: 2, type: "recordatorio", title: "Pago próximo", message: "El pago del arriendo vence pronto", date: "2024-05-10", read: false }
-];
+    return String(localStorage.getItem("userEmail") || "").trim().toLowerCase();
+}
 
-let favoriteProperties = [
-    { id: 1, title: "Casa en Vitacura", location: "Vitacura", price: 800000, image: "assets/image/casa1.png" },
-    { id: 2, title: "Loft Industrial", location: "Ñuñoa", price: 420000, image: "assets/image/casa2.png" }
-];
+function normalizeRequestStatus(status) {
+    return {
+        pending: "pendiente",
+        approved: "aprobada",
+        rejected: "rechazada",
+    }[status] || status || "pendiente";
+}
 
-// ========== ACTUALIZAR ESTADÍSTICAS ==========
+function getRentRequestsForCurrentTenant() {
+    const currentEmail = getCurrentUserEmail();
+    const requests = getStoredJson('rentRequests', []);
+
+    return requests
+        .map(request => ({
+            ...request,
+            status: normalizeRequestStatus(request.status),
+            propertyPrice: Number(request.propertyPrice || 0),
+        }))
+        .filter(request => {
+            if (!currentEmail) return true;
+            return String(request.email || "").trim().toLowerCase() === currentEmail;
+        });
+}
+
+function getRentalEndDate(startDate, durationText) {
+    const start = new Date(startDate || Date.now());
+    const months = Number(String(durationText || "").match(/\d+/)?.[0] || 12);
+    const end = new Date(start);
+    end.setMonth(end.getMonth() + months);
+    return end.toISOString();
+}
+
+function buildNotifications(requests) {
+    const readNotificationIds = new Set(getStoredJson('tenantReadNotifications', []));
+
+    return requests
+        .filter(request => request.status === 'aprobada' || request.status === 'rechazada')
+        .map(request => {
+            const approved = request.status === 'aprobada';
+            const id = `${request.id}-${request.status}`;
+            return {
+                id,
+                type: 'solicitud',
+                title: approved ? 'Solicitud aprobada' : 'Solicitud rechazada',
+                message: approved
+                    ? `Tu solicitud para ${request.propertyTitle} fue aprobada.`
+                    : `Tu solicitud para ${request.propertyTitle} fue rechazada.`,
+                date: request.statusUpdatedAt || request.date,
+                read: readNotificationIds.has(id),
+            };
+        });
+}
+
+function loadTenantDashboardData() {
+    const requests = getRentRequestsForCurrentTenant();
+
+    userRequests = requests;
+    userRentals = requests
+        .filter(request => request.status === 'aprobada')
+        .map(request => ({
+            id: request.id,
+            propertyId: request.propertyId,
+            propertyTitle: request.propertyTitle,
+            startDate: request.startDate,
+            endDate: getRentalEndDate(request.startDate, request.duration),
+            status: 'activo',
+            rating: 0,
+            rated: userRatings.some(rating => Number(rating.rentalId) === Number(request.id)),
+        }));
+    userNotifications = buildNotifications(requests);
+}
+
 function updateStats() {
     document.getElementById('totalRequests').textContent = userRequests.length;
     document.getElementById('activeRentals').textContent = userRentals.filter(r => r.status === 'activo').length;
-    
+
     let avgRating = 0;
     if (userRatings.length > 0) {
-        let sum = userRatings.reduce((acc, r) => acc + r.rating, 0);
+        const sum = userRatings.reduce((acc, r) => acc + Number(r.rating || 0), 0);
         avgRating = (sum / userRatings.length).toFixed(1);
     }
+
     document.getElementById('avgRating').textContent = avgRating;
     document.getElementById('pendingNotifications').textContent = userNotifications.filter(n => !n.read).length;
 }
 
-// ========== NOTIFICACIONES ==========
 function renderNotifications() {
     const container = document.getElementById('notificationsList');
     const unread = userNotifications.filter(n => !n.read);
-    
+
     if (unread.length === 0) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-bell-slash"></i><p>No hay notificaciones</p></div>';
         return;
     }
-    
+
     container.innerHTML = unread.map(n => `
-        <div class="notification-item unread" onclick="markAsRead(${n.id})">
+        <div class="notification-item unread" onclick="markAsRead('${n.id}')">
             <div class="notification-icon"><i class="fas fa-${getIcon(n.type)}"></i></div>
             <div class="notification-content">
                 <div class="notification-title">${n.title}</div>
@@ -67,51 +141,76 @@ function getIcon(type) {
 
 function markAsRead(id) {
     userNotifications = userNotifications.map(n => n.id === id ? { ...n, read: true } : n);
+    const readIds = new Set(getStoredJson('tenantReadNotifications', []));
+    readIds.add(String(id));
+    localStorage.setItem('tenantReadNotifications', JSON.stringify([...readIds]));
     renderNotifications();
     updateStats();
-    showToast('Notificación marcada como leída');
+    showToast('Notificacion marcada como leida');
 }
 
 function markAllNotificationsAsRead() {
     userNotifications = userNotifications.map(n => ({ ...n, read: true }));
+    localStorage.setItem('tenantReadNotifications', JSON.stringify(userNotifications.map(n => String(n.id))));
     renderNotifications();
     updateStats();
-    showToast('Todas las notificaciones marcadas como leídas');
+    showToast('Todas las notificaciones marcadas como leidas');
 }
 
-// ========== SOLICITUDES ACTIVAS ==========
 function renderActiveRequests() {
     const container = document.getElementById('activeRequestsList');
     const active = userRequests.filter(r => r.status === 'pendiente' || r.status === 'aprobada');
-    
+
     if (active.length === 0) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay solicitudes activas</p></div>';
         return;
     }
-    
+
     container.innerHTML = active.map(r => `
         <div class="request-card">
             <h4>${r.propertyTitle}</h4>
             <div class="request-location"><i class="fas fa-map-marker-alt"></i> ${r.propertyLocation}</div>
-            <div class="request-price">$${r.propertyPrice.toLocaleString()} /mes</div>
+            <div class="request-price">$${Number(r.propertyPrice || 0).toLocaleString()} /mes</div>
             <span class="status-badge status-${r.status}">${r.status === 'pendiente' ? 'Pendiente' : 'Aprobada'}</span>
             <div class="request-actions">
-                <button class="btn-outline-sm" onclick="alert('Detalles de ${r.propertyTitle}')">Ver detalles</button>
+                <button class="btn-outline-sm" onclick="window.location.href='requestHistory.html'">Ver detalles</button>
             </div>
         </div>
     `).join('');
 }
 
-// ========== HISTORIAL DE ARRIENDOS ==========
+function renderActiveRentals() {
+    const container = document.getElementById('activeRentalsList');
+    if (!container) return;
+
+    if (userRentals.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-home"></i><p>No hay arriendos activos</p></div>';
+        return;
+    }
+
+    container.innerHTML = userRentals.map(r => `
+        <div class="request-card rental-card">
+            <h4>${r.propertyTitle}</h4>
+            <div class="request-location"><i class="fas fa-calendar-check"></i> Inicio: ${formatDate(r.startDate)}</div>
+            <div class="request-location"><i class="fas fa-calendar-alt"></i> Termino estimado: ${formatDate(r.endDate)}</div>
+            <span class="status-badge status-aprobada">Activo</span>
+            <div class="request-actions">
+                <button class="btn-outline-sm" onclick="window.location.href='requestHistory.html'">Ver detalles</button>
+                <button class="btn-outline-sm" onclick="window.location.href='propertyReview.html?id=${encodeURIComponent(r.propertyId || r.id)}'">Calificar</button>
+            </div>
+        </div>
+    `).join('');
+}
+
 function renderHistory() {
     const container = document.getElementById('historyList');
     const history = userRentals.filter(r => r.status === 'finalizado');
-    
+
     if (history.length === 0) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>No hay historial de arriendos</p></div>';
         return;
     }
-    
+
     container.innerHTML = history.map(r => `
         <div class="history-item">
             <div class="history-info">
@@ -138,38 +237,6 @@ function generateStars(rating) {
     return stars;
 }
 
-// ========== FAVORITOS ==========
-function renderFavorites() {
-    const container = document.getElementById('favoritesList');
-    
-    if (favoriteProperties.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-heart-broken"></i><p>No hay favoritos</p></div>';
-        return;
-    }
-    
-    container.innerHTML = favoriteProperties.map(p => `
-        <div class="favorite-card">
-            <div class="favorite-image"><img src="${p.image}" alt="${p.title}"></div>
-            <div class="favorite-info">
-                <h4>${p.title}</h4>
-                <div class="favorite-location"><i class="fas fa-map-marker-alt"></i> ${p.location}</div>
-                <div class="favorite-price">$${p.price.toLocaleString()} /mes</div>
-                <div class="favorite-actions">
-                    <button class="btn-outline-sm" onclick="alert('Detalles de ${p.title}')">Ver</button>
-                    <button class="btn-outline-sm" onclick="removeFavorite(${p.id})">Quitar</button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-function removeFavorite(id) {
-    favoriteProperties = favoriteProperties.filter(p => p.id !== id);
-    renderFavorites();
-    showToast('Eliminado de favoritos');
-}
-
-// ========== MODAL DE CALIFICACIÓN ==========
 let currentRentalId = null;
 let selectedRating = 0;
 
@@ -178,10 +245,10 @@ function openRatingModal(rentalId, title) {
     selectedRating = 0;
     document.getElementById('rentalTitle').textContent = title;
     document.getElementById('ratingComment').value = '';
-    
+
     const stars = document.querySelectorAll('#ratingStars i');
     stars.forEach(s => s.className = 'far fa-star');
-    
+
     document.getElementById('ratingModal').classList.add('active');
 }
 
@@ -205,46 +272,60 @@ function initModalStars() {
 
 function submitRating() {
     if (selectedRating === 0) {
-        showToast('Selecciona una calificación', true);
+        showToast('Selecciona una calificacion', true);
         return;
     }
-    
+
     const comment = document.getElementById('ratingComment').value;
     userRentals = userRentals.map(r => r.id === currentRentalId ? { ...r, rating: selectedRating, rated: true } : r);
     userRatings.push({ id: Date.now(), rentalId: currentRentalId, rating: selectedRating, comment });
-    
+    localStorage.setItem('tenantRatings', JSON.stringify(userRatings));
+
     closeRatingModal();
     renderHistory();
     updateStats();
-    showToast('¡Gracias por calificar!');
+    showToast('Gracias por calificar');
 }
 
-// ========== FUNCIONES AUXILIARES ==========
 function formatDate(date) {
     if (!date) return '';
     const d = new Date(date);
-    return d.toLocaleDateString('es-ES');
+    return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('es-ES');
 }
 
 function showToast(message, isError = false) {
     const toast = document.getElementById('notificationToast');
     const toastMessage = document.getElementById('toastMessage');
+    if (!toast || !toastMessage) return;
+
     toastMessage.textContent = message;
+    toast.style.borderLeftColor = isError ? '#dc3545' : '#2C5A6E';
     toast.style.display = 'block';
     setTimeout(() => toast.style.display = 'none', 3000);
 }
 
-// ========== INICIALIZACIÓN ==========
-document.addEventListener('DOMContentLoaded', () => {
+function refreshDashboard() {
+    loadTenantDashboardData();
     updateStats();
     renderNotifications();
     renderActiveRequests();
+    renderActiveRentals();
     renderHistory();
-    renderFavorites();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    refreshDashboard();
     initModalStars();
-    
+
     document.getElementById('ratingModal').addEventListener('click', (e) => {
         if (e.target === document.getElementById('ratingModal')) closeRatingModal();
+    });
+
+    window.addEventListener('focus', refreshDashboard);
+    window.addEventListener('storage', (event) => {
+        if (['rentRequests', 'tenantReadNotifications', 'tenantRatings'].includes(event.key)) {
+            refreshDashboard();
+        }
     });
 });
 
@@ -253,4 +334,3 @@ window.markAllNotificationsAsRead = markAllNotificationsAsRead;
 window.openRatingModal = openRatingModal;
 window.closeRatingModal = closeRatingModal;
 window.submitRating = submitRating;
-window.removeFavorite = removeFavorite;
