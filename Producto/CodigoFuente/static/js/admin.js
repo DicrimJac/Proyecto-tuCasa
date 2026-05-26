@@ -127,7 +127,7 @@ function normalizeUser(user, index) {
 function showUsersLoading() {
     const container = document.getElementById('usersTable');
     if (container) {
-        container.innerHTML = `<tr><td colspan="7" class="text-center">Cargando usuarios...</td></tr>`;
+        container.innerHTML = `<tr><td colspan="6" class="text-center">Cargando usuarios...</td></tr>`;
     }
 }
 
@@ -155,7 +155,7 @@ async function loadUsersFromDatabase() {
         usersLoadError = error.message || "No se pudieron cargar los usuarios";
         const container = document.getElementById('usersTable');
         if (container) {
-            container.innerHTML = `<tr><td colspan="7" class="text-center">No se pudieron cargar los usuarios registrados</td></tr>`;
+            container.innerHTML = `<tr><td colspan="6" class="text-center">No se pudieron cargar los usuarios registrados</td></tr>`;
         }
         showToast(usersLoadError, true);
     }
@@ -528,7 +528,7 @@ function renderUsers() {
     if (!container) return;
 
     if (usersLoadError) {
-        container.innerHTML = `<tr><td colspan="7" class="text-center">${escapeHtml(usersLoadError)}</td></tr>`;
+        container.innerHTML = `<tr><td colspan="6" class="text-center">${escapeHtml(usersLoadError)}</td></tr>`;
         document.getElementById('usersPagination').innerHTML = '';
         return;
     }
@@ -543,7 +543,7 @@ function renderUsers() {
     const paginated = filtered.slice(start, start + itemsPerPage);
     
     if (paginated.length === 0) {
-        container.innerHTML = `<tr><td colspan="7" class="text-center">No hay usuarios registrados</td></tr>`;
+        container.innerHTML = `<tr><td colspan="6" class="text-center">No hay usuarios registrados</td></tr>`;
         document.getElementById('usersPagination').innerHTML = '';
         return;
     }
@@ -553,7 +553,6 @@ function renderUsers() {
             <td>${escapeHtml(user.id)}</td>
             <td><strong>${escapeHtml(user.name)}</strong></td>
             <td>${escapeHtml(user.email)}</td>
-            <td>${escapeHtml(user.phone)}</td>
             <td>${formatDate(user.joined)}</td>
             <td><span class="status-badge status-${user.status}">${user.status === 'active' ? 'Activo' : 'Inactivo'}</span></td>
             <td class="action-btns">
@@ -716,7 +715,6 @@ window.viewUser = function(id) {
             <p><strong>ID:</strong> ${user.id}</p>
             <p><strong>Nombre:</strong> ${escapeHtml(user.name)}</p>
             <p><strong>Email:</strong> ${escapeHtml(user.email)}</p>
-            <p><strong>Teléfono:</strong> ${escapeHtml(user.phone)}</p>
             <p><strong>Miembro desde:</strong> ${formatDate(user.joined)}</p>
             <p><strong>Estado:</strong> <span class="status-badge status-${user.status}">${user.status === 'active' ? 'Activo' : 'Inactivo'}</span></p>
         </div>
@@ -739,14 +737,9 @@ window.toggleUserStatus = function(id) {
 window.deleteUser = async function(id) {
     const user = adminUsers.find(u => u.id === id);
     if (!user) return;
-    if (!user.email || user.email === "Sin correo") {
-        showToast("Este usuario no tiene correo para eliminarlo desde la base de datos", true);
-        return;
-    }
-
     if (confirm('¿Eliminar este usuario permanentemente?')) {
         try {
-            const response = await fetch(`/api/users/${encodeURIComponent(user.email)}`, {
+            const response = await fetch(`/api/users/id/${encodeURIComponent(id)}`, {
                 method: "DELETE",
                 credentials: "same-origin",
             });
@@ -754,7 +747,7 @@ window.deleteUser = async function(id) {
             const result = await response.json();
 
             if (!response.ok || !result.success) {
-                throw new Error(result?.error || "No se pudo eliminar el usuario");
+                throw new Error(result?.message || result?.error || "No se pudo eliminar el usuario");
             }
 
             adminUsers = adminUsers.filter(u => u.id !== id);

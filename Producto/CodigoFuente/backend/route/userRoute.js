@@ -23,6 +23,12 @@ userRoute.put("/:mail", (c) => userController.updateUserByMail(c));
 
 // DELETE /api/users/:mail - Eliminar usuario por mail
 userRoute.delete(
+  "/id/:id",
+  requireAuth,
+  (c) => userController.deleteUserById(c),
+);
+
+userRoute.delete(
   "/:mail",
   requireAuth,
   (c) => userController.deleteUserByMail(c),

@@ -1,8 +1,10 @@
 import { UserRepository } from "../repository/userRepository.js";
+import { PropertyService } from "./propertyService.js";
 
 export class UserService {
     constructor() {
         this.userRepository = new UserRepository();
+        this.propertyService = new PropertyService();
     }
 
     async getAllUsers() {
@@ -146,6 +148,11 @@ export class UserService {
     // Eliminar usuario (CRUD - Delete)
     async deleteUser(id) {
         try {
+            const userProperties = await this.propertyService.repository.findByOwnerId(id);
+            for (const property of userProperties) {
+                await this.propertyService.deleteProperty(property.id_propi);
+            }
+
             const deleted = await this.userRepository.delete(id);
             return { success: true, data: deleted };
         } catch (error) {
@@ -318,6 +325,15 @@ export class UserService {
         if (!user) {
             return { success: false, error: `Usuario con mail ${mail} no encontrado` };
         }
+
+        const userId = user.id_usuario || user.id || user.id_user || user.user_id;
+        if (userId) {
+            const userProperties = await this.propertyService.repository.findByOwnerId(userId);
+            for (const property of userProperties) {
+                await this.propertyService.deleteProperty(property.id_propi);
+            }
+        }
+
         const deleted = await this.userRepository.deleteByUserRecord(user);
         return { success: true, data: deleted };
     }
