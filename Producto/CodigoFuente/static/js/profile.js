@@ -165,7 +165,7 @@ function initNavigation() {
 
                 case "review":
                     window.location.href =
-                        "tenantreview.html";
+                        "tenantReview.html";
                     break;
             }
         });
