@@ -7,6 +7,8 @@ const propertyController = new PropertyController();
 
 // GET /api/properties
 propertyRoute.get("/", (c) => propertyController.getAllProperties(c));
+// PATCH /api/properties/:id/status
+propertyRoute.patch("/:id/status", requireAuth, (c) => propertyController.updatePropertyStatus(c));
 // GET /api/properties/:id
 propertyRoute.get("/:id", (c) => propertyController.getPropertyById(c));
 // POST /api/properties

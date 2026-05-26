@@ -69,6 +69,22 @@ function getPropertyLocation(property) {
     return [...new Set(parts)].join(", ") || "Sin ubicacion";
 }
 
+function normalizePropertyStatus(property) {
+    const stateNumber = property.state_nbr ?? property.status_nbr;
+    const stateText = String(property.state_desc || property.status_desc || property.estado || property.status || "")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .trim()
+        .toLowerCase();
+
+    if (Number(stateNumber) === 0) return false;
+    if (["no disponible", "inactiva", "inactivo", "inactive", "disabled", "deshabilitada", "deshabilitado", "vendida", "vendido"].includes(stateText)) {
+        return false;
+    }
+
+    return true;
+}
+
 function normalizeProperty(property, index) {
     const characteristic = property.caracteristica || property.characteristic || {};
     const id = property.id_propi || property.id || property.property_id || index + 1;
@@ -79,6 +95,7 @@ function normalizeProperty(property, index) {
         location: getPropertyLocation(property),
         price: Number(characteristic.price ?? property.price ?? property.precio ?? 0),
         image: getCachedPropertyImage(id) || property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
+        active: normalizePropertyStatus(property),
         raw: property,
     };
 }
@@ -205,13 +222,19 @@ function renderProperties() {
     }
     
     container.innerHTML = ownerProperties.map(p => `
-        <div class="property-card">
+        <div class="property-card ${p.active ? '' : 'property-disabled'}">
             <div class="property-image"><img src="${p.image}" alt="${p.title}" onerror="this.src='${DEFAULT_PROPERTY_IMAGE}'"></div>
             <div class="property-info">
-                <h4>${p.title}</h4>
+                <div class="property-title-row">
+                    <h4>${p.title}</h4>
+                    <span class="property-status ${p.active ? 'status-active' : 'status-inactive'}">${p.active ? 'Habilitada' : 'Deshabilitada'}</span>
+                </div>
                 <div class="property-location"><i class="fas fa-map-marker-alt"></i> ${p.location}</div>
                 <div class="property-price">$${Number(p.price || 0).toLocaleString()} /mes</div>
                 <div class="property-actions">
+                    <button class="btn-action btn-toggle-status ${p.active ? 'is-active' : 'is-inactive'}" type="button" title="${p.active ? 'Deshabilitar propiedad' : 'Habilitar propiedad'}" aria-label="${p.active ? 'Deshabilitar propiedad' : 'Habilitar propiedad'}" onclick="togglePropertyStatus(${p.id})">
+                        <i class="bi bi-${p.active ? 'toggle-on' : 'toggle-off'}"></i>
+                    </button>
                     <button class="btn-edit" onclick="editProperty(${p.id})">Editar</button>
                     <button class="btn-delete" onclick="deleteProperty(${p.id})">Eliminar</button>
                 </div>
@@ -222,6 +245,40 @@ function renderProperties() {
 
 function editProperty(id) {
     window.location.href = `publishProperty.html?id=${encodeURIComponent(id)}&mode=edit`;
+}
+
+async function togglePropertyStatus(id) {
+    const property = ownerProperties.find(p => p.id === id);
+    if (!property) return;
+
+    const nextActive = !property.active;
+    const previousActive = property.active;
+    property.active = nextActive;
+    renderProperties();
+
+    try {
+        const response = await fetch(`/api/properties/${encodeURIComponent(id)}/status`, {
+            method: "PATCH",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ active: nextActive }),
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudo actualizar el estado");
+        }
+
+        property.raw = result.data || property.raw;
+        property.active = normalizePropertyStatus(result.data || property.raw);
+        renderProperties();
+        showToast(`Propiedad ${property.active ? 'habilitada' : 'deshabilitada'}`);
+    } catch (error) {
+        console.error("Error actualizando estado de propiedad:", error);
+        property.active = previousActive;
+        renderProperties();
+        showToast(error.message || "No se pudo actualizar el estado", true);
+    }
 }
 
 async function deleteProperty(id) {
@@ -304,4 +361,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 window.viewRequestDetail = viewRequestDetail;
 window.closeRequestModal = closeRequestModal;
 window.editProperty = editProperty;
+window.togglePropertyStatus = togglePropertyStatus;
 window.deleteProperty = deleteProperty;
