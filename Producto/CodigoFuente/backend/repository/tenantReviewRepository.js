@@ -22,4 +22,17 @@ export class TenantReviewRepository extends BaseRepository {
         if (error) throw new Error(`Error al crear evaluacion de arrendatario: ${error.message}`);
         return data;
     }
+
+    async delete(id) {
+        const { data, error } = await this.supabase
+            .from("EVALTENANT")
+            .delete()
+            .eq("id_review", id)
+            .select()
+            .maybeSingle();
+
+        if (error) throw new Error(`Error al eliminar evaluacion de arrendatario: ${error.message}`);
+        if (!data) throw new Error("La evaluacion no existe");
+        return data;
+    }
 }

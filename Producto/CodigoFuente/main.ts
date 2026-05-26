@@ -106,5 +106,6 @@ console.log("   PUT    /api/properties/:id");
 console.log("   DELETE /api/properties/:id");
 console.log("   GET    /api/tenant-reviews");
 console.log("   POST   /api/tenant-reviews");
+console.log("   DELETE /api/tenant-reviews/:id");
 
 Deno.serve({ port }, app.fetch);

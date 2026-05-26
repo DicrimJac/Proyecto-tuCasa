@@ -270,7 +270,21 @@ async function loadPropertyDetail() {
 
 const requestRentButton = document.getElementById("requestRentButton");
 
+function hasActiveSession() {
+    const userData = localStorage.getItem("userData");
+    const userProfile = localStorage.getItem("userProfile");
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true"
+        || localStorage.getItem("isLoggedIn") === "true";
+
+    return isLoggedIn && !!(userData || userProfile);
+}
+
 function requestRent() {
+    if (!hasActiveSession()) {
+        window.location.href = "login.html";
+        return;
+    }
+
     const idParam = property?.id ? `?id=${encodeURIComponent(property.id)}` : "";
     window.location.href = `requestRent.html${idParam}`;
 }

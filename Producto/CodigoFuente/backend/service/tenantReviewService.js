@@ -48,4 +48,14 @@ export class TenantReviewService {
         const payload = this.buildPayload(reviewData);
         return this.repository.create(payload);
     }
+
+    async deleteReview(id) {
+        const reviewId = Number(id);
+
+        if (!Number.isInteger(reviewId) || reviewId <= 0) {
+            throw new Error("ID de evaluacion invalido");
+        }
+
+        return this.repository.delete(reviewId);
+    }
 }
