@@ -1,17 +1,6 @@
 // ========== SOLICITAR ARRIENDO - DATOS DE PROPIEDAD ==========
-// Simular datos de la propiedad (normalmente vendría de URL o API)
-let propertyData = {
-    id: 1,
-    title: "Casa en Santiago Centro",
-    location: "Santiago Centro, Santiago",
-    price: 500000,
-    rooms: 3,
-    bathrooms: 2,
-    parking: 1,
-    area: 120,
-    image: "assets/image/casa1.png",
-    status: "disponible"
-};
+const DEFAULT_PROPERTY_IMAGE = "assets/image/casa1.png";
+let propertyData = null;
 
 function normalizeText(value) {
     return String(value || "")
@@ -38,11 +27,34 @@ function getPropertyLocation(rawProperty) {
     const parts = [
         rawProperty.location,
         rawProperty.ubicacion,
+        address.street && address.number ? `${address.street} ${address.number}` : "",
         address.comuna,
         address.city,
+        address.state,
     ].filter(Boolean);
 
     return [...new Set(parts)].join(", ") || "Sin ubicacion";
+}
+
+function getCachedPropertyImage(propertyId) {
+    try {
+        const cache = JSON.parse(localStorage.getItem("propertyImageCache") || "{}");
+        return cache[propertyId] || "";
+    } catch (error) {
+        console.error("Error leyendo cache de imagenes:", error);
+        return "";
+    }
+}
+
+function getOperationType(rawProperty) {
+    const operation = rawProperty.operationType
+        || rawProperty.operation_desc
+        || rawProperty.operation
+        || rawProperty.type_operation
+        || rawProperty.type
+        || "arriendo";
+
+    return normalizeText(operation).includes("venta") ? "Venta" : "Arriendo";
 }
 
 function getPropertyFromStorage() {
@@ -54,21 +66,30 @@ function getPropertyFromStorage() {
     }
 }
 
+function propertyMatchesId(savedProperty, propertyId) {
+    return savedProperty
+        && (String(savedProperty.id) === String(propertyId)
+            || String(savedProperty.id_propi) === String(propertyId)
+            || String(savedProperty.raw?.id_propi) === String(propertyId));
+}
+
 function normalizeProperty(rawProperty) {
     const characteristic = rawProperty.caracteristica || rawProperty.characteristic || rawProperty.raw?.caracteristica || {};
-    const id = rawProperty.id_propi || rawProperty.id || rawProperty.property_id || rawProperty.raw?.id_propi || propertyData.id;
-    const price = Number(characteristic.price ?? rawProperty.price ?? rawProperty.precio ?? propertyData.price ?? 0);
+    const id = rawProperty.id_propi || rawProperty.id || rawProperty.property_id || rawProperty.raw?.id_propi || "";
+    const price = Number(characteristic.price ?? rawProperty.price ?? rawProperty.precio ?? 0);
+    const operationType = getOperationType(rawProperty);
 
     return {
         id,
-        title: rawProperty.title || rawProperty.titulo || rawProperty.name || rawProperty.type_desc || propertyData.title,
+        title: rawProperty.title || rawProperty.titulo || rawProperty.name || rawProperty.type_desc || rawProperty.raw?.type_desc || "Propiedad",
         location: getPropertyLocation(rawProperty),
         price,
-        rooms: Number(characteristic.qty_room ?? rawProperty.rooms ?? rawProperty.habitaciones ?? propertyData.rooms ?? 0),
-        bathrooms: Number(characteristic.qty_bath ?? rawProperty.bathrooms ?? rawProperty.banos ?? propertyData.bathrooms ?? 0),
-        parking: characteristic.h_parkin ? 1 : (rawProperty.parking ?? rawProperty.parkingSpaces ?? propertyData.parking ?? 0),
-        area: Number(characteristic.total_mtr ?? rawProperty.area ?? rawProperty.propertyArea ?? propertyData.area ?? 0),
-        image: rawProperty.image || rawProperty.imagen || propertyData.image,
+        operationType,
+        rooms: Number(characteristic.qty_room ?? rawProperty.rooms ?? rawProperty.bedrooms ?? rawProperty.habitaciones ?? 0),
+        bathrooms: Number(characteristic.qty_bath ?? rawProperty.bathrooms ?? rawProperty.banos ?? 0),
+        parking: Number(characteristic.h_parkin ? 1 : (rawProperty.parking ?? rawProperty.parkingSpaces ?? 0)),
+        area: Number(characteristic.total_mtr ?? rawProperty.area ?? rawProperty.propertyArea ?? 0),
+        image: getCachedPropertyImage(id) || rawProperty.image || rawProperty.imagen || DEFAULT_PROPERTY_IMAGE,
         status: isPropertyPublic(rawProperty) ? "disponible" : "no disponible",
     };
 }
@@ -99,6 +120,7 @@ async function resolvePropertyData() {
 
             if (response.ok && result.success) {
                 propertyData = normalizeProperty(result.data);
+                localStorage.setItem("selectedProperty", JSON.stringify(result.data));
                 return;
             }
         } catch (error) {
@@ -106,21 +128,42 @@ async function resolvePropertyData() {
         }
     }
 
-    if (savedProperty) {
+    if (savedProperty && (!propertyId || propertyMatchesId(savedProperty, propertyId))) {
         propertyData = normalizeProperty(savedProperty);
     }
 }
 
 // ========== CARGAR DATOS DE PROPIEDAD ==========
 function loadPropertyData() {
-    document.getElementById('propertyImage').src = propertyData.image;
+    if (!propertyData) {
+        document.getElementById('propertyTitle').textContent = 'No se encontro la propiedad';
+        document.getElementById('propertyLocation').textContent = 'Vuelve al buscador y selecciona una propiedad.';
+        document.getElementById('propertyStatus').textContent = 'No disponible';
+        document.getElementById('propertyStatus').classList.add('unavailable');
+        setRequestFormAvailability(false);
+        showToast('No se encontro la propiedad seleccionada', true);
+        return;
+    }
+
+    const imageElement = document.getElementById('propertyImage');
+    imageElement.onerror = () => {
+        imageElement.src = DEFAULT_PROPERTY_IMAGE;
+    };
+    imageElement.src = propertyData.image;
     document.getElementById('propertyTitle').textContent = propertyData.title;
     document.getElementById('propertyLocation').textContent = propertyData.location;
-    document.getElementById('propertyPrice').textContent = `$${propertyData.price.toLocaleString()}`;
+    document.getElementById('propertyPrice').textContent = propertyData.price
+        ? `$${propertyData.price.toLocaleString()}`
+        : 'Precio no disponible';
     document.getElementById('propertyRooms').textContent = propertyData.rooms;
     document.getElementById('propertyBathrooms').textContent = propertyData.bathrooms;
     document.getElementById('propertyParking').textContent = propertyData.parking;
     document.getElementById('propertyArea').textContent = propertyData.area;
+
+    const pricePeriod = document.querySelector('.price-period');
+    if (pricePeriod) {
+        pricePeriod.style.display = propertyData.operationType === 'Arriendo' && propertyData.price ? '' : 'none';
+    }
     
     const statusElement = document.getElementById('propertyStatus');
     if (propertyData.status === 'disponible') {

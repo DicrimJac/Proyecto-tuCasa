@@ -237,7 +237,7 @@
     margin-top: 0.5rem;
 }
 
-.btn-whatsapp {
+.btn-request-rent {
     background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
     color: white;
     border: none;
@@ -254,11 +254,11 @@
     justify-content: center;
 }
 
-.btn-whatsapp i {
+.btn-request-rent i {
     font-size: 1.2rem;
 }
 
-.btn-whatsapp:hover {
+.btn-request-rent:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(44, 90, 110, 0.3);
     filter: brightness(1.05);
@@ -317,132 +317,6 @@
     width: 100%;
     height: 300px;
     border: none;
-}
-
-/* ========== MODAL WHATSAPP ========== */
-.modal-whatsapp {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.modal-whatsapp.active {
-    display: flex;
-}
-
-/* Contenido modal */
-.modal-content {
-    background: white;
-    width: 90%;
-    max-width: 450px;
-    padding: 2rem;
-    border-radius: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    position: relative;
-    animation: fadeInScale 0.25s ease;
-    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Cerrar modal */
-.cerrar-modal {
-    position: absolute;
-    top: 0.8rem;
-    right: 1.2rem;
-    font-size: 1.8rem;
-    cursor: pointer;
-    color: #a0b3c2;
-    transition: all 0.2s ease;
-}
-
-.cerrar-modal:hover {
-    color: #dc3545;
-}
-
-/* Título modal */
-.modal-content h3 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #1F3B4C;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.modal-content h3 i {
-    color: #25D366;
-    font-size: 1.5rem;
-}
-
-/* Mensaje modal */
-.mensaje-modal {
-    line-height: 1.7;
-    color: #5a6e7a;
-    font-size: 0.95rem;
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    border-left: 3px solid #25D366;
-}
-
-/* Botón modal */
-.btn-modal {
-    background: linear-gradient(135deg, #1F3B4C, #2C5A6E);
-    color: white;
-    border: none;
-    padding: 0.9rem;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.btn-modal:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(44, 90, 110, 0.3);
-}
-
-/* Enlace WhatsApp en modal */
-.whatsapp-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background: #25D366;
-    color: white;
-    text-decoration: none;
-    padding: 0.9rem;
-    border-radius: 0.75rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.whatsapp-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-    color: white;
 }
 
 /* Toast */
@@ -521,7 +395,7 @@
         flex-direction: column;
     }
     
-    .btn-whatsapp,
+    .btn-request-rent,
     .btn-volver {
         width: 100%;
     }
@@ -539,9 +413,5 @@
 @media (max-width: 576px) {
     .imagen-box img {
         height: 250px;
-    }
-    
-    .modal-content {
-        padding: 1.5rem;
     }
 }
