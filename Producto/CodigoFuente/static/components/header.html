@@ -30,12 +30,17 @@
             <span>Contacto</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a href="profile.html" class="nav-link user-greeting" id="userGreeting" style="display: none">
-            <i class="fas fa-user-circle"></i>
-            <span class="user-greeting-text"></span>
-          </a>
-        </li>
+        <div class="top-bar">
+        <div class="logo-area">
+            <a href="home.html" class="navbar-brand">
+                <img src="assets/image/3.png" alt="Tu Casa" class="logo-img-header">
+            </a>
+        </div>
+        <button class="btn-open-profile" type="button" data-bs-toggle="offcanvas" data-bs-target="#profileOffcanvas">
+            <i class="bi bi-person-circle"></i>
+            <span>Mi Perfil</span>
+        </button>
+    </div>
         <li class="nav-item" id="adminNavItem" style="display: none">
           <a href="admin.html" class="nav-link">
             <i class="fas fa-shield-alt"></i>
