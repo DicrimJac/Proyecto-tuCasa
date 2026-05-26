@@ -137,7 +137,7 @@ function normalizeProperty(rawProperty) {
         propertyArea: area ? `${area} m2` : "Sin informacion",
         propertyType: getPropertyType(rawProperty),
         operationType: operation,
-        description: rawProperty.description || rawProperty.descripcion || characteristic.description || "Sin descripcion disponible.",
+        description: rawProperty.describe || rawProperty.description || rawProperty.descripcion || characteristic.description || "Sin descripcion disponible.",
         features: Object.entries(featureLabels)
             .filter(([field]) => characteristic[field] === true)
             .map(([field, data]) => ({ field, ...data })),

@@ -69,7 +69,7 @@ body {
     padding: 1rem 0;
 }
 
-.nav-item {
+.admin-nav .nav-item {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -80,16 +80,16 @@ body {
     position: relative;
 }
 
-.nav-item i {
+.admin-nav .nav-item i {
     width: 24px;
     font-size: 1.2rem;
 }
 
-.nav-item span:not(.badge) {
+.admin-nav .nav-item span:not(.badge) {
     flex: 1;
 }
 
-.nav-item .badge {
+.admin-nav .nav-item .badge {
     background: #dc3545;
     color: white;
     border-radius: 20px;
@@ -97,12 +97,12 @@ body {
     font-size: 0.7rem;
 }
 
-.nav-item:hover {
+.admin-nav .nav-item:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
 }
 
-.nav-item.active {
+.admin-nav .nav-item.active {
     background: rgba(255, 255, 255, 0.15);
     color: white;
     border-left: 3px solid #ffc107;

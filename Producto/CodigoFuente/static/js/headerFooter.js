@@ -1,7 +1,59 @@
 document.addEventListener("DOMContentLoaded", function () {
 
 
+  function loadStylesheetOnce(href) {
+    return new Promise((resolve, reject) => {
+      const existingLink = document.querySelector(`link[href="${href}"]`);
+      if (existingLink) {
+        resolve();
+        return;
+      }
+
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.onload = resolve;
+      link.onerror = () => reject(new Error(`Error cargando CSS: ${href}`));
+      document.head.appendChild(link);
+    });
+  }
+
+  function loadScriptOnce(src) {
+    return new Promise((resolve, reject) => {
+      const existingScript = document.querySelector(`script[src="${src}"]`);
+      if (existingScript) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error(`Error cargando script: ${src}`));
+      document.body.appendChild(script);
+    });
+  }
+
+  function ensureBootstrap() {
+    const bootstrapCss = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
+    const bootstrapJs = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
+    const profileCss = "css/profile.css";
+
+    const cssTasks = [
+      loadStylesheetOnce(bootstrapCss),
+      loadStylesheetOnce(profileCss),
+    ];
+
+    const jsTask = window.bootstrap
+      ? Promise.resolve()
+      : loadScriptOnce(bootstrapJs);
+
+    return Promise.all([...cssTasks, jsTask]);
+  }
+
   function reinitBootstrapComponents() {
+
+    if (!window.bootstrap) return;
 
     const offcanvasElements = document.querySelectorAll('.offcanvas');
     offcanvasElements.forEach(el => {
@@ -56,13 +108,22 @@ fetch("components/profile.html")
     return response.text();
   })
   .then((data) => {
-    const profile = document.getElementById("profileContainer");
-    if (!profile) return;
+    let profile = document.getElementById("profileContainer");
+    if (!profile) {
+      profile = document.createElement("div");
+      profile.id = "profileContainer";
+      document.body.appendChild(profile);
+    }
 
-    profile.innerHTML = data;    
-    reinitBootstrapComponents();
+    profile.innerHTML = data.replace(/<script[\s\S]*?<\/script>/gi, "");
 
-    // Cargar datos del usuario si existen funciones
+    return ensureBootstrap()
+      .then(() => {
+        reinitBootstrapComponents();
+        return loadScriptOnce("js/profile.js");
+      });
+  })
+  .then(() => {
     if (typeof loadUserData === "function") loadUserData();
     if (typeof initNavigation === "function") initNavigation();
   })
@@ -114,14 +175,19 @@ function updateHeaderSessionState() {
   const adminEmail = "admin@duoc.cl";
   const userData = localStorage.getItem("userData");
   const userProfile = localStorage.getItem("userProfile");
-  const isLoggedIn = !!(userData || userProfile);
+  const hasActiveSession = sessionStorage.getItem("isLoggedIn") === "true"
+    || localStorage.getItem("isLoggedIn") === "true";
+  const isLoggedIn = hasActiveSession && !!(userData || userProfile);
 
   const registerBtn = document.querySelector(".btn-register-nav");
   const loginBtn = document.querySelector(".btn-login-nav");
+  const profileNavItem = document.querySelector(".profile-nav-item");
+  const profileButton = document.querySelector(".btn-open-profile");
   const publicNavItems = document.querySelectorAll(".public-nav-item");
   const adminNavItem = document.getElementById("adminNavItem");
   const greetingLink = document.getElementById("userGreeting");
   const greetingTextSpan = greetingLink ? greetingLink.querySelector(".user-greeting-text") : null;
+  const greetingItem = document.querySelector(".user-greeting-item");
 
   let firstName = "";
   let email = "";
@@ -137,25 +203,35 @@ function updateHeaderSessionState() {
     if (greetingLink && greetingTextSpan) {
       greetingTextSpan.textContent = firstName ? `Hola! ${firstName}` : "Hola!";
       greetingLink.href = isAdmin ? "admin.html" : "profile.html";
-      greetingLink.style.display = isAdmin ? "none" : "inline-flex";
     }
+    if (greetingItem) greetingItem.style.display = isAdmin ? "none" : "list-item";
     if (adminNavItem) adminNavItem.style.display = isAdmin ? "list-item" : "none";
     publicNavItems.forEach((item) => {
       item.style.display = isAdmin ? "none" : "list-item";
     });
     if (registerBtn) registerBtn.style.display = "none";
     if (loginBtn) loginBtn.style.display = "none";
+    if (profileNavItem) profileNavItem.style.display = isAdmin ? "none" : "list-item";
+    if (profileButton) {
+      profileButton.disabled = false;
+      profileButton.setAttribute("aria-hidden", "false");
+    }
   } else {
     if (greetingLink && greetingTextSpan) {
       greetingTextSpan.textContent = "";
-      greetingLink.style.display = "none";
     }
+    if (greetingItem) greetingItem.style.display = "none";
     if (adminNavItem) adminNavItem.style.display = "none";
     publicNavItems.forEach((item) => {
       item.style.display = "list-item";
     });
     if (registerBtn) registerBtn.style.display = "flex";
     if (loginBtn) loginBtn.style.display = "flex";
+    if (profileNavItem) profileNavItem.style.display = "none";
+    if (profileButton) {
+      profileButton.disabled = true;
+      profileButton.setAttribute("aria-hidden", "true");
+    }
   }
 }
 

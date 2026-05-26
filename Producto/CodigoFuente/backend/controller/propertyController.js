@@ -60,6 +60,13 @@ export class PropertyController {
                 }, 400);
             }
 
+            if (!String(propiedad.describe || "").trim()) {
+                return c.json({
+                    success: false,
+                    error: "Falta describe en propiedad",
+                }, 400);
+            }
+
             if (typeof caracteristica.total_mtr === "undefined" || typeof caracteristica.price === "undefined") {
                 return c.json({
                     success: false,
