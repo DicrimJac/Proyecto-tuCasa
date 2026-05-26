@@ -15,48 +15,30 @@ export class UserRepository extends BaseRepository {
         const { data, error } = await this.supabase
             .from('USUARIO')
             .select('*')
-            .eq('id', id)
-            .single();
+            .eq('id_usuario', id)
+            .maybeSingle();
 
         if (error) throw new Error(`Usuario ${id} no encontrado: ${error.message}`);
+        if (!data) throw new Error(`Usuario ${id} no encontrado`);
         return data;
     }
 
-    // Buscar usuario por email (priorizando columnas posibles: mail, email, correo)
+    // Buscar usuario por email usando la columna real de la tabla USUARIO: mail
     async findByEmail(email) {
-        // Intento con la columna 'mail'
-        let { data, error } = await this.supabase
+        const normalizedEmail = decodeURIComponent(String(email || "")).trim().toLowerCase();
+
+        const { data, error } = await this.supabase
             .from('USUARIO')
             .select('*')
-            .eq('mail', email)
-            .single();
+            .eq('mail', normalizedEmail)
+            .maybeSingle();
 
-        if (error || !data) {
-            // Intento con columna 'email'
-            const alt1 = await this.supabase
-                .from('USUARIO')
-                .select('*')
-                .eq('email', email)
-                .single();
-            if (!alt1?.data && alt1?.error) {
-                // Intento con columna 'correo'
-                const alt2 = await this.supabase
-                    .from('USUARIO')
-                    .select('*')
-                    .eq('correo', email)
-                    .single();
-                if (alt2?.error) {
-                    throw new Error(`Usuario con email ${email} no encontrado: ${alt2.error.message}`);
-                }
-                data = alt2?.data;
-            } else {
-                data = alt1?.data;
-            }
-        }
+        if (error) throw new Error(`Error al buscar usuario con email ${normalizedEmail}: ${error.message}`);
 
         if (!data) {
-            throw new Error(`Usuario con email ${email} no encontrado: ${error?.message || 'no data'}`);
+            throw new Error(`Usuario con email ${normalizedEmail} no encontrado`);
         }
+
         return data;
     }
 
@@ -129,10 +111,11 @@ export class UserRepository extends BaseRepository {
         const { data, error } = await this.supabase
             .from('USUARIO')
             .delete()
-            .eq('id', id)
+            .eq('id_usuario', id)
             .select()
-            .single();
+            .maybeSingle();
         if (error) throw new Error(`Error al eliminar usuario ${id}: ${error.message}`);
+        if (!data) throw new Error(`No se elimino ningun usuario con id_usuario ${id}`);
         return data;
     }
 

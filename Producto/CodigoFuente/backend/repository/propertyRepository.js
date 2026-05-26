@@ -19,6 +19,20 @@ export class PropertyRepository extends BaseRepository {
         return data;
     }
 
+    async findByOwnerId(ownerId) {
+        const { data, error } = await this.supabase
+            .from('PROPIEDAD')
+            .select('*')
+            .eq('id_usuario', ownerId);
+
+        if (error && /column .*id_usuario.* does not exist/i.test(error.message)) {
+            return [];
+        }
+
+        if (error) throw new Error(`Error al obtener propiedades del usuario ${ownerId}: ${error.message}`);
+        return data || [];
+    }
+
     async create(propertyData) {
         const { data, error } = await this.supabase
             .from('PROPIEDAD')

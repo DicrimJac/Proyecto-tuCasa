@@ -245,6 +245,21 @@ export class UserController {
     }
   }
 
+  async deleteUserById(c) {
+    try {
+      const id = c.req.param("id");
+      const result = await this.userService.deleteUser(id);
+      const status = result?.success ? 200 : 400;
+      return c.json(result, status);
+    } catch (error) {
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
+    }
+  }
+
   // POST /api/register
   async register(c) {
     try {
@@ -373,7 +388,7 @@ export class UserController {
   // Delete user by mail
   async deleteUserByMail(c) {
     try {
-      const mail = c.req.param("mail");
+      const mail = decodeURIComponent(c.req.param("mail") || "").trim().toLowerCase();
       const result = await this.userService.deleteUserByMail(mail);
       const status = result?.success ? 200 : 400;
       return c.json(result, status);
