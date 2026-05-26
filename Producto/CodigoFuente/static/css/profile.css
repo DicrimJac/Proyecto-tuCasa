@@ -10,9 +10,15 @@ body {
     font-family: 'Segoe UI', system-ui, 'Inter', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
     min-height: 100vh;
     padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
+    margin: 0;    
+}
+
+.offcanvas {
+    visibility: hidden;
+}
+
+.offcanvas.show {
+    visibility: visible;
 }
 
 /* ========== BARRA SUPERIOR ========== */

@@ -1,57 +1,463 @@
+// ===================== UTILIDADES =====================
+
+function getStoredJson(key) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function getCurrentUser() {
+    return (
+        getStoredJson("userData") ||
+        getStoredJson("userProfile") ||
+        null
+    );
+}
+
+function setText(id, value) {
+    const el = document.getElementById(id);
+
+    if (el) {
+        el.textContent = value;
+    }
+}
+
+function buildFullName(user) {
+
+    if (!user) return "Usuario";
+
+    const names = [
+        user.first_name,
+        user.second_name,
+        user.first_last_name,
+        user.second_last_name
+    ].filter(Boolean);
+
+    if (names.length > 0) {
+        return names.join(" ");
+    }
+
+    return (
+        user.fullName ||
+        user.name ||
+        user.nombre ||
+        "Usuario"
+    );
+}
+
+function getEmail(user) {
+
+    return (
+        user.email ||
+        user.mail ||
+        "Sin correo"
+    );
+}
+
+function formatPhone(user) {
+
+    return (
+        user.phone ||
+        user.fono ||
+        user.telefono ||
+        "No registrado"
+    );
+}
+
+function formatBirthdate(user) {
+
+    return (
+        user.birthdate ||
+        user.date_birth ||
+        "No registrada"
+    );
+}
+
+function avatarUrl(name, avatar) {
+
+    if (avatar) return avatar;
+
+    return `https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=120&bold=true&name=${encodeURIComponent(name)}`;
+}
+
+// ===================== CARGAR PERFIL =====================
+
+function updateProfileDisplay(user) {
+
+    if (!user) return;
+
+    const fullName = buildFullName(user);
+    const email = getEmail(user);
+    const phone = formatPhone(user);
+    const birthdate = formatBirthdate(user);
+
+    // Header / Offcanvas
+    setText("userNameDisplay", fullName);
+    setText("userEmailDisplay", email);
+
+    // Página profile.html
+    setText("fullName", fullName);
+    setText("email", email);
+    setText("phone", phone);
+    setText("birthdate", birthdate);
+
+    const avatar = avatarUrl(fullName, user.avatar);
+
+    const avatarImg = document.getElementById("avatarImg");
+    const avatarPreview = document.getElementById("avatarPreview");
+
+    if (avatarImg) avatarImg.src = avatar;
+    if (avatarPreview) avatarPreview.src = avatar;
+}
+
+function loadUserData() {
+
+    const user = getCurrentUser();
+
+    if (!user) {
+        console.warn("No hay usuario en localStorage");
+        return;
+    }
+
+    updateProfileDisplay(user);
+}
+
+// ===================== NAVEGACIÓN =====================
+
 function initNavigation() {
-    const navLinks = document.querySelectorAll('.nav-link[data-section]');
-    const sections = document.querySelectorAll('.panel-section');
+
+    const navLinks =
+        document.querySelectorAll(".nav-link[data-section]");
 
     navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
+
+        link.addEventListener("click", (e) => {
+
             e.preventDefault();
 
             const sectionId = link.dataset.section;
 
-            // Redirecciones
-            if (sectionId === 'Arri') {
-                window.location.href = 'dashboardTenant.html';
-                return;
-            }
-
-            if (sectionId === 'Propi') {
-                window.location.href = 'dashboardOwner.html';
-                return;
-            }
-
-            if (sectionId === 'review') {
-                window.location.href = 'tenantreview.html';
-                return;
-            }
-
-            // Mostrar secciones internas
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-
             navLinks.forEach(nav => {
-                nav.classList.remove('active');
+                nav.classList.remove("active");
             });
 
-            link.classList.add('active');
+            link.classList.add("active");
 
-            const targetSection = document.getElementById(`${sectionId}-section`);
+            switch (sectionId) {
 
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
+                case "dashboard":
+                    window.location.href =
+                        "dashboardOwner.html";
+                    break;
 
-            // Renderizados
-            if (sectionId === 'dashboard') {
-                renderDashboard();
-            }
+                case "properties":
+                    window.location.href =
+                        "dashboardTenant.html";
+                    break;
 
-            if (sectionId === 'properties') {
-                renderAllProperties();
+                case "favorites":
+                    window.location.href =
+                        "favorites.html";
+                    break;
+
+                case "review":
+                    window.location.href =
+                        "tenantreview.html";
+                    break;
             }
         });
     });
 }
+
+// ===================== EDITAR PERFIL =====================
+
+const editProfileForm =
+    document.getElementById("editProfileForm");
+
+if (editProfileForm) {
+
+    editProfileForm.addEventListener("submit", (e) => {
+
+        e.preventDefault();
+
+        const currentUser =
+            getCurrentUser() || {};
+
+        const updatedUser = {
+
+            ...currentUser,
+
+            fullName:
+                document.getElementById("editFullName").value,
+
+            email:
+                document.getElementById("editEmail").value,
+
+            phone:
+                document.getElementById("editPhone").value,
+
+            birthdate:
+                document.getElementById("editBirthdate").value,
+
+            avatar:
+                document.getElementById("avatarImg")?.src
+        };
+
+        localStorage.setItem(
+            "userProfile",
+            JSON.stringify(updatedUser)
+        );
+
+        updateProfileDisplay(updatedUser);
+
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById("editProfileModal")
+        );
+
+        if (modal) {
+            modal.hide();
+        }
+
+        alert("Perfil actualizado");
+    });
+}
+
+// ===================== PRECARGAR MODAL =====================
+
+const editProfileModal =
+    document.getElementById("editProfileModal");
+
+if (editProfileModal) {
+
+    editProfileModal.addEventListener(
+        "show.bs.modal",
+        () => {
+
+            const user = getCurrentUser();
+
+            if (!user) return;
+
+            const fullName =
+                buildFullName(user);
+
+            document.getElementById("editFullName").value =
+                fullName;
+
+            document.getElementById("editEmail").value =
+                getEmail(user);
+
+            document.getElementById("editPhone").value =
+                formatPhone(user);
+
+            document.getElementById("editBirthdate").value =
+                user.birthdate || "";
+        }
+    );
+}
+
+// ===================== AVATAR =====================
+
+const avatarUpload =
+    document.getElementById("avatarUpload");
+
+if (avatarUpload) {
+
+    avatarUpload.addEventListener("change", (e) => {
+
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+
+            const image = event.target.result;
+
+            const avatarPreview =
+                document.getElementById("avatarPreview");
+
+            if (avatarPreview) {
+                avatarPreview.src = image;
+            }
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+const saveAvatar =
+    document.getElementById("saveAvatar");
+
+if (saveAvatar) {
+
+    saveAvatar.addEventListener("click", () => {
+
+        const avatarPreview =
+            document.getElementById("avatarPreview");
+
+        if (!avatarPreview) return;
+
+        const image = avatarPreview.src;
+
+        const avatarImg =
+            document.getElementById("avatarImg");
+
+        if (avatarImg) {
+            avatarImg.src = image;
+        }
+
+        const user =
+            getCurrentUser() || {};
+
+        user.avatar = image;
+
+        localStorage.setItem(
+            "userProfile",
+            JSON.stringify(user)
+        );
+
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById("avatarModal")
+        );
+
+        if (modal) {
+            modal.hide();
+        }
+
+        alert("Avatar actualizado");
+    });
+}
+
+// ===================== CONTRASEÑA =====================
+
+const passwordChangeForm =
+    document.getElementById("passwordChangeForm");
+
+if (passwordChangeForm) {
+
+    passwordChangeForm.addEventListener(
+        "submit",
+        (e) => {
+
+            e.preventDefault();
+
+            const newPass =
+                document.getElementById("newPass").value;
+
+            const confirmPass =
+                document.getElementById("confirmNewPass").value;
+
+            if (newPass !== confirmPass) {
+
+                alert("Las contraseñas no coinciden");
+                return;
+            }
+
+            alert("Contraseña actualizada");
+
+            passwordChangeForm.reset();
+
+            const modal =
+                bootstrap.Modal.getInstance(
+                    document.getElementById(
+                        "passwordModal"
+                    )
+                );
+
+            if (modal) {
+                modal.hide();
+            }
+        }
+    );
+}
+
+// ===================== LOGOUT =====================
+
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener("click", () => {
+
+        const confirmLogout =
+            confirm("¿Deseas cerrar sesión?");
+
+        if (!confirmLogout) return;
+
+        localStorage.removeItem("userData");
+        localStorage.removeItem("userProfile");
+
+        window.location.href = "home.html";
+    });
+}
+
+// ===================== INIT =====================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    loadUserData();
+
+    initNavigation();
+});
+// function initNavigation() {
+//     const navLinks = document.querySelectorAll('.nav-link[data-section]');
+//     const sections = document.querySelectorAll('.panel-section');
+
+//     navLinks.forEach(link => {
+//         link.addEventListener('click', (e) => {
+//             e.preventDefault();
+
+//             const sectionId = link.dataset.section;
+
+//             // Redirecciones
+//             if (sectionId === 'Arri') {
+//                 window.location.href = 'dashboardTenant.html';
+//                 return;
+//             }
+
+//             if (sectionId === 'Propi') {
+//                 window.location.href = 'dashboardOwner.html';
+//                 return;
+//             }
+
+//             if (sectionId === 'review') {
+//                 window.location.href = 'tenantreview.html';
+//                 return;
+//             }
+
+//             // Mostrar secciones internas
+//             sections.forEach(section => {
+//                 section.classList.remove('active');
+//             });
+
+//             navLinks.forEach(nav => {
+//                 nav.classList.remove('active');
+//             });
+
+//             link.classList.add('active');
+
+//             const targetSection = document.getElementById(`${sectionId}-section`);
+
+//             if (targetSection) {
+//                 targetSection.classList.add('active');
+//             }
+
+//             // Renderizados
+//             if (sectionId === 'dashboard') {
+//                 renderDashboard();
+//             }
+
+//             if (sectionId === 'properties') {
+//                 renderAllProperties();
+//             }
+//         });
+//     });
+// }
 
 // // Cargar desde localStorage
 // if (localStorage.getItem('userProperties')) {

@@ -1,5 +1,80 @@
 <nav class="navbar">
   <div class="nav-container">
+
+    <div class="nav-logo">
+      <a href="home.html" class="logo-link">
+        <img src="assets/image/3.png" alt="Tu Casa" class="logo-img">
+      </a>
+    </div>
+
+    <button class="nav-toggle" id="navToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="nav-menu" id="navMenu">
+
+      <ul class="nav-list">
+
+        <li class="nav-item public-nav-item">
+          <a href="home.html" class="nav-link">
+            <i class="fas fa-home"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+
+        <li class="nav-item public-nav-item">
+          <a href="aboutUs.html" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Nosotros</span>
+          </a>
+        </li>
+
+        <li class="nav-item public-nav-item">
+          <a href="contact.html" class="nav-link">
+            <i class="fas fa-envelope"></i>
+            <span>Contacto</span>
+          </a>
+        </li>
+
+        <!-- PERFIL -->
+        <li class="nav-item">
+          <button class="btn-open-profile" type="button" data-bs-toggle="offcanvas" data-bs-target="#profileOffcanvas"
+            aria-controls="profileOffcanvas">
+            <i class="bi bi-person-circle"></i>
+            <span>Mi Perfil</span>
+          </button>
+        </li>
+
+        <li class="nav-item" id="adminNavItem" style="display:none;">
+          <a href="admin.html" class="nav-link">
+            <i class="fas fa-shield-alt"></i>
+            <span>Administración</span>
+          </a>
+        </li>
+
+      </ul>
+
+      <div class="nav-buttons">
+
+        <a href="register.html" class="btn-register-nav">
+          <i class="fas fa-user-plus"></i>
+          <span>Registrarse</span>
+        </a>
+
+        <a href="login.html" class="btn-login-nav">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Iniciar Sesión</span>
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+
+<!-- <nav class="navbar">
+  <div class="nav-container">
     <div class="nav-logo">
       <a href="../home.html" class="logo-link">
         <img src="assets/image/3.png" alt="Tu Casa" class="logo-img">
@@ -34,6 +109,7 @@
         <div class="logo-area">            
         </div>
         <button class="btn-open-profile" type="button" data-bs-toggle="offcanvas" data-bs-target="#profileOffcanvas">
+            <a href="profile.html" class="nav-link"></a>
             <i class="bi bi-person-circle"></i>
             <span>Mi Perfil</span>
         </button>
@@ -46,7 +122,7 @@
         </li>
       </ul>
 
-      <div class="nav-buttons">
+      <div class="nav-buttons">        
         <a href="register.html" class="btn-register-nav">
           <i class="fas fa-user-plus"></i>
           <span>Registrarse</span>
@@ -58,4 +134,4 @@
       </div>
     </div>
   </div>
-</nav>
+</nav> -->
