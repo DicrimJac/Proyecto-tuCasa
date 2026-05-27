@@ -84,6 +84,43 @@ function formatBirthdate(user) {
     );
 }
 
+function getUserIdentifier(user) {
+    return user?.mail || user?.email || localStorage.getItem("userEmail") || "";
+}
+
+function splitFullName(fullName) {
+    const parts = String(fullName || "").trim().split(/\s+/).filter(Boolean);
+
+    return {
+        first_name: parts[0] || "",
+        second_name: parts.length > 3 ? parts[1] : "",
+        first_last_name: parts.length > 1 ? parts[parts.length - 2] : "",
+        second_last_name: parts.length > 2 ? parts[parts.length - 1] : "",
+    };
+}
+
+function normalizeDateForInput(value) {
+    if (!value) return "";
+    const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return "";
+    return parsed.toISOString().split("T")[0];
+}
+
+function persistUserSession(user) {
+    const currentUser = getCurrentUser() || {};
+    const mergedUser = { ...currentUser, ...user };
+
+    localStorage.setItem("userData", JSON.stringify(mergedUser));
+    localStorage.setItem("userProfile", JSON.stringify(mergedUser));
+    localStorage.setItem("userEmail", getEmail(mergedUser));
+    localStorage.setItem("userName", mergedUser.first_name || buildFullName(mergedUser));
+
+    return mergedUser;
+}
+
 function getRegisterYear(user) {
 
     const registerDate =
@@ -206,49 +243,90 @@ const editProfileForm =
 
 if (editProfileForm) {
 
-    editProfileForm.addEventListener("submit", (e) => {
+    editProfileForm.addEventListener("submit", async (e) => {
 
         e.preventDefault();
 
         const currentUser =
             getCurrentUser() || {};
+        const currentEmail =
+            getUserIdentifier(currentUser).trim().toLowerCase();
+        const fullName =
+            document.getElementById("editFullName").value.trim();
+        const email =
+            document.getElementById("editEmail").value.trim().toLowerCase();
+        const phone =
+            document.getElementById("editPhone").value.trim();
+        const birthdate =
+            document.getElementById("editBirthdate").value;
 
-        const updatedUser = {
-
-            ...currentUser,
-
-            fullName:
-                document.getElementById("editFullName").value,
-
-            email:
-                document.getElementById("editEmail").value,
-
-            phone:
-                document.getElementById("editPhone").value,
-
-            birthdate:
-                document.getElementById("editBirthdate").value,
-
-            avatar:
-                document.getElementById("avatarImg")?.src
-        };
-
-        localStorage.setItem(
-            "userProfile",
-            JSON.stringify(updatedUser)
-        );
-
-        updateProfileDisplay(updatedUser);
-
-        const modal = bootstrap.Modal.getInstance(
-            document.getElementById("editProfileModal")
-        );
-
-        if (modal) {
-            modal.hide();
+        if (!currentEmail) {
+            alert("No se pudo identificar el correo actual del usuario");
+            return;
         }
 
-        alert("Perfil actualizado");
+        if (!fullName || !email) {
+            alert("Nombre y correo son obligatorios");
+            return;
+        }
+
+        const payload = {
+            ...splitFullName(fullName),
+            mail: email,
+            fono: phone,
+            date_birth: birthdate || null,
+        };
+
+        const submitBtn = editProfileForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn?.innerHTML;
+
+        if (submitBtn) {
+            submitBtn.innerHTML = "Guardando...";
+            submitBtn.disabled = true;
+        }
+
+        try {
+            const response = await fetch(`/api/users/${encodeURIComponent(currentEmail)}`, {
+                method: "PUT",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result?.error || result?.message || "No se pudo actualizar el perfil");
+            }
+
+            const updatedUser = persistUserSession({
+                ...result.data,
+                avatar: document.getElementById("avatarImg")?.src,
+            });
+
+            updateProfileDisplay(updatedUser);
+            if (typeof updateHeaderSessionState === "function") {
+                updateHeaderSessionState();
+            }
+
+            const modal = bootstrap.Modal.getInstance(
+                document.getElementById("editProfileModal")
+            );
+
+            if (modal) {
+                modal.hide();
+            }
+
+            alert("Perfil actualizado");
+        } catch (error) {
+            console.error("Error actualizando perfil:", error);
+            alert(error.message || "No se pudo actualizar el perfil");
+        } finally {
+            if (submitBtn) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
     });
 }
 
@@ -277,10 +355,10 @@ if (editProfileModal) {
                 getEmail(user);
 
             document.getElementById("editPhone").value =
-                formatPhone(user);
+                formatPhone(user) === "No registrado" ? "" : formatPhone(user);
 
             document.getElementById("editBirthdate").value =
-                user.birthdate || "";
+                normalizeDateForInput(user.date_birth || user.birthdate);
         }
     );
 }

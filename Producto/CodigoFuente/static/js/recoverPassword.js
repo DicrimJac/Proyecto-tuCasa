@@ -154,13 +154,13 @@ function startTimer() {
 
     resendLink.style.pointerEvents = "none";
     resendLink.style.opacity = "0.5";
-    timerSpan.textContent = `(${seconds}s)`;
+    timerSpan.textContent = `(reenviar en ${seconds}s)`;
 
     if (timerInterval) clearInterval(timerInterval);
 
     timerInterval = setInterval(() => {
         seconds--;
-        timerSpan.textContent = `(${seconds}s)`;
+        timerSpan.textContent = `(reenviar en ${seconds}s)`;
 
         if (seconds <= 0) {
             clearInterval(timerInterval);
@@ -224,7 +224,7 @@ function initStep1() {
                 ? `<br><small>Modo desarrollo: codigo ${result.devResetCode}</small>`
                 : "";
             goToStep(2);
-            showMessage(`Hemos enviado un codigo de verificacion de 4 digitos a ${email}${devMessage}`, "success");
+            showMessage(`Hemos enviado un codigo de verificacion de 4 digitos a ${email}. Vence en 10 minutos.${devMessage}`, "success");
             startTimer();
         } catch (error) {
             showMessage(error.message || "No se pudo enviar el codigo", "danger");
@@ -275,7 +275,7 @@ function initStep2() {
             verificationCode = result.devResetCode || "";
             const devMessage = result.devResetCode ? ` Modo desarrollo: codigo ${result.devResetCode}` : "";
             startTimer();
-            showMessage(`Se ha enviado un nuevo codigo de 4 digitos a tu email.${devMessage}`, "success");
+            showMessage(`Se ha enviado un nuevo codigo de 4 digitos a tu email. Vence en 10 minutos.${devMessage}`, "success");
         } catch (error) {
             showMessage(error.message || "No se pudo reenviar el codigo", "danger");
         }

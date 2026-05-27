@@ -120,7 +120,7 @@ fetch("components/profile.html")
     return ensureBootstrap()
       .then(() => {
         reinitBootstrapComponents();
-        return loadScriptOnce("js/profile.js");
+        return loadScriptOnce("js/profile.js?v=profile-backend-2");
       });
   })
   .then(() => {

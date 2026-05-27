@@ -244,7 +244,9 @@ export class UserService {
             }
         }
 
-        if (allowedPayload.fono !== undefined && allowedPayload.fono !== null && allowedPayload.fono !== "") {
+        if (allowedPayload.fono === "") {
+            allowedPayload.fono = null;
+        } else if (allowedPayload.fono !== undefined && allowedPayload.fono !== null) {
             const digits = String(allowedPayload.fono).replace(/\D/g, "");
             allowedPayload.fono = digits ? Number(digits) : null;
         }
