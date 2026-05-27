@@ -446,15 +446,36 @@ if (passwordChangeForm) {
 
     passwordChangeForm.addEventListener(
         "submit",
-        (e) => {
+        async (e) => {
 
             e.preventDefault();
 
+            const currentUser =
+                getCurrentUser() || {};
+            const currentEmail =
+                getUserIdentifier(currentUser).trim().toLowerCase();
+            const currentPassword =
+                document.getElementById("currentPassword").value;
             const newPass =
                 document.getElementById("newPass").value;
 
             const confirmPass =
                 document.getElementById("confirmNewPass").value;
+
+            if (!currentEmail) {
+                alert("No se pudo identificar el correo actual del usuario");
+                return;
+            }
+
+            if (!currentPassword) {
+                alert("Ingresa tu contraseña actual");
+                return;
+            }
+
+            if (newPass.length < 6) {
+                alert("La nueva contraseña debe tener al menos 6 caracteres");
+                return;
+            }
 
             if (newPass !== confirmPass) {
 
@@ -462,19 +483,53 @@ if (passwordChangeForm) {
                 return;
             }
 
-            alert("Contraseña actualizada");
+            const submitBtn = passwordChangeForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn?.innerHTML;
 
-            passwordChangeForm.reset();
+            if (submitBtn) {
+                submitBtn.innerHTML = "Actualizando...";
+                submitBtn.disabled = true;
+            }
 
-            const modal =
-                bootstrap.Modal.getInstance(
-                    document.getElementById(
-                        "passwordModal"
-                    )
-                );
+            try {
+                const response = await fetch(`/api/users/${encodeURIComponent(currentEmail)}/password`, {
+                    method: "PUT",
+                    credentials: "same-origin",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        currentPassword,
+                        newPassword: newPass,
+                    }),
+                });
 
-            if (modal) {
-                modal.hide();
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result?.error || result?.message || "No se pudo actualizar la contraseña");
+                }
+
+                alert("Contraseña actualizada");
+
+                passwordChangeForm.reset();
+
+                const modal =
+                    bootstrap.Modal.getInstance(
+                        document.getElementById(
+                            "passwordModal"
+                        )
+                    );
+
+                if (modal) {
+                    modal.hide();
+                }
+            } catch (error) {
+                console.error("Error actualizando contraseña:", error);
+                alert(error.message || "No se pudo actualizar la contraseña");
+            } finally {
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
             }
         }
     );
