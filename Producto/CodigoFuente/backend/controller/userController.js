@@ -30,6 +30,7 @@ export class UserController {
         error: result.error,
       }, status);
     } catch (error) {
+      console.error("Error solicitando recuperacion de contrasena:", error);
       return c.json({
         success: false,
         error: "Error interno del servidor",
@@ -64,6 +65,7 @@ export class UserController {
       }
       return c.json(result, status);
     } catch (error) {
+      console.error("Error confirmando recuperacion de contrasena:", error);
       return c.json({
         success: false,
         error: "Error interno del servidor",

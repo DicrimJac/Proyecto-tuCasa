@@ -38,7 +38,7 @@ async function requestResetCode(email) {
     const result = await response.json();
 
     if (!response.ok || !result.success) {
-        throw new Error(result?.error || result?.message || "No se pudo enviar el codigo");
+        throw new Error(result?.message || result?.error || "No se pudo enviar el codigo");
     }
 
     return result;
@@ -53,7 +53,7 @@ async function confirmPasswordReset(email, code, newPasswordValue) {
     const result = await response.json();
 
     if (!response.ok || !result.success) {
-        throw new Error(result?.error || result?.message || "No se pudo actualizar la contrasena");
+        throw new Error(result?.message || result?.error || "No se pudo actualizar la contrasena");
     }
 
     return result;
