@@ -329,6 +329,23 @@ export class UserController {
     }
   }
 
+  // GET /api/users/email/:mail
+  async getUserByEmail(c) {
+    try {
+      const mail = decodeURIComponent(c.req.param("mail") || "").trim().toLowerCase();
+      const result = await this.userService.getUserByEmail(mail);
+
+      const status = result.success ? 200 : 404;
+      return c.json(result, status);
+    } catch (error) {
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
+    }
+  }
+
   // GET /api/users/me
   async getCurrentUser(c) {
     try {
@@ -340,7 +357,11 @@ export class UserController {
         return c.json({ success: false, error: "No autorizado" }, 401);
       }
 
-      const result = await this.userService.getUserById(String(session.userId));
+      const sessionUserId = String(session.userId);
+      let result = await this.userService.getUserById(sessionUserId);
+      if (!result.success && sessionUserId.includes("@")) {
+        result = await this.userService.getUserByEmail(sessionUserId);
+      }
       const status = result.success ? 200 : 404;
       return c.json(result, status);
     } catch (error) {
