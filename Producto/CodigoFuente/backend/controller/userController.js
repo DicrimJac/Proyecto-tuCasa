@@ -329,6 +329,29 @@ export class UserController {
     }
   }
 
+  // GET /api/users/me
+  async getCurrentUser(c) {
+    try {
+      const sessionId = getCookie(c, "session_id");
+      const sessionRepo = new SessionRepository();
+      const session = await sessionRepo.findSession(sessionId);
+
+      if (!session?.userId) {
+        return c.json({ success: false, error: "No autorizado" }, 401);
+      }
+
+      const result = await this.userService.getUserById(String(session.userId));
+      const status = result.success ? 200 : 404;
+      return c.json(result, status);
+    } catch (error) {
+      return c.json({
+        success: false,
+        error: "Error interno del servidor",
+        message: error.message,
+      }, 500);
+    }
+  }
+
   async deleteUserById(c) {
     try {
       const id = c.req.param("id");
