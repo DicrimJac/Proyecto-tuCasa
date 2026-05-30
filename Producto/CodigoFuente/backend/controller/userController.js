@@ -5,9 +5,91 @@ import { SessionRepository } from "../repository/sessionRepository.js";
 
 const passwordResetCodes = new Map();
 const RESET_CODE_TTL_MS = 10 * 60 * 1000;
+const RESET_CODE_TTL_SECONDS = RESET_CODE_TTL_MS / 1000;
+const RESET_COOKIE_NAME = "password_reset";
+const textEncoder = new TextEncoder();
 
 function createResetCode() {
   return String(Math.floor(1000 + Math.random() * 9000));
+}
+
+function base64UrlEncode(value) {
+  const bytes = value instanceof Uint8Array ? value : textEncoder.encode(value);
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return btoa(binary)
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replaceAll("=", "");
+}
+
+function base64UrlDecode(value) {
+  const normalized = value.replaceAll("-", "+").replaceAll("_", "/");
+  const padded = normalized.padEnd(
+    normalized.length + ((4 - normalized.length % 4) % 4),
+    "=",
+  );
+
+  return atob(padded);
+}
+
+async function getResetSigningKey() {
+  const secret = Deno.env.get("SESSION_SECRET") ||
+    Deno.env.get("RESEND_API_KEY") ||
+    "tu-casa-reset-dev-secret";
+
+  return await crypto.subtle.importKey(
+    "raw",
+    textEncoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"],
+  );
+}
+
+async function signResetPayload(value) {
+  const key = await getResetSigningKey();
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    textEncoder.encode(value),
+  );
+
+  return base64UrlEncode(new Uint8Array(signature));
+}
+
+async function createResetCookieValue(data) {
+  const encodedPayload = base64UrlEncode(JSON.stringify(data));
+  const signature = await signResetPayload(encodedPayload);
+  return `${encodedPayload}.${signature}`;
+}
+
+async function readResetCookieValue(value) {
+  if (!value || !value.includes(".")) return null;
+
+  const [encodedPayload, signature] = value.split(".");
+  if (!encodedPayload || !signature) return null;
+
+  const expectedSignature = await signResetPayload(encodedPayload);
+  if (expectedSignature !== signature) return null;
+
+  try {
+    return JSON.parse(base64UrlDecode(encodedPayload));
+  } catch {
+    return null;
+  }
+}
+
+function clearResetCookie(c) {
+  setCookie(c, RESET_COOKIE_NAME, "", {
+    httpOnly: true,
+    path: "/",
+    sameSite: "Lax",
+    maxAge: 0,
+  });
 }
 
 export class UserController {
@@ -326,16 +408,30 @@ export class UserController {
       }
 
       const code = createResetCode();
+      const expiresAt = Date.now() + RESET_CODE_TTL_MS;
       passwordResetCodes.set(normalizedEmail, {
         code,
-        expiresAt: Date.now() + RESET_CODE_TTL_MS,
+        expiresAt,
       });
 
       const emailResult = await this.emailService.sendPasswordResetCode(normalizedEmail, code);
+      const resetCookieValue = await createResetCookieValue({
+        email: normalizedEmail,
+        code,
+        expiresAt,
+      });
+      setCookie(c, RESET_COOKIE_NAME, resetCookieValue, {
+        httpOnly: true,
+        path: "/",
+        sameSite: "Lax",
+        secure: new URL(c.req.url).protocol === "https:",
+        maxAge: RESET_CODE_TTL_SECONDS,
+      });
+
       const payload = {
         success: true,
         message: "Codigo de recuperacion enviado",
-        expiresInSeconds: RESET_CODE_TTL_MS / 1000,
+        expiresInSeconds: RESET_CODE_TTL_SECONDS,
       };
 
       if (emailResult.devMode) {
@@ -357,7 +453,17 @@ export class UserController {
       const { email, code, newPassword } = await c.req.json();
       const normalizedEmail = String(email || "").trim().toLowerCase();
       const normalizedCode = String(code || "").trim();
-      const resetData = passwordResetCodes.get(normalizedEmail);
+      let resetData = passwordResetCodes.get(normalizedEmail);
+
+      if (!resetData) {
+        const cookieResetData = await readResetCookieValue(
+          getCookie(c, RESET_COOKIE_NAME),
+        );
+
+        if (cookieResetData?.email === normalizedEmail) {
+          resetData = cookieResetData;
+        }
+      }
 
       if (!normalizedEmail || !normalizedCode || !newPassword) {
         return c.json({ success: false, error: "Email, codigo y nueva contrasena son requeridos" }, 400);
@@ -365,6 +471,7 @@ export class UserController {
 
       if (!resetData || resetData.expiresAt < Date.now()) {
         passwordResetCodes.delete(normalizedEmail);
+        clearResetCookie(c);
         return c.json({ success: false, error: "Codigo expirado o inexistente" }, 400);
       }
 
@@ -375,6 +482,7 @@ export class UserController {
       const result = await this.userService.resetPasswordByMail(normalizedEmail, newPassword);
       if (result.success) {
         passwordResetCodes.delete(normalizedEmail);
+        clearResetCookie(c);
       }
 
       return c.json(result, result.success ? 200 : 400);
