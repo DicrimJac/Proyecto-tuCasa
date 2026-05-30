@@ -92,6 +92,12 @@ function getUserId(user) {
     return user?.id_usuario || user?.id || user?.id_user || user?.user_id || "";
 }
 
+function getUserEmail(user) {
+    return String(user?.mail || user?.email || user?.correo || localStorage.getItem("userEmail") || "")
+        .trim()
+        .toLowerCase();
+}
+
 function buildFullName(user) {
     const names = [
         user?.first_name,
@@ -164,10 +170,27 @@ async function resolveApplicantData() {
     }
 
     const userId = getUserId(storedUser);
-    if (!userId || applicantData !== storedUser) return;
+    if (userId && applicantData === storedUser) {
+        try {
+            const response = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
+                method: "GET",
+                credentials: "same-origin",
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success && result.data) {
+                applicantData = persistApplicantData(result.data);
+            }
+        } catch (error) {
+            console.error("Error cargando datos del solicitante por ID:", error);
+        }
+    }
+
+    const userEmail = getUserEmail(applicantData || storedUser);
+    if (!userEmail || applicantData !== storedUser) return;
 
     try {
-        const response = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
+        const response = await fetch(`/api/users/email/${encodeURIComponent(userEmail)}`, {
             method: "GET",
             credentials: "same-origin",
         });
@@ -177,7 +200,7 @@ async function resolveApplicantData() {
             applicantData = persistApplicantData(result.data);
         }
     } catch (error) {
-        console.error("Error cargando datos del solicitante por ID:", error);
+        console.error("Error cargando datos del solicitante por correo:", error);
     }
 }
 
@@ -194,7 +217,7 @@ function prefillApplicantForm() {
 
     setInputValue("fullName", buildFullName(applicantData));
     setInputValue("rut", formatRutValue(applicantData));
-    setInputValue("email", applicantData.mail || applicantData.email || localStorage.getItem("userEmail"));
+    setInputValue("email", getUserEmail(applicantData));
     setInputValue("phone", formatPhoneValue(applicantData));
 }
 

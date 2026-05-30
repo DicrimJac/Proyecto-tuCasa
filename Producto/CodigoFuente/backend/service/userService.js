@@ -217,6 +217,32 @@ export class UserService {
         }
     }
 
+    async getUserByEmail(mail) {
+        const normalizedEmail = String(mail || "").trim().toLowerCase();
+
+        if (!normalizedEmail) {
+            return { success: false, error: "El correo es requerido" };
+        }
+
+        try {
+            const user = await this.userRepository.findByEmail(normalizedEmail);
+
+            if (user && user.pass) {
+                delete user.pass;
+            }
+
+            return {
+                success: true,
+                data: user,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.message,
+            };
+        }
+    }
+
     // Actualizar usuario usando mail como identificador si así se prefiere
     async updateUserByMail(mail, userData) {
         // Buscar usuario por mail y luego actualizar por id encontrado

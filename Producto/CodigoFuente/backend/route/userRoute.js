@@ -11,6 +11,9 @@ userRoute.get("/", requireAuth, (c) => userController.getAllUsers(c));
 // GET /api/users/me - Usuario autenticado
 userRoute.get("/me", requireAuth, (c) => userController.getCurrentUser(c));
 
+// GET /api/users/email/:mail - Usuario por correo
+userRoute.get("/email/:mail", requireAuth, (c) => userController.getUserByEmail(c));
+
 // POST /api/users - Crear usuario
 userRoute.post("/", requireAuth, (c) => userController.createUser(c));
 
