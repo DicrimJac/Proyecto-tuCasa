@@ -8,6 +8,9 @@ const userController = new UserController();
 // GET /api/users
 userRoute.get("/", requireAuth, (c) => userController.getAllUsers(c));
 
+// GET /api/users/me - Usuario autenticado
+userRoute.get("/me", requireAuth, (c) => userController.getCurrentUser(c));
+
 // POST /api/users - Crear usuario
 userRoute.post("/", requireAuth, (c) => userController.createUser(c));
 

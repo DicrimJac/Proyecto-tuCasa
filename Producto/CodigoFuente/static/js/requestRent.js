@@ -1,6 +1,17 @@
 // ========== SOLICITAR ARRIENDO - DATOS DE PROPIEDAD ==========
 const DEFAULT_PROPERTY_IMAGE = "assets/image/casa1.png";
 let propertyData = null;
+let applicantData = null;
+
+function getStoredJson(key) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : null;
+    } catch (error) {
+        console.error(`Error leyendo ${key}:`, error);
+        return null;
+    }
+}
 
 function normalizeText(value) {
     return String(value || "")
@@ -71,6 +82,120 @@ function propertyMatchesId(savedProperty, propertyId) {
         && (String(savedProperty.id) === String(propertyId)
             || String(savedProperty.id_propi) === String(propertyId)
             || String(savedProperty.raw?.id_propi) === String(propertyId));
+}
+
+function getCurrentUserFromStorage() {
+    return getStoredJson("userData") || getStoredJson("userProfile") || null;
+}
+
+function getUserId(user) {
+    return user?.id_usuario || user?.id || user?.id_user || user?.user_id || "";
+}
+
+function buildFullName(user) {
+    const names = [
+        user?.first_name,
+        user?.second_name,
+        user?.first_last_name,
+        user?.second_last_name,
+    ].filter(Boolean);
+
+    return names.join(" ") || user?.fullName || user?.name || user?.nombre || localStorage.getItem("userName") || "";
+}
+
+function formatRutValue(user) {
+    const rut = user?.rut ?? user?.run ?? "";
+    const rawRut = String(rut || "").trim();
+
+    if (rawRut.includes("-")) {
+        return rawRut;
+    }
+
+    const digits = rawRut.replace(/\D/g, "");
+    const dv = String(user?.rut_dv ?? user?.rutDv ?? "").trim().toUpperCase();
+
+    if (!digits || !dv) {
+        return rawRut;
+    }
+
+    return `${digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}-${dv}`;
+}
+
+function formatPhoneValue(user) {
+    const rawPhone = user?.fono ?? user?.phone ?? user?.telefono ?? "";
+    const digits = String(rawPhone || "").replace(/\D/g, "");
+
+    if (digits.startsWith("56") && digits.length > 9) {
+        return digits.slice(-9);
+    }
+
+    return digits;
+}
+
+function persistApplicantData(user) {
+    if (!user) return null;
+
+    const currentUser = getCurrentUserFromStorage() || {};
+    const mergedUser = { ...currentUser, ...user };
+    localStorage.setItem("userData", JSON.stringify(mergedUser));
+    localStorage.setItem("userProfile", JSON.stringify(mergedUser));
+    localStorage.setItem("userEmail", mergedUser.mail || mergedUser.email || localStorage.getItem("userEmail") || "");
+    localStorage.setItem("userName", buildFullName(mergedUser));
+
+    return mergedUser;
+}
+
+async function resolveApplicantData() {
+    const storedUser = getCurrentUserFromStorage();
+    applicantData = storedUser;
+
+    try {
+        const response = await fetch("/api/users/me", {
+            method: "GET",
+            credentials: "same-origin",
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success && result.data) {
+            applicantData = persistApplicantData(result.data);
+        }
+    } catch (error) {
+        console.error("Error cargando datos del solicitante:", error);
+    }
+
+    const userId = getUserId(storedUser);
+    if (!userId || applicantData !== storedUser) return;
+
+    try {
+        const response = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
+            method: "GET",
+            credentials: "same-origin",
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success && result.data) {
+            applicantData = persistApplicantData(result.data);
+        }
+    } catch (error) {
+        console.error("Error cargando datos del solicitante por ID:", error);
+    }
+}
+
+function setInputValue(id, value) {
+    const input = document.getElementById(id);
+    const normalizedValue = String(value || "").trim();
+
+    if (!input || !normalizedValue || input.value.trim()) return;
+    input.value = normalizedValue;
+}
+
+function prefillApplicantForm() {
+    if (!applicantData) return;
+
+    setInputValue("fullName", buildFullName(applicantData));
+    setInputValue("rut", formatRutValue(applicantData));
+    setInputValue("email", applicantData.mail || applicantData.email || localStorage.getItem("userEmail"));
+    setInputValue("phone", formatPhoneValue(applicantData));
 }
 
 function normalizeProperty(rawProperty) {
@@ -293,8 +418,12 @@ function showToast(message, isError = false) {
 
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', async function() {
-    await resolvePropertyData();
+    await Promise.all([
+        resolvePropertyData(),
+        resolveApplicantData(),
+    ]);
     loadPropertyData();
+    prefillApplicantForm();
     
     // Validación de RUT
     const rutInput = document.getElementById('rut');
@@ -404,6 +533,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (success) {
                 showToast('¡Solicitud enviada correctamente! Te contactaremos pronto.');
                 form.reset();
+                prefillApplicantForm();
             } else {
                 showToast('Error al enviar la solicitud. Intenta nuevamente.', true);
             }
