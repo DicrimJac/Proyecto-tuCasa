@@ -69,6 +69,8 @@ app.get("/api/health", (c) => {
       hasSupabaseServiceRoleKey: Boolean(Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")),
       hasSupabaseAnonKey: Boolean(Deno.env.get("SUPABASE_ANON_KEY")),
       hasSessionSecret: Boolean(Deno.env.get("SESSION_SECRET")),
+      hasGoogleMapsApiKey: Boolean(Deno.env.get("GOOGLE_MAPS_API_KEY")),
+      hasGeminiApiKey: Boolean(Deno.env.get("GEMINI_API_KEY") || Deno.env.get("GOOGLE_AI_API_KEY")),
       frontendOrigin: Deno.env.get("FRONTEND_ORIGIN") || null,
     },
     routes: [

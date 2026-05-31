@@ -1,4 +1,4 @@
-const GOOGLE_MAPS_API_KEY = "AIzaSyCHldzkKhkn7QOS0cuAivFkgtbgV-RlFTc";
+const GOOGLE_MAPS_API_KEY = Deno.env.get("GOOGLE_MAPS_API_KEY") || "";
 
 export class GoogleMapsService {
     private apiKey: string;
@@ -8,11 +8,19 @@ export class GoogleMapsService {
     }
 
     async geocodeAddress(direccion: string) {
+        if (!this.apiKey) {
+            throw new Error("Falta configurar GOOGLE_MAPS_API_KEY");
+        }
+
         const url =
             `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(direccion)}&key=${this.apiKey}`;
 
         const response = await fetch(url);
         const data = await response.json();
+
+        if (data.status === "REQUEST_DENIED") {
+            throw new Error(data.error_message || "Credenciales invalidas para Google Maps");
+        }
 
         if (data.status !== "OK" || !data.results?.[0]) {
             throw new Error(`Dirección no encontrada: ${direccion}`);
@@ -53,11 +61,18 @@ export class GoogleMapsService {
         tipo: string,
         radio: number = 1000
     ) {
+        if (!this.apiKey) {
+            throw new Error("Falta configurar GOOGLE_MAPS_API_KEY");
+        }
+
         const url =
             `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radio}&type=${tipo}&key=${this.apiKey}`;
 
         const response = await fetch(url);
         const data = await response.json();
+        if (data.status === "REQUEST_DENIED") {
+            throw new Error(data.error_message || "Credenciales invalidas para Google Places");
+        }
         data.results?.slice(0, 5).forEach((p: any) => {
             console.log("-", p.name);
         });

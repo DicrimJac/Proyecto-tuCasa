@@ -765,7 +765,7 @@ async function loadAIAnalysis(propertyData) {
         } else {
             console.error("❌ Error:", result.error);
             if (analisisIA) {
-                analisisIA.textContent = result.error || "Error al analizar el sector";
+                analisisIA.textContent = "El analisis del sector no esta disponible en este momento.";
             }
         }
     } catch (error) {
