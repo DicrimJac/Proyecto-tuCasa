@@ -324,15 +324,28 @@ async function loadReceivedRequests() {
         ? storedRequests.filter((request) => ownerPropertyIds.has(request.propertyId))
         : storedRequests;
 
-    recentActivity = receivedRequests.map((request) => ({
+    buildRecentActivity();
+}
+
+function buildRecentActivity() {
+    const requestActivity = receivedRequests.map((request) => ({
         type: "solicitud",
         title: `Nueva solicitud: ${request.propertyTitle}`,
         date: request.date,
     }));
+
+    const ratingActivity = propertyRatings.map((review) => ({
+        type: "resena",
+        title: `Nueva resena: ${review.propertyTitle} (${review.rating.toFixed(1)})`,
+        date: review.date,
+    }));
+
+    recentActivity = [...requestActivity, ...ratingActivity];
 }
 
 async function refreshReceivedRequests() {
     await loadReceivedRequests();
+    buildRecentActivity();
     renderRecentActivity();
     renderRequests();
     updateStats();
@@ -356,6 +369,40 @@ async function loadOwnerProperties() {
             .map(normalizeProperty)
             .map(hydratePropertyImage),
     );
+}
+
+async function loadPropertyRatings() {
+    const reviewsByProperty = await Promise.all(
+        ownerProperties.map(async (property) => {
+            try {
+                const response = await fetch(`/api/property-reviews?id_propi=${encodeURIComponent(property.id)}`, {
+                    method: "GET",
+                    credentials: "include",
+                });
+                const result = await response.json().catch(() => null);
+
+                if (!response.ok || !result?.success) {
+                    throw new Error(result?.message || result?.error || "No se pudieron cargar las resenas");
+                }
+
+                return (Array.isArray(result.data) ? result.data : []).map((review) => ({
+                    propertyId: property.id,
+                    propertyTitle: property.title,
+                    rating: Number(review.total_point || 0),
+                    date: review.date_register,
+                    comment: review.description || "",
+                }));
+            } catch (error) {
+                console.error(`Error cargando calificaciones de propiedad ${property.id}:`, error);
+                return [];
+            }
+        }),
+    );
+
+    propertyRatings = reviewsByProperty
+        .flat()
+        .filter((review) => Number.isFinite(review.rating) && review.rating > 0);
+    buildRecentActivity();
 }
 
 // ========== ACTUALIZAR ESTADISTICAS ==========
@@ -687,6 +734,7 @@ function showToast(message, isError = false) {
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await loadOwnerProperties();
+        await loadPropertyRatings();
     } catch (error) {
         console.error("Error cargando propiedades del arrendador:", error);
         showToast(error.message || "No se pudieron cargar tus propiedades", true);
@@ -699,8 +747,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.target === document.getElementById('requestModal')) closeRequestModal();
     });
 
-    window.addEventListener('focus', () => {
-        refreshReceivedRequests();
+    window.addEventListener('focus', async () => {
+        await loadPropertyRatings();
+        await refreshReceivedRequests();
     });
     window.addEventListener('storage', (event) => {
         if (event.key === 'rentRequests') refreshReceivedRequests();
