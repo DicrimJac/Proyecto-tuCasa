@@ -36,6 +36,35 @@ export class RequestController {
             }, 500);
         }
     }
+
+    async getReceivedRequests(c) {
+        try {
+            const data = await this.requestService.getReceivedRequests(this.getAuthenticatedUserId(c));
+            return c.json({ success: true, data, total: data.length }, 200);
+        } catch (error) {
+            return c.json({
+                success: false,
+                error: "Error interno del servidor",
+                message: error.message,
+            }, 500);
+        }
+    }
+
+    async updateRequestStatus(c) {
+        try {
+            const id = c.req.param("id");
+            const payload = await c.req.json();
+            const data = await this.requestService.updateRequestStatus(id, payload, this.getAuthenticatedUserId(c));
+            return c.json({ success: true, data }, 200);
+        } catch (error) {
+            const isValidationError = /invalido|permiso|no existe/i.test(error.message);
+            return c.json({
+                success: false,
+                error: isValidationError ? "Datos invalidos" : "Error interno del servidor",
+                message: error.message,
+            }, isValidationError ? 400 : 500);
+        }
+    }
 }
 
 export default RequestController;

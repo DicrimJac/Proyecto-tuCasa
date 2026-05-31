@@ -36,7 +36,7 @@ app.use("*", async (c, next) => {
     c.header("Access-Control-Allow-Credentials", "true");
     c.header("Vary", "Origin");
   }
-  c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  c.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
   c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   if (c.req.method === "OPTIONS") {
     return new Response(null, { status: 204 });
@@ -125,6 +125,8 @@ console.log("   GET    /api/tenant-reviews");
 console.log("   POST   /api/tenant-reviews");
 console.log("   DELETE /api/tenant-reviews/:id");
 console.log("   GET    /api/requests/mine");
+console.log("   GET    /api/requests/received");
 console.log("   POST   /api/requests");
+console.log("   PATCH  /api/requests/:id/status");
 
 Deno.serve({ port }, app.fetch);

@@ -29,11 +29,94 @@ function getCurrentUserEmail() {
 }
 
 function normalizeRequestStatus(status) {
+    if (Number(status) === 1) return "pendiente";
+    if (Number(status) === 2) return "aprobada";
+    if (Number(status) === 3) return "rechazada";
+    if (Number(status) === 4) return "finalizada";
+
     return {
         pending: "pendiente",
         approved: "aprobada",
         rejected: "rechazada",
-    }[status] || status || "pendiente";
+        completed: "finalizada",
+        Pendiente: "pendiente",
+        Aprobada: "aprobada",
+        Rechazada: "rechazada",
+        Finalizada: "finalizada",
+    }[status] || normalizeText(status) || "pendiente";
+}
+
+function normalizeText(value) {
+    return String(value || "")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .trim()
+        .toLowerCase();
+}
+
+function getPropertyLocation(rawProperty = {}) {
+    const address = rawProperty.direccion || rawProperty.address || {};
+    const parts = [
+        rawProperty.location,
+        rawProperty.ubicacion,
+        address.street && address.number ? `${address.street} ${address.number}` : "",
+        address.comuna,
+        address.city,
+        address.state,
+    ].filter(Boolean);
+
+    return [...new Set(parts)].join(", ") || "Sin ubicacion";
+}
+
+function getPropertyPrice(rawProperty = {}) {
+    const characteristic = rawProperty.caracteristica || rawProperty.characteristic || {};
+    return Number(characteristic.price ?? rawProperty.price ?? rawProperty.precio ?? 0);
+}
+
+function getPropertyImage(rawProperty = {}) {
+    const photos = rawProperty.fotos || rawProperty.photos || rawProperty.imagenes || [];
+    return photos[0]?.url_foto
+        || photos[0]?.url
+        || rawProperty.url_foto
+        || rawProperty.image
+        || rawProperty.imagen
+        || "assets/image/casa1.png";
+}
+
+function getMessageValue(message, label) {
+    const normalizedLabel = normalizeText(label);
+    const line = String(message || "")
+        .split(/\r?\n/)
+        .find(value => normalizeText(value).startsWith(`${normalizedLabel}:`));
+
+    return line ? line.slice(line.indexOf(":") + 1).trim() : "";
+}
+
+function normalizeApiRequest(request) {
+    const property = request.propiedad || {};
+    const propertyId = request.id_propi || property.id_propi || "";
+    const startDate = getMessageValue(request.message, "Fecha de inicio deseada");
+
+    return {
+        id: request.id_request,
+        propertyId,
+        propertyTitle: property.title || property.titulo || property.name || property.type_desc || "Propiedad",
+        propertyLocation: getPropertyLocation(property),
+        propertyPrice: getPropertyPrice(property),
+        propertyImage: getPropertyImage(property),
+        fullName: getMessageValue(request.message, "Nombre"),
+        rut: getMessageValue(request.message, "RUT"),
+        email: getMessageValue(request.message, "Correo"),
+        phone: getMessageValue(request.message, "Telefono"),
+        startDate,
+        duration: `${Number(request.contract_time || 0)} meses`,
+        occupants: `${Number(request.qty_person || 0)} persona${Number(request.qty_person || 0) === 1 ? "" : "s"}`,
+        employment: request.work_situation_desc || "",
+        income: Number(request.income || 0),
+        message: request.message || "",
+        status: normalizeRequestStatus(request.status_nbr || request.status_desc || request.status || "pendiente"),
+        date: request.date,
+    };
 }
 
 function getRentRequestsForCurrentTenant() {
@@ -50,6 +133,20 @@ function getRentRequestsForCurrentTenant() {
             if (!currentEmail) return true;
             return String(request.email || "").trim().toLowerCase() === currentEmail;
         });
+}
+
+async function getRentRequestsFromApi() {
+    const response = await fetch("/api/requests/mine", {
+        method: "GET",
+        credentials: "same-origin",
+    });
+    const result = await response.json();
+
+    if (!response.ok || !result?.success) {
+        throw new Error(result?.message || result?.error || "No se pudieron cargar las solicitudes");
+    }
+
+    return (result.data || []).map(normalizeApiRequest);
 }
 
 function getRentalEndDate(startDate, durationText) {
@@ -81,8 +178,15 @@ function buildNotifications(requests) {
         });
 }
 
-function loadTenantDashboardData() {
-    const requests = getRentRequestsForCurrentTenant();
+async function loadTenantDashboardData() {
+    let requests = [];
+
+    try {
+        requests = await getRentRequestsFromApi();
+    } catch (error) {
+        console.error("Error cargando solicitudes desde Supabase:", error);
+        requests = getRentRequestsForCurrentTenant();
+    }
 
     userRequests = requests;
     userRentals = requests
@@ -304,8 +408,8 @@ function showToast(message, isError = false) {
     setTimeout(() => toast.style.display = 'none', 3000);
 }
 
-function refreshDashboard() {
-    loadTenantDashboardData();
+async function refreshDashboard() {
+    await loadTenantDashboardData();
     updateStats();
     renderNotifications();
     renderActiveRequests();
