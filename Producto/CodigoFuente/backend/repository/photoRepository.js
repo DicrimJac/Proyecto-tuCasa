@@ -35,6 +35,10 @@ export class PhotoRepository extends BaseRepository {
         return data || [];
     }
 
+    async findByPropertyId(propertyId) {
+        return this.findByPropertyIds([propertyId]);
+    }
+
     async createMany(photos) {
         if (!Array.isArray(photos) || photos.length === 0) {
             return [];
