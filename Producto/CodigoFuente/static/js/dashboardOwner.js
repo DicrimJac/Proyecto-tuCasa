@@ -22,6 +22,49 @@ function getLoggedOwnerKey() {
     return (localStorage.getItem("userEmail") || "owner").trim().toLowerCase();
 }
 
+function getLoggedOwnerIds() {
+    const ids = new Set();
+    const savedData = localStorage.getItem("userData") || localStorage.getItem("userProfile");
+    if (savedData) {
+        try {
+            const user = JSON.parse(savedData);
+            [user.id_usuario, user.id, user.id_user, user.user_id, user.mail, user.email, user.correo]
+                .filter((value) => value !== undefined && value !== null && String(value).trim())
+                .forEach((value) => ids.add(String(value).trim().toLowerCase()));
+        } catch (error) {
+            console.error("Error leyendo usuario logueado:", error);
+        }
+    }
+
+    const email = localStorage.getItem("userEmail");
+    if (email) ids.add(String(email).trim().toLowerCase());
+    return ids;
+}
+
+function isOwnedByLoggedUser(property) {
+    const ownerIds = getLoggedOwnerIds();
+    if (ownerIds.size === 0) return true;
+
+    const user = property.usuario || property.user || property.owner || {};
+    const candidates = [
+        property.id_usuario,
+        property.id_user,
+        property.user_id,
+        property.owner_id,
+        user.id_usuario,
+        user.id,
+        user.id_user,
+        user.user_id,
+        user.mail,
+        user.email,
+        user.correo,
+    ];
+
+    return candidates
+        .filter((value) => value !== undefined && value !== null && String(value).trim())
+        .some((value) => ownerIds.has(String(value).trim().toLowerCase()));
+}
+
 function getOwnerPropertyIds() {
     try {
         const allOwners = JSON.parse(localStorage.getItem("ownerPropertyIds") || "{}");
@@ -60,6 +103,34 @@ function getPropertyImage(property, propertyId) {
         || property.imagen
         || getCachedPropertyImage(propertyId)
         || DEFAULT_PROPERTY_IMAGE;
+}
+
+async function hydratePropertyImage(property) {
+    if (!property?.id || property.image !== DEFAULT_PROPERTY_IMAGE) {
+        return property;
+    }
+
+    try {
+        const response = await fetch(`/api/properties/${encodeURIComponent(property.id)}`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.success) return property;
+
+        const image = getPropertyImage(result.data || {}, property.id);
+        return {
+            ...property,
+            image,
+            raw: {
+                ...property.raw,
+                ...(result.data || {}),
+            },
+        };
+    } catch (error) {
+        console.error("Error cargando foto de propiedad:", error);
+        return property;
+    }
 }
 
 function removeCachedPropertyImage(propertyId) {
@@ -172,7 +243,12 @@ async function loadOwnerProperties() {
     }
 
     const properties = Array.isArray(result.data) ? result.data : [];
-    ownerProperties = properties.map(normalizeProperty);
+    ownerProperties = await Promise.all(
+        properties
+            .filter(isOwnedByLoggedUser)
+            .map(normalizeProperty)
+            .map(hydratePropertyImage),
+    );
 }
 
 // ========== ACTUALIZAR ESTADISTICAS ==========
