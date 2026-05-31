@@ -33,6 +33,20 @@ export class PropertyRepository extends BaseRepository {
         return data || [];
     }
 
+    async findByAddress(direccion) {
+        const { data, error } = await this.supabase
+            .from("PROPIEDAD")
+            .select("*")
+            .ilike("direccion", direccion)
+            .maybeSingle();
+
+        if (error) {
+            throw new Error(`Error buscando propiedad: ${error.message}`);
+        }
+
+        return data;
+    }
+
     async create(propertyData) {
         const { data, error } = await this.supabase
             .from('PROPIEDAD')

@@ -58,11 +58,6 @@ export class GoogleMapsService {
 
         const response = await fetch(url);
         const data = await response.json();
-
-        console.log(`\n=== ${tipo.toUpperCase()} ===`);
-        console.log("Status:", data.status);
-        console.log("Cantidad:", data.results?.length || 0);
-
         data.results?.slice(0, 5).forEach((p: any) => {
             console.log("-", p.name);
         });
@@ -99,14 +94,13 @@ export class GoogleMapsService {
             ]);
 
             const resumenSector = {
-                salud: hospitales.length,
-                educacion: colegios.length,
-                areasVerdes: parques.length,
-                gastronomia: restaurantes.length,
-                farmacias: farmacias.length,
-                supermercados: supermercados.length,
-                gimnasios: gimnasios.length,
-                transporte: estacionesMetro.length
+                hospitales: hospitales.slice(0, 5).map((x: any) => x.name),
+                colegios: colegios.slice(0, 5).map((x: any) => x.name),
+                parques: parques.slice(0, 5).map((x: any) => x.name),
+                restaurantes: restaurantes.slice(0, 5).map((x: any) => x.name),
+                farmacias: farmacias.slice(0, 5).map((x: any) => x.name),
+                supermercados: supermercados.slice(0, 5).map((x: any) => x.name),
+                gimnasios: gimnasios.slice(0, 5).map((x: any) => x.name)
             };
 
             const metroMasCercano =
@@ -140,21 +134,14 @@ export class GoogleMapsService {
                 supermercados.length >= 5
             ) {
                 perfilSector = "Comercial";
-            }
-
-            console.log("\nIndicadores obtenidos:");
-            console.log({                
-                perfilSector,
-                resumenSector,
-                metroMasCercano
-            });
+            }           
 
             return {
                 exito: true,
                 direccion: formattedAddress,
                 coordenadas: { lat, lng },
 
-                indicadores: {                    
+                indicadores: {
                     perfilSector,
                     resumenSector,
                     metroMasCercano

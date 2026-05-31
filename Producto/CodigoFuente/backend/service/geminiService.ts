@@ -13,23 +13,33 @@ export class GeminiService {
 
     private construirPrompt(datos: any) {
         const indicadores = datos.indicadores;
+        const r = indicadores.resumenSector;
 
         return `
-Actúa como un asesor inmobiliario especializado en arriendos en Chile.
+Actúa como un analista inmobiliario.
 
-Analiza objetivamente el siguiente sector.
+Describe objetivamente el sector utilizando únicamente la información entregada.
 
 Dirección:
 ${datos.direccion}
 
-Indicadores del sector:
-
-- Perfil del sector: ${indicadores.perfilSector}
+Perfil del sector:
+${indicadores.perfilSector}
 
 ${indicadores.metroMasCercano
-                ? `Metro más cercano: ${indicadores.metroMasCercano.nombre} (${indicadores.metroMasCercano.distancia.toFixed(2)} km)`
-                : "No se identificó una estación de metro cercana."
-            }
+    ? `Metro más cercano: ${indicadores.metroMasCercano.nombre} (${indicadores.metroMasCercano.distancia.toFixed(2)} km)`
+    : "No se identificó una estación de metro cercana."
+}
+
+Servicios encontrados en el entorno:
+
+- Hospitales o centros de salud: ${r.hospitales.length}
+- Colegios: ${r.colegios.length}
+- Parques y áreas verdes: ${r.parques.length}
+- Restaurantes: ${r.restaurantes.length}
+- Farmacias: ${r.farmacias.length}
+- Supermercados: ${r.supermercados.length}
+- Gimnasios: ${r.gimnasios.length}
 
 Genera un único párrafo entre 80 y 150 palabras.
 
@@ -46,9 +56,11 @@ Reglas:
 - No menciones negocios específicos.
 - No inventes problemas de seguridad.
 - No inventes aspectos negativos.
-- No menciones reseñas.
-- Mantén un tono profesional, objetivo e inmobiliario.
+- Mantén un tono profesional y objetivo.
 - Basa todas las conclusiones únicamente en los datos proporcionados.
+- No asumas que el sector es bueno ni malo.
+- No afirmes que falta información sobre servicios si se han proporcionado datos de servicios.
+- No generes elogios que no puedan justificarse con los datos recibidos.
 `;
     }
 
@@ -78,10 +90,6 @@ Reglas:
             });
 
             const data = await response.json();
-            console.log("\n===== RESPUESTA COMPLETA GEMINI =====");
-            console.log(JSON.stringify(data, null, 2));
-            console.log("=====================================\n");
-
             if (data.error) {
                 throw new Error(data.error.message);
             }
