@@ -375,38 +375,75 @@ function validatePhone(input) {
     input.value = value;
 }
 
-// ========== ENVIAR SOLICITUD ==========
-function submitRequest(formData) {
-    // Obtener solicitudes existentes
-    let requests = JSON.parse(localStorage.getItem('rentRequests')) || [];
-    
-    // Crear nueva solicitud
-    const newRequest = {
-        id: Date.now(),
-        propertyId: propertyData.id,
-        propertyTitle: propertyData.title,
-        propertyLocation: propertyData.location,
-        propertyPrice: propertyData.price,
-        propertyImage: propertyData.image,
-        fullName: formData.fullName,
-        rut: formData.rut,
-        email: formData.email,
-        phone: formData.phone,
-        startDate: formData.startDate,
-        duration: formData.duration,
-        occupants: formData.occupants,
-        pets: formData.pets,
-        employment: formData.employment,
-        income: formData.income,
-        message: formData.message,
-        status: 'pendiente',
-        date: new Date().toISOString()
+function getEmploymentNumber(value) {
+    const map = {
+        dependiente: 1,
+        independiente: 2,
+        estudiante: 3,
+        jubilado: 4,
+        cesante: 5,
     };
-    
-    requests.unshift(newRequest);
-    localStorage.setItem('rentRequests', JSON.stringify(requests));
-    
-    return true;
+
+    return map[value] || 0;
+}
+
+function buildRequestMessage(formData) {
+    const details = [
+        `Fecha de inicio deseada: ${formData.startDate}`,
+        `Nombre: ${formData.fullName}`,
+        `RUT: ${formData.rut}`,
+        `Correo: ${formData.email}`,
+        `Telefono: ${formData.phone}`,
+    ];
+
+    if (formData.message) {
+        details.push(`Mensaje: ${formData.message}`);
+    }
+
+    return details.join("\n");
+}
+
+// ========== ENVIAR SOLICITUD ==========
+async function submitRequest(formData) {
+    if (!propertyData?.id) {
+        throw new Error("No se encontro la propiedad seleccionada");
+    }
+
+    const payload = {
+        id_propi: Number(propertyData.id),
+        contract_time: Number(formData.duration),
+        qty_person: Number(formData.occupants),
+        work_situation_key: formData.employment,
+        work_situation_nbr: getEmploymentNumber(formData.employment),
+        work_situation_desc: formData.employmentText,
+        income: Number(formData.income),
+        message: buildRequestMessage(formData),
+    };
+
+    const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "same-origin",
+        body: JSON.stringify(payload),
+    });
+
+    let result = null;
+    try {
+        result = await response.json();
+    } catch {
+        result = null;
+    }
+
+    if (!response.ok || !result?.success) {
+        const message = response.status === 401
+            ? "Debes iniciar sesion para enviar una solicitud"
+            : result?.message || result?.error || "Error al enviar la solicitud";
+        throw new Error(message);
+    }
+
+    return result.data;
 }
 
 // ========== TOAST ==========
@@ -478,7 +515,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Envío de formulario
     const form = document.getElementById('requestForm');
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         const fullName = document.getElementById('fullName').value.trim();
@@ -488,7 +525,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         const startDate = document.getElementById('startDate').value;
         const duration = document.getElementById('duration').value;
         const occupants = document.getElementById('occupants').value;
-        const pets = document.querySelector('input[name="pets"]:checked')?.value;
         const employment = document.getElementById('employment').value;
         const income = document.getElementById('income').value;
         const message = document.getElementById('message').value;
@@ -548,10 +584,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Preparar datos
         const formData = {
             fullName, rut, email, phone, startDate,
-            duration: document.getElementById('duration').options[document.getElementById('duration').selectedIndex]?.text,
-            occupants: document.getElementById('occupants').options[document.getElementById('occupants').selectedIndex]?.text,
-            pets,
-            employment: document.getElementById('employment').options[document.getElementById('employment').selectedIndex]?.text,
+            duration,
+            occupants,
+            employment,
+            employmentText: document.getElementById('employment').options[document.getElementById('employment').selectedIndex]?.text,
             income,
             message
         };
@@ -562,8 +598,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         submitBtn.disabled = true;
         
-        setTimeout(() => {
-            const success = submitRequest(formData);
+        try {
+            const success = await submitRequest(formData);
             if (success) {
                 showToast('¡Solicitud enviada correctamente! Te contactaremos pronto.');
                 form.reset();
@@ -571,8 +607,14 @@ document.addEventListener('DOMContentLoaded', async function() {
             } else {
                 showToast('Error al enviar la solicitud. Intenta nuevamente.', true);
             }
+        } catch (error) {
+            showToast(error.message || 'Error al enviar la solicitud. Intenta nuevamente.', true);
+        } finally {
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
-        }, 1500);
+            if (propertyData?.status !== 'disponible') {
+                setRequestFormAvailability(false);
+            }
+        }
     });
 });
