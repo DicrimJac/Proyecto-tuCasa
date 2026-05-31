@@ -94,7 +94,7 @@ function normalizeProperty(property, index) {
         title: property.title || property.titulo || property.name || property.type_desc || `Propiedad ${id}`,
         location: getPropertyLocation(property),
         price: Number(characteristic.price ?? property.price ?? property.precio ?? 0),
-        image: getCachedPropertyImage(id) || property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
+        image: property.image || property.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
         active: normalizePropertyStatus(property),
         raw: property,
     };
@@ -150,7 +150,7 @@ function refreshReceivedRequests() {
 }
 
 async function loadOwnerProperties() {
-    const response = await fetch("/api/properties", {
+    const response = await fetch("/api/properties/mine", {
         method: "GET",
         credentials: "same-origin",
     });
@@ -161,11 +161,7 @@ async function loadOwnerProperties() {
     }
 
     const properties = Array.isArray(result.data) ? result.data : [];
-    const ownerIds = getOwnerPropertyIds();
-    const normalized = properties.map(normalizeProperty);
-    ownerProperties = ownerIds.size > 0
-        ? normalized.filter((property) => ownerIds.has(String(property.id)))
-        : normalized;
+    ownerProperties = properties.map(normalizeProperty);
 }
 
 // ========== ACTUALIZAR ESTADISTICAS ==========

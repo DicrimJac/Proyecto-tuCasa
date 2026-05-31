@@ -264,6 +264,28 @@ function saveOwnerPropertyId(propertyId) {
     localStorage.setItem(OWNER_PROPERTY_IDS_KEY, JSON.stringify(allOwners));
 }
 
+async function uploadPropertyPhotos(propertyId) {
+    if (!propertyId || selectedImages.length === 0) return [];
+
+    const formData = new FormData();
+    selectedImages.forEach((file) => {
+        formData.append("photos", file, file.name);
+    });
+
+    const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}/photos`, {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+    });
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || !result?.success) {
+        throw new Error(result?.message || result?.error || "No se pudieron subir las fotos");
+    }
+
+    return Array.isArray(result.data) ? result.data : [];
+}
+
 function getCachedPropertyImage(propertyId) {
     try {
         const cache = JSON.parse(localStorage.getItem(PROPERTY_IMAGE_CACHE_KEY) || "{}");
@@ -627,8 +649,15 @@ async function publishProperty() {
         showToast(editingPropertyId ? "Propiedad actualizada exitosamente" : "Propiedad publicada exitosamente");
         const savedPropertyId = editingPropertyId || result?.data?.propiedad?.id_propi || result?.data?.id_propi;
         if (selectedImages.length > 0) {
-            const cachedImage = await fileToCompressedDataUrl(getMainImageFile());
-            savePropertyImageToCache(savedPropertyId, cachedImage);
+            try {
+                const uploadedPhotos = await uploadPropertyPhotos(savedPropertyId);
+                const cachedImage = await fileToCompressedDataUrl(getMainImageFile());
+                savePropertyImageToCache(savedPropertyId, uploadedPhotos[0]?.url_foto || cachedImage);
+            } catch (photoError) {
+                console.error("Error subiendo fotos:", photoError);
+                showToast(`La propiedad se guardo, pero las fotos no se pudieron subir: ${photoError.message}`, true);
+                return;
+            }
         }
         saveOwnerPropertyId(savedPropertyId);
 

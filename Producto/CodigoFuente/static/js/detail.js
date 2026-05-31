@@ -22,6 +22,7 @@ const featureLabels = {
     h_gas: { label: "Gas natural", icon: "fa-fire" },
     h_air: { label: "Aire acondicionado", icon: "fa-snowflake" },
     h_heat: { label: "Calefaccion", icon: "fa-temperature-high" },
+    h_pet: { label: "Acepta mascotas", icon: "fa-paw" },
     h_logia: { label: "Logia", icon: "fa-shirt" },
     h_energy_solar: { label: "Energia solar", icon: "fa-solar-panel" },
     h_bioler: { label: "Caldera", icon: "fa-fire-burner" },
@@ -141,7 +142,7 @@ function normalizeProperty(rawProperty) {
         features: Object.entries(featureLabels)
             .filter(([field]) => characteristic[field] === true)
             .map(([field, data]) => ({ field, ...data })),
-        image: getCachedPropertyImage(id) || rawProperty.image || rawProperty.imagen || DEFAULT_PROPERTY_IMAGE,
+        image: rawProperty.image || rawProperty.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
         raw: rawProperty,
     };
 }

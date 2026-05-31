@@ -5,6 +5,10 @@ export class PropertyController {
         this.propertyService = new PropertyService();
     }
 
+    getAuthenticatedUserId(c) {
+        return c.get("authUserId");
+    }
+
     // GET /api/properties
     async getAllProperties(c) {
         try {
@@ -31,9 +35,29 @@ export class PropertyController {
         }
     }
 
+    // GET /api/properties/mine
+    async getMyProperties(c) {
+        try {
+            const ownerId = this.getAuthenticatedUserId(c);
+            if (!ownerId) {
+                return c.json({ success: false, error: "No autorizado" }, 401);
+            }
+
+            const data = await this.propertyService.getPropertiesByOwner(ownerId);
+            return c.json({ success: true, data, total: data?.length ?? 0 }, 200);
+        } catch (error) {
+            return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+        }
+    }
+
     // POST /api/properties
     async createProperty(c) {
         try {
+            const ownerId = this.getAuthenticatedUserId(c);
+            if (!ownerId) {
+                return c.json({ success: false, error: "No autorizado" }, 401);
+            }
+
             const payload = await c.req.json();
             const { direccion, propiedad, caracteristica } = payload || {};
 
@@ -78,6 +102,7 @@ export class PropertyController {
                 direccion,
                 propiedad,
                 caracteristica,
+                ownerId,
             });
 
             return c.json({ success: true, data }, 201);
@@ -91,8 +116,34 @@ export class PropertyController {
         try {
             const id = c.req.param("id");
             const payload = await c.req.json();
-            const data = await this.propertyService.updateProperty(id, payload);
+            const ownerId = this.getAuthenticatedUserId(c);
+            const data = await this.propertyService.updateProperty(id, payload, { ownerId });
             return c.json({ success: true, data }, 200);
+        } catch (error) {
+            return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+        }
+    }
+
+    // POST /api/properties/:id/photos
+    async uploadPropertyPhotos(c) {
+        try {
+            const ownerId = this.getAuthenticatedUserId(c);
+            if (!ownerId) {
+                return c.json({ success: false, error: "No autorizado" }, 401);
+            }
+
+            const id = c.req.param("id");
+            const body = await c.req.parseBody({ all: true });
+            const rawPhotos = body.photos || body.fotos || body.files || [];
+            const photos = (Array.isArray(rawPhotos) ? rawPhotos : [rawPhotos])
+                .filter((file) => file instanceof File && file.size > 0);
+
+            if (photos.length === 0) {
+                return c.json({ success: false, error: "Debes enviar al menos una foto" }, 400);
+            }
+
+            const data = await this.propertyService.uploadPropertyPhotos(id, photos, { ownerId });
+            return c.json({ success: true, data, total: data.length }, 201);
         } catch (error) {
             return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
         }
@@ -103,7 +154,8 @@ export class PropertyController {
         try {
             const id = c.req.param("id");
             const payload = await c.req.json();
-            const data = await this.propertyService.updatePropertyStatus(id, payload);
+            const ownerId = this.getAuthenticatedUserId(c);
+            const data = await this.propertyService.updatePropertyStatus(id, payload, { ownerId });
             return c.json({ success: true, data }, 200);
         } catch (error) {
             return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
@@ -114,7 +166,8 @@ export class PropertyController {
     async deleteProperty(c) {
         try {
             const id = c.req.param("id");
-            const data = await this.propertyService.deleteProperty(id);
+            const ownerId = this.getAuthenticatedUserId(c);
+            const data = await this.propertyService.deleteProperty(id, { ownerId });
             return c.json({ success: true, data }, 200);
         } catch (error) {
             return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);

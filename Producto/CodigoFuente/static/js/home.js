@@ -87,7 +87,7 @@ function normalizeProperty(property, index) {
     bathrooms: Number(characteristic.qty_bath ?? property.bathrooms ?? property.banos ?? 0),
     category: getPropertyCategory(property),
     condition: getPropertyCondition(property),
-    image: getCachedPropertyImage(id) || property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
+    image: property.image || property.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
     destacada: property.destacada ?? property.featured ?? index < 5,
     date: property.date_register || property.created_at || property.createdAt || property.date_created || property.date || "",
     raw: property,

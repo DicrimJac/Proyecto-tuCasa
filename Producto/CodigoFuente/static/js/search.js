@@ -264,7 +264,7 @@ function normalizeProperty(property, index) {
         rooms: Number(characteristic.qty_room ?? property.rooms ?? property.habitaciones ?? 0),
         bathrooms: Number(characteristic.qty_bath ?? property.bathrooms ?? property.banos ?? 0),
         area: Number(characteristic.total_mtr ?? property.area ?? property.superficie ?? 0),
-        image: getCachedPropertyImage(id) || property.image || property.imagen || DEFAULT_PROPERTY_IMAGE,
+        image: property.image || property.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
         favorite: false,
         date: property.date_register || property.created_at || property.createdAt || property.date_created || property.date || "",
         raw: property,

@@ -267,7 +267,7 @@ export class UserController {
         "Usuario";
 
       const sessionRepo = new SessionRepository();
-      const token = await sessionRepo.createSession(googleUser.sub || email);
+      const token = await sessionRepo.createSession(email || googleUser.sub);
       setCookie(c, "session_id", token, {
         httpOnly: true,
         path: "/",
