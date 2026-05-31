@@ -679,17 +679,41 @@ function renderAI(propertyData) {
     renderSectorData(propertyData);
 }
 
+// En detail.js, modifica la función loadAIAnalysis
 async function loadAIAnalysis(propertyData) {
-    console.log("🔵 loadAIAnalysis llamado para propiedad:", propertyData.id);
+    console.log("🔵 loadAIAnalysis llamado con propertyData:", propertyData);
+    
+    // Obtener el ID correctamente
+    let propertyId = null;
+    
+    if (propertyData.id_propi) {
+        propertyId = propertyData.id_propi;
+    } else if (propertyData.id) {
+        propertyId = propertyData.id;
+    } else if (propertyData.raw?.id_propi) {
+        propertyId = propertyData.raw.id_propi;
+    } else if (propertyData.raw?.id) {
+        propertyId = propertyData.raw.id;
+    }
+    
+    console.log("📌 ID extraído:", propertyId, "Tipo:", typeof propertyId);
+    
+    if (!propertyId) {
+        console.error("❌ No se pudo obtener el ID de la propiedad");
+        if (analisisIA) {
+            analisisIA.textContent = "Error: No se pudo identificar la propiedad";
+        }
+        return;
+    }
     
     // Mostrar estado de carga
     if (analisisIA) {
         analisisIA.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizando sector...';
     }
     
-    // Si ya tiene análisis guardado, mostrarlo
+    // Verificar si ya tiene análisis
     if (propertyData.perfil_sector || propertyData.analisis_ia) {
-        console.log("✅ Usando análisis cacheado");
+        console.log("✅ Usando análisis existente");
         renderSectorData(propertyData);
         if (analisisIA && propertyData.analisis_ia) {
             analisisIA.textContent = propertyData.analisis_ia;
@@ -699,36 +723,34 @@ async function loadAIAnalysis(propertyData) {
     
     // Solicitar análisis al backend
     try {
-        console.log("Llamando a /api/properties/analyze con ID:", propertyData.id);
+        const idString = String(propertyId);
+        console.log("📡 Enviando ID como string:", idString);
         
         const response = await fetch("/api/properties/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id_propi: String(propertyData.id) })
+            body: JSON.stringify({ id_propi: idString })
         });
         
         const result = await response.json();
-        console.log("Respuesta del backend:", result);
+        console.log("📦 Respuesta:", result);
         
         if (result.exito && result.data) {
-            console.log("Análisis recibido, actualizando vista");
-            
-            // Renderizar los datos recibidos
+            console.log("✅ Análisis recibido");
             renderSectorData(result.data);
-            
             if (analisisIA && result.data.analisis_ia) {
                 analisisIA.textContent = result.data.analisis_ia;
             }
         } else {
-            console.error("Error en análisis:", result.error);
+            console.error("❌ Error:", result.error);
             if (analisisIA) {
-                analisisIA.textContent = "No se pudo generar el análisis del sector";
+                analisisIA.textContent = result.error || "Error al analizar el sector";
             }
         }
     } catch (error) {
-        console.error("Error en loadAIAnalysis:", error);
+        console.error("🔴 Error:", error);
         if (analisisIA) {
-            analisisIA.textContent = "Error al cargar el análisis";
+            analisisIA.textContent = "Error de conexión al servidor";
         }
     }
 }
@@ -768,17 +790,15 @@ function renderSectorData(data) {
     if (transporteCount) transporteCount.textContent = indicadores.transporte || data.transporte || "0";
 }
 
-// Modificar renderPropertyDetail para llamar a loadAIAnalysis
 function renderPropertyDetail() {
     if (!property) return;
 
-    // Renderizar datos básicos
-    if (propertyImage) {
-        propertyImage.onerror = () => {
-            propertyImage.src = DEFAULT_PROPERTY_IMAGE;
-        };
-        propertyImage.src = property.image;
-    }
+    console.log("🎨 Renderizando propiedad:", property);
+    console.log("ID de propiedad:", property.id);
+    console.log("Raw de propiedad:", property.raw);
+    
+    // Renderizar datos básicos...
+    if (propertyImage) propertyImage.src = property.image;
     if (propertyTitle) propertyTitle.textContent = property.title;
     if (propertyPrice) propertyPrice.textContent = property.price;
     if (propertyLocation) propertyLocation.textContent = property.location;
@@ -790,8 +810,10 @@ function renderPropertyDetail() {
     if (operationType) operationType.textContent = property.operationType;
     if (propertyDescription) propertyDescription.textContent = property.description;
     
-    renderPropertyFeatures();    
-    loadAIAnalysis(property.raw || property);
+    renderPropertyFeatures();
+    
+    // Pasar la propiedad completa (tiene el id)
+    loadAIAnalysis(property);
     
     if (mapFrame && property.location) {
         const addressURL = encodeURIComponent(property.location);
