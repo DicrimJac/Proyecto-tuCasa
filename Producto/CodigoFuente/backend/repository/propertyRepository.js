@@ -19,6 +19,33 @@ export class PropertyRepository extends BaseRepository {
         return data;
     }
 
+    async findById2(id) {
+        // Sintaxis correcta: nombre_tabla!nombre_foreign_key(*)
+        const { data, error } = await this.supabase
+            .from('PROPIEDAD')
+            .select(`
+                *,
+                DIRECCION!fk_direccion(*)
+            `)
+            .eq('id_propi', id)
+            .single();
+        
+        if (error) {
+            console.error("Error en findById:", error);
+            throw new Error(`Propiedad ${id} no encontrada: ${error.message}`);
+        }
+        
+        console.log("Propiedad encontrada con dirección:", data?.DIRECCION);
+        
+        // Renombrar la propiedad para que sea más legible
+        if (data && data.DIRECCION) {
+            data.direccion = data.DIRECCION;
+            delete data.DIRECCION;
+        }
+        
+        return data;
+    }
+
     async findByOwnerId(ownerId) {
         const { data, error } = await this.supabase
             .from('PROPIEDAD')
