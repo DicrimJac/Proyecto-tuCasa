@@ -1,19 +1,37 @@
-// PROPERTY ID
-const params = new URLSearchParams(window.location.search);
-const propertyId = params.get("id") || "default";
-const storageKey = `propertyReviews_${propertyId}`;
+const categoryToField = {
+    neighborhood: "neight",
+    services: "service_near",
+    security: "segurity",
+    connectivity: "service_bus",
+    neighbors: "neightbors",
+    cleanliness: "clean",
+    maintenance: "maintenance",
+    priceQuality: "quality_price",
+    noise: "level_noise",
+    internet: "signal",
+    lighting: "lighting",
+    parking: "parking",
+};
 
-// VARIABLES
+const params = new URLSearchParams(window.location.search);
+const propertyId = params.get("id") || params.get("id_propi");
+
 const ratings = {};
+let reviews = [];
+
 const starGroups = document.querySelectorAll(".star-group");
 const submitButton = document.getElementById("submitReview");
+const reviewComment = document.getElementById("reviewComment");
+const reviewsContainer = document.getElementById("reviewsContainer");
+const averageScore = document.getElementById("averageScore");
+const averageStars = document.getElementById("averageStars");
+const totalReviews = document.getElementById("totalReviews");
 
-// ESTRELLAS POR CATEGORÍA
 starGroups.forEach((group) => {
     const category = group.dataset.category;
     const stars = group.querySelectorAll(".star");
-    
     ratings[category] = 0;
+
     stars.forEach((star) => {
         star.addEventListener("click", () => {
             const value = Number(star.dataset.value);
@@ -22,155 +40,179 @@ starGroups.forEach((group) => {
         });
 
         star.addEventListener("mouseover", () => {
-            const value = Number(star.dataset.value);
-            updateStars(group, value);
+            updateStars(group, Number(star.dataset.value));
         });
 
         star.addEventListener("mouseleave", () => {
-            updateStars( group, ratings[category]
-            );
+            updateStars(group, ratings[category]);
         });
     });
 });
- 
-// ACTUALIZAR ESTRELLAS
+
 function updateStars(group, value) {
-    const stars = group.querySelectorAll(".star");
-    stars.forEach((star) => {
-        const starValue = Number(star.dataset.value);
-        if (starValue <= value) {
-            star.classList.add("active");
-        } else {
-            star.classList.remove("active");
-        }
+    group.querySelectorAll(".star").forEach((star) => {
+        star.classList.toggle("active", Number(star.dataset.value) <= value);
     });
 }
 
-// ENVIAR RESEÑA
-submitButton.addEventListener("click", () => {
-    const comment = document.getElementById("reviewComment").value;
-    const hasRating = Object.values(ratings).some(
-            value => value > 0
-        );
-    if (!hasRating) {
-        alert("Debes evaluar al menos una categoría");
+function validateRatings() {
+    return Object.keys(categoryToField).every((category) => Number(ratings[category]) >= 1);
+}
+
+function buildReviewPayload() {
+    const payload = {};
+
+    Object.entries(categoryToField).forEach(([category, field]) => {
+        payload[field] = ratings[category];
+    });
+
+    payload.id_propi = Number(propertyId);
+    payload.description = reviewComment.value.trim();
+    return payload;
+}
+
+async function loadReviews() {
+    if (!propertyId) {
+        reviewsContainer.innerHTML = "<p>No se encontro la propiedad para cargar resenas.</p>";
+        updateSummary();
         return;
     }
 
-    if (comment.trim() === "") {
-        alert("Debes escribir un comentario");
+    try {
+        const response = await fetch(`/api/property-reviews?id_propi=${encodeURIComponent(propertyId)}`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudieron cargar las resenas");
+        }
+
+        reviews = Array.isArray(result.data) ? result.data : [];
+        renderReviews();
+    } catch (error) {
+        console.error("Error cargando evaluaciones de propiedad:", error);
+        reviewsContainer.innerHTML = "<p>No se pudieron cargar las resenas.</p>";
+        updateSummary();
+    }
+}
+
+submitButton.addEventListener("click", async () => {
+    if (!propertyId) {
+        alert("No se encontro la propiedad a evaluar.");
         return;
     }
 
-    // CALCULAR PROMEDIO GENERAL
-    const values = Object.values(ratings).filter(
-            value => value > 0
-        );
+    if (!validateRatings()) {
+        alert("Debes evaluar todas las categorias.");
+        return;
+    }
 
-    const total = values.reduce((acc, value) => acc + value, 0);
-    const average = (total / values.length).toFixed(1);
+    if (!reviewComment.value.trim()) {
+        alert("Debes escribir un comentario.");
+        return;
+    }
 
-    // OBTENER RESEÑAS
-    const reviews = JSON.parse(localStorage.getItem(storageKey)) || [];
+    const originalText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
 
-    // NUEVA RESEÑA
-    const newReview = {
-        user: "María González",
-        date: new Date().toLocaleDateString("es-CL"),
-        ratings: { ...ratings },
-        average: average,
-        comment: comment
-    };
+    try {
+        const response = await fetch("/api/property-reviews", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(buildReviewPayload()),
+        });
+        const result = await response.json();
 
-    // GUARDAR
-    reviews.push(newReview);
-    localStorage.setItem(
-        storageKey,
-        JSON.stringify(reviews)
-    );
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudo enviar la resena");
+        }
 
-    // LIMPIAR FORM
-    document.getElementById("reviewComment").value = "";
+        resetForm();
+        await loadReviews();
+        alert("Resena enviada correctamente.");
+    } catch (error) {
+        console.error("Error enviando evaluacion de propiedad:", error);
+        alert(error.message || "No se pudo enviar la resena.");
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
+    }
+});
 
+function renderReviews() {
+    reviewsContainer.innerHTML = "";
+
+    if (reviews.length === 0) {
+        reviewsContainer.innerHTML = "<p>No hay resenas todavia.</p>";
+        updateSummary();
+        return;
+    }
+
+    reviews.forEach((review) => {
+        const card = document.createElement("div");
+        card.classList.add("review-card");
+        card.innerHTML = `
+            <div class="review-header">
+                <div>
+                    <div class="review-user">Usuario anonimo</div>
+                    <div class="review-date">${formatDate(review.date_register)}</div>
+                </div>
+                <div class="review-stars">${generateStars(review.total_point)}</div>
+            </div>
+            <div class="review-comment">${escapeHtml(review.description || "Sin comentario")}</div>
+        `;
+        reviewsContainer.appendChild(card);
+    });
+
+    updateSummary();
+}
+
+function updateSummary() {
+    totalReviews.textContent = reviews.length;
+
+    if (reviews.length === 0) {
+        averageScore.textContent = "0.0";
+        averageStars.textContent = "\u2606".repeat(5);
+        return;
+    }
+
+    const total = reviews.reduce((sum, review) => sum + Number(review.total_point || 0), 0);
+    const finalAverage = (total / reviews.length).toFixed(1);
+    averageScore.textContent = finalAverage;
+    averageStars.textContent = generateStars(finalAverage);
+}
+
+function generateStars(score) {
+    const rounded = Math.round(Number(score || 0));
+    return "\u2605".repeat(rounded) + "\u2606".repeat(Math.max(0, 5 - rounded));
+}
+
+function resetForm() {
+    reviewComment.value = "";
     Object.keys(ratings).forEach((key) => {
         ratings[key] = 0;
     });
-
-    starGroups.forEach((group) => {
-        updateStars(group, 0);
-    });
-
-    // RENDER
-    renderReviews();
-});
- 
-// RENDER REVIEWS
-function renderReviews() {
-
-    const reviews = JSON.parse(localStorage.getItem(storageKey)) || [];
-    const reviewsContainer = document.getElementById("reviewsContainer");
-
-    reviewsContainer.innerHTML = "";
-
-    // SIN RESEÑAS
-    if (reviews.length === 0) {
-        reviewsContainer.innerHTML = `<p>No hay reseñas todavía.</p>`;
-        document.getElementById("averageScore").textContent = "0.0";
-        document.getElementById("totalReviews").textContent = "0";
-        document.getElementById("averageStars").textContent = "☆☆☆☆☆";
-        return;
-    }
-
-    // PROMEDIO GENERAL
-    const totalAverage =
-        reviews.reduce((acc, review) => {
-            return acc + Number(review.average);
-
-        }, 0);
-
-    const finalAverage =
-        (totalAverage / reviews.length).toFixed(1);
-
-
-    document.getElementById("averageScore").textContent =
-        finalAverage;
-
-    document.getElementById("totalReviews").textContent =
-        reviews.length;
-
-    document.getElementById("averageStars").textContent =
-        "★".repeat(Math.round(finalAverage)) +
-        "☆".repeat(5 - Math.round(finalAverage));
-
-    // MOSTRAR RESEÑAS
-    reviews
-        .slice()
-        .reverse()
-        .forEach((review) => {
-            reviewsContainer.innerHTML += `
-                <div class="review-card">
-                    <div class="review-header">
-                        <div>
-                            <div class="review-user">
-                                ${review.user}
-                            </div>
-
-                            <div class="review-date">
-                                ${review.date}
-                            </div>
-                        </div>
-                        <div class="review-stars">
-                            ${"★".repeat(Math.round(review.average))}
-                        </div>
-                    </div>
-
-                    <div class="review-comment">
-                        ${review.comment}
-                    </div>
-                </div>
-           `;
-        });
+    starGroups.forEach((group) => updateStars(group, 0));
 }
 
-// INIT
-renderReviews();
+function formatDate(value) {
+    if (!value) return "Sin fecha";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Sin fecha";
+    return date.toLocaleDateString("es-CL");
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+loadReviews();

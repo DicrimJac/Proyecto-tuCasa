@@ -6,10 +6,11 @@ import userRoute from "./backend/route/userRoute.js";
 import propertyRoute from "./backend/route/propertyRoute.js";
 import tenantReviewRoute from "./backend/route/tenantReviewRoute.js";
 import landlordReviewRoute from "./backend/route/landlordReviewRoute.js";
+import propertyReviewRoute from "./backend/route/propertyReviewRoute.js";
 import requestRoute from "./backend/route/requestRoute.js";
 
 const app = new Hono();
-const APP_VERSION = "reviews-email-1";
+const APP_VERSION = "property-reviews-1";
 
 // ============================================
 // MIDDLEWARES GLOBALES
@@ -58,6 +59,8 @@ app.route("/api/properties", propertyRoute);
 app.route("/api/tenant-reviews", tenantReviewRoute);
 // Montar rutas de evaluaciones de arrendadores
 app.route("/api/landlord-reviews", landlordReviewRoute);
+// Montar rutas de evaluaciones de propiedades
+app.route("/api/property-reviews", propertyReviewRoute);
 // Montar rutas de solicitudes de arriendo
 app.route("/api/requests", requestRoute);
 
@@ -85,6 +88,8 @@ app.get("/api/health", (c) => {
       "PATCH /api/requests/:id/status",
       "GET /api/landlord-reviews",
       "POST /api/landlord-reviews",
+      "GET /api/property-reviews",
+      "POST /api/property-reviews",
     ],
   });
 });
@@ -171,6 +176,9 @@ console.log("   DELETE /api/tenant-reviews/:id");
 console.log("   GET    /api/landlord-reviews");
 console.log("   POST   /api/landlord-reviews");
 console.log("   DELETE /api/landlord-reviews/:id");
+console.log("   GET    /api/property-reviews");
+console.log("   POST   /api/property-reviews");
+console.log("   DELETE /api/property-reviews/:id");
 console.log("   GET    /api/requests/mine");
 console.log("   GET    /api/requests/received");
 console.log("   POST   /api/requests");
