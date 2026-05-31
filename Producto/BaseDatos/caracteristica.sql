@@ -34,7 +34,7 @@ CREATE TABLE public.CARACTERISTICA (
   h_walki_clos boolean,
   h_pool boolean,
   w_furnitor boolean,
-  h_ comedor boolean,
+  h_comedor boolean,
   price numeric,
   type_publis_nbr numeric,
   type_publis_desc character varying,

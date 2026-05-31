@@ -1,0 +1,21 @@
+CREATE TABLE public.EVALUPROPI (
+  id_evalupropi bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  date_register date DEFAULT now(),
+  neight numeric,
+  service_near numeric,
+  segurity numeric,
+  service_bus numeric,
+  neightbors numeric,
+  clean numeric,
+  maintenance numeric,
+  quality_price numeric,
+  level_noise numeric,
+  signal numeric,
+  lighting numeric,
+  parking numeric,
+  total_point numeric,
+  description character varying,
+  id_propi integer,
+  CONSTRAINT EVALUPROPI_pkey PRIMARY KEY (id_evalupropi),
+  CONSTRAINT EVALUPROPI_id_propi_fkey FOREIGN KEY (id_propi) REFERENCES public.PROPIEDAD(id_propi)
+);
