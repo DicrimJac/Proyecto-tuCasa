@@ -1,14 +1,14 @@
-import { TenantReviewService } from "../service/tenantReviewService.js";
+import { LandlordReviewService } from "../service/landlordReviewService.js";
 
-export class TenantReviewController {
+export class LandlordReviewController {
     constructor() {
-        this.tenantReviewService = new TenantReviewService();
+        this.landlordReviewService = new LandlordReviewService();
     }
 
     async getAllReviews(c) {
         try {
             const userId = c.req.query("id_usuario");
-            const data = await this.tenantReviewService.getAllReviews({ userId });
+            const data = await this.landlordReviewService.getAllReviews({ userId });
             return c.json({ success: true, data, total: data.length }, 200);
         } catch (error) {
             return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
@@ -18,7 +18,7 @@ export class TenantReviewController {
     async createReview(c) {
         try {
             const payload = await c.req.json();
-            const data = await this.tenantReviewService.createReview(payload);
+            const data = await this.landlordReviewService.createReview(payload);
             return c.json({ success: true, data }, 201);
         } catch (error) {
             const isValidationError = /debe ser un numero entre 1 y 5|id_usuario invalido/.test(error.message);
@@ -33,7 +33,7 @@ export class TenantReviewController {
     async deleteReview(c) {
         try {
             const id = c.req.param("id");
-            const data = await this.tenantReviewService.deleteReview(id);
+            const data = await this.landlordReviewService.deleteReview(id);
             return c.json({ success: true, data }, 200);
         } catch (error) {
             const isInvalidId = /ID de evaluacion invalido/.test(error.message);
@@ -48,4 +48,4 @@ export class TenantReviewController {
     }
 }
 
-export default TenantReviewController;
+export default LandlordReviewController;

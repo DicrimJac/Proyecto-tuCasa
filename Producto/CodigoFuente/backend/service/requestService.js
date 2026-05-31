@@ -1,6 +1,7 @@
 import { RequestRepository } from "../repository/requestRepository.js";
 import { UserRepository } from "../repository/userRepository.js";
 import { PropertyService } from "./propertyService.js";
+import { EmailService } from "./emailService.js";
 
 const WORK_SITUATIONS = {
     dependiente: 1,
@@ -22,6 +23,7 @@ export class RequestService {
         this.repository = new RequestRepository();
         this.userRepository = new UserRepository();
         this.propertyService = new PropertyService();
+        this.emailService = new EmailService();
     }
 
     async resolveUserId(sessionUserId) {
@@ -132,7 +134,21 @@ export class RequestService {
         return statusData;
     }
 
-    async updateRequestStatus(id, statusData = {}, sessionUserId) {
+    getUserEmail(user = {}) {
+        return String(user.mail || user.email || user.correo || "").trim().toLowerCase();
+    }
+
+    buildReviewUrl(baseUrl, pathname, params = {}) {
+        const url = new URL(pathname, baseUrl);
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && String(value).trim()) {
+                url.searchParams.set(key, String(value));
+            }
+        });
+        return url.toString();
+    }
+
+    async updateRequestStatus(id, statusData = {}, sessionUserId, { baseUrl } = {}) {
         const ownerId = await this.resolveUserId(sessionUserId);
         const statusPayload = this.normalizeRequestStatus(statusData.status || statusData.status_desc);
         const properties = await this.propertyService.getPropertiesByOwner(ownerId);
@@ -145,9 +161,34 @@ export class RequestService {
         }
 
         const updatedRequest = await this.repository.updateStatus(id, statusPayload);
+        const property = properties.find((item) => String(item.id_propi || item.id) === String(updatedRequest.id_propi)) || null;
+
+        if (statusPayload.status_desc === "Aprobada" && baseUrl) {
+            try {
+                const [ownerUser, tenantUser] = await Promise.all([
+                    this.userRepository.findById(ownerId),
+                    this.userRepository.findById(updatedRequest.id_usuario),
+                ]);
+                await this.emailService.sendRentalApprovedReviewLinks({
+                    ownerEmail: this.getUserEmail(ownerUser),
+                    tenantEmail: this.getUserEmail(tenantUser),
+                    tenantReviewUrl: this.buildReviewUrl(baseUrl, "/tenantReview.html", {
+                        id_usuario: updatedRequest.id_usuario,
+                        id_request: updatedRequest.id_request,
+                    }),
+                    landlordReviewUrl: this.buildReviewUrl(baseUrl, "/landlordReview.html", {
+                        id_usuario: ownerId,
+                        id_request: updatedRequest.id_request,
+                    }),
+                });
+            } catch (error) {
+                console.error("No se pudieron enviar los correos de resena:", error);
+            }
+        }
+
         return {
             ...updatedRequest,
-            propiedad: properties.find((property) => String(property.id_propi || property.id) === String(updatedRequest.id_propi)) || null,
+            propiedad: property,
         };
     }
 

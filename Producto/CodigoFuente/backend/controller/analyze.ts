@@ -103,7 +103,7 @@ export const handler = async (c: any) => {
 
         if (!resultado.exito) {
             console.log("❌ Error en análisis:", resultado.error);
-            return c.json(resultado, 500);
+            return c.json(resultado, 200);
         }
 
         const i = resultado.indicadores;

@@ -71,6 +71,10 @@ Reglas:
                 return { exito: false, error: datosSector.error };
             }
 
+            if (!this.apiKey) {
+                return { exito: false, error: "Falta configurar GEMINI_API_KEY" };
+            }
+
             const prompt = this.construirPrompt(datosSector);
             console.log("🤖 Enviando a Gemini...");
 
