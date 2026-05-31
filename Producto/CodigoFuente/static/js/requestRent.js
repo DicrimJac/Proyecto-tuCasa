@@ -77,6 +77,17 @@ function getPropertyFromStorage() {
     }
 }
 
+function getPropertyImage(rawProperty, propertyId) {
+    const photos = rawProperty.fotos || rawProperty.photos || rawProperty.imagenes || rawProperty.raw?.fotos || [];
+    return photos[0]?.url_foto
+        || photos[0]?.url
+        || rawProperty.url_foto
+        || rawProperty.image
+        || rawProperty.imagen
+        || getCachedPropertyImage(propertyId)
+        || DEFAULT_PROPERTY_IMAGE;
+}
+
 function propertyMatchesId(savedProperty, propertyId) {
     return savedProperty
         && (String(savedProperty.id) === String(propertyId)
@@ -237,7 +248,7 @@ function normalizeProperty(rawProperty) {
         bathrooms: Number(characteristic.qty_bath ?? rawProperty.bathrooms ?? rawProperty.banos ?? 0),
         parking: Number(characteristic.h_parkin ? 1 : (rawProperty.parking ?? rawProperty.parkingSpaces ?? 0)),
         area: Number(characteristic.total_mtr ?? rawProperty.area ?? rawProperty.propertyArea ?? 0),
-        image: rawProperty.image || rawProperty.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
+        image: getPropertyImage(rawProperty, id),
         status: isPropertyPublic(rawProperty) ? "disponible" : "no disponible",
     };
 }

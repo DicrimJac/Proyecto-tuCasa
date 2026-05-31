@@ -236,6 +236,17 @@ function getCachedPropertyImage(propertyId) {
     }
 }
 
+function getPropertyImage(property, propertyId) {
+    const photos = property.fotos || property.photos || property.imagenes || [];
+    return photos[0]?.url_foto
+        || photos[0]?.url
+        || property.url_foto
+        || property.image
+        || property.imagen
+        || getCachedPropertyImage(propertyId)
+        || DEFAULT_PROPERTY_IMAGE;
+}
+
 function isPropertyPublic(property) {
     const stateNumber = property.state_nbr ?? property.status_nbr;
     const stateText = normalizeText(property.state_desc || property.status_desc || property.estado || property.status);
@@ -264,7 +275,7 @@ function normalizeProperty(property, index) {
         rooms: Number(characteristic.qty_room ?? property.rooms ?? property.habitaciones ?? 0),
         bathrooms: Number(characteristic.qty_bath ?? property.bathrooms ?? property.banos ?? 0),
         area: Number(characteristic.total_mtr ?? property.area ?? property.superficie ?? 0),
-        image: property.image || property.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
+        image: getPropertyImage(property, id),
         favorite: false,
         date: property.date_register || property.created_at || property.createdAt || property.date_created || property.date || "",
         raw: property,

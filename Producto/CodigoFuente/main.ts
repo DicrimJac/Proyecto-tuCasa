@@ -20,9 +20,23 @@ app.use("*", async (c, next) => {
 
 // CORS
 app.use("*", async (c, next) => {
-  c.header("Access-Control-Allow-Origin", "*");
+  const origin = c.req.header("origin");
+  const allowedOrigins = (Deno.env.get("FRONTEND_ORIGIN") || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const allowOrigin = origin &&
+    (allowedOrigins.length === 0 || allowedOrigins.includes(origin))
+    ? origin
+    : "";
+
+  if (allowOrigin) {
+    c.header("Access-Control-Allow-Origin", allowOrigin);
+    c.header("Access-Control-Allow-Credentials", "true");
+    c.header("Vary", "Origin");
+  }
   c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  c.header("Access-Control-Allow-Headers", "Content-Type");
+  c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   if (c.req.method === "OPTIONS") {
     return new Response(null, { status: 204 });
   }

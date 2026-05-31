@@ -51,6 +51,17 @@ function getCachedPropertyImage(propertyId) {
     }
 }
 
+function getPropertyImage(property, propertyId) {
+    const photos = property.fotos || property.photos || property.imagenes || [];
+    return photos[0]?.url_foto
+        || photos[0]?.url
+        || property.url_foto
+        || property.image
+        || property.imagen
+        || getCachedPropertyImage(propertyId)
+        || DEFAULT_PROPERTY_IMAGE;
+}
+
 function removeCachedPropertyImage(propertyId) {
     const cache = JSON.parse(localStorage.getItem("propertyImageCache") || "{}");
     delete cache[String(propertyId)];
@@ -94,7 +105,7 @@ function normalizeProperty(property, index) {
         title: property.title || property.titulo || property.name || property.type_desc || `Propiedad ${id}`,
         location: getPropertyLocation(property),
         price: Number(characteristic.price ?? property.price ?? property.precio ?? 0),
-        image: property.image || property.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
+        image: getPropertyImage(property, id),
         active: normalizePropertyStatus(property),
         raw: property,
     };
@@ -152,7 +163,7 @@ function refreshReceivedRequests() {
 async function loadOwnerProperties() {
     const response = await fetch("/api/properties/mine", {
         method: "GET",
-        credentials: "same-origin",
+        credentials: "include",
     });
     const result = await response.json();
 
@@ -281,7 +292,7 @@ async function disablePropertyAfterApproval(propertyId) {
     try {
         const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}/status`, {
             method: "PATCH",
-            credentials: "same-origin",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ active: false }),
         });
@@ -377,7 +388,7 @@ async function togglePropertyStatus(id) {
     try {
         const response = await fetch(`/api/properties/${encodeURIComponent(id)}/status`, {
             method: "PATCH",
-            credentials: "same-origin",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ active: nextActive }),
         });
@@ -405,7 +416,7 @@ async function deleteProperty(id) {
     try {
         const response = await fetch(`/api/properties/${encodeURIComponent(id)}`, {
             method: "DELETE",
-            credentials: "same-origin",
+            credentials: "include",
         });
         const result = await response.json();
 

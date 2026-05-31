@@ -7,6 +7,7 @@ const PROPERTY_IMAGE_CACHE_KEY = "propertyImageCache";
 const OWNER_PROPERTY_IDS_KEY = "ownerPropertyIds";
 let editingPropertyId = null;
 let editingPropertyData = null;
+let isPublishing = false;
 
 // INICIALIZACIÓN
 document.addEventListener("DOMContentLoaded", () => {
@@ -466,6 +467,16 @@ function generateSummary() {
 
 // Publicar propiedad
 async function publishProperty() {
+    if (isPublishing) return;
+
+    const publishButton = document.querySelector('button[onclick="publishProperty()"]');
+    const originalButtonHtml = publishButton?.innerHTML;
+    isPublishing = true;
+    if (publishButton) {
+        publishButton.disabled = true;
+        publishButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
+    }
+
     try {
         // Paso 1: categoría y condición
         const categoryInput = document.querySelector('input[name="category"]:checked');
@@ -667,6 +678,12 @@ async function publishProperty() {
     } catch (error) {
         console.error("Error publicando propiedad:", error);
         showToast("Error al conectar con el servidor", true);
+    } finally {
+        isPublishing = false;
+        if (publishButton) {
+            publishButton.disabled = false;
+            publishButton.innerHTML = originalButtonHtml;
+        }
     }
 }
 
