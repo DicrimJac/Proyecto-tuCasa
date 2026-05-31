@@ -1,6 +1,6 @@
 // backend/service/geminiService.ts - VERSIÓN SIMPLE QUE FUNCIONA
 
-const GEMINI_API_KEY = "AQ.Ab8RN6J_h8nmyZJzzGy8YXkCnH_hV2eLIx7PzcZGv4sIZr46ww";
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
 export class GeminiService {
     private apiKey: string;
