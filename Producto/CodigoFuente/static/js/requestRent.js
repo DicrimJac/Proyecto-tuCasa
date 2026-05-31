@@ -169,7 +169,7 @@ async function resolveApplicantData() {
     try {
         const response = await fetch("/api/users/me", {
             method: "GET",
-            credentials: "same-origin",
+            credentials: "include",
         });
         const result = await response.json();
 
@@ -185,7 +185,7 @@ async function resolveApplicantData() {
         try {
             const response = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
                 method: "GET",
-                credentials: "same-origin",
+                credentials: "include",
             });
             const result = await response.json();
 
@@ -203,7 +203,7 @@ async function resolveApplicantData() {
     try {
         const response = await fetch(`/api/users/email/${encodeURIComponent(userEmail)}`, {
             method: "GET",
-            credentials: "same-origin",
+            credentials: "include",
         });
         const result = await response.json();
 
@@ -273,7 +273,7 @@ async function resolvePropertyData() {
         try {
             const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}?public=true`, {
                 method: "GET",
-                credentials: "same-origin",
+                credentials: "include",
             });
             const result = await response.json();
 
@@ -425,7 +425,7 @@ async function submitRequest(formData) {
         headers: {
             "Content-Type": "application/json",
         },
-        credentials: "same-origin",
+        credentials: "include",
         body: JSON.stringify(payload),
     });
 

@@ -8,6 +8,7 @@ import tenantReviewRoute from "./backend/route/tenantReviewRoute.js";
 import requestRoute from "./backend/route/requestRoute.js";
 
 const app = new Hono();
+const APP_VERSION = "deploy-sync-1";
 
 // ============================================
 // MIDDLEWARES GLOBALES
@@ -57,6 +58,30 @@ app.route("/api/tenant-reviews", tenantReviewRoute);
 // Montar rutas de solicitudes de arriendo
 app.route("/api/requests", requestRoute);
 
+app.get("/api/health", (c) => {
+  return c.json({
+    success: true,
+    version: APP_VERSION,
+    runtime: "deno",
+    deploymentId: Deno.env.get("DENO_DEPLOYMENT_ID") || null,
+    env: {
+      hasSupabaseUrl: Boolean(Deno.env.get("SUPABASE_URL")),
+      hasSupabaseServiceRoleKey: Boolean(Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")),
+      hasSupabaseAnonKey: Boolean(Deno.env.get("SUPABASE_ANON_KEY")),
+      hasSessionSecret: Boolean(Deno.env.get("SESSION_SECRET")),
+      frontendOrigin: Deno.env.get("FRONTEND_ORIGIN") || null,
+    },
+    routes: [
+      "GET /api/properties/mine",
+      "POST /api/properties",
+      "POST /api/properties/analyze",
+      "GET /api/requests/mine",
+      "GET /api/requests/received",
+      "PATCH /api/requests/:id/status",
+    ],
+  });
+});
+
 // ============================================
 // RUTAS DE ARCHIVOS ESTÁTICOS
 // ============================================
@@ -99,7 +124,17 @@ app.get("/*", async (c) => {
     enableCors: true,
   });
 
-  return response;
+  const headers = new Headers(response.headers);
+  const pathname = new URL(c.req.url).pathname;
+  if (/\.(html|js|css)$/i.test(pathname)) {
+    headers.set("Cache-Control", "no-store, max-age=0");
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 });
 
 // ============================================
@@ -111,6 +146,8 @@ const port = 3000;
 console.log("   Servidor corriendo en http://localhost:" + port);
 console.log("   Archivos estáticos: carpeta /static");
 console.log("   API endpoints:");
+console.log("   Version: " + APP_VERSION);
+console.log("   GET    /api/health");
 console.log("   GET    /api/users");
 console.log("   GET    /api/users/:id");
 console.log("   POST   /api/users");

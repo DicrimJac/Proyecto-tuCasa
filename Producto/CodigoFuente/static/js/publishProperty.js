@@ -275,7 +275,7 @@ async function uploadPropertyPhotos(propertyId) {
 
     const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}/photos`, {
         method: "POST",
-        credentials: "same-origin",
+        credentials: "include",
         body: formData,
     });
     const result = await response.json().catch(() => null);
@@ -356,7 +356,7 @@ async function initEditMode() {
     try {
         const response = await fetch(`/api/properties/${encodeURIComponent(editingPropertyId)}`, {
             method: "GET",
-            credentials: "same-origin",
+            credentials: "include",
         });
         const result = await response.json();
 
@@ -636,7 +636,7 @@ async function publishProperty() {
             headers: {
                 "Content-Type": "application/json",
             },
-            credentials: "same-origin",
+            credentials: "include",
             body: JSON.stringify(payload),
         });
 
