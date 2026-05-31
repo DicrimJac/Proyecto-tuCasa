@@ -619,12 +619,13 @@ function renderPropertyFeatures() {
             <span>${feature.label}</span>
         </div>
     `).join("");
+    
 }
 
 // FUNCIÓN PRINCIPAL PARA RENDERIZAR EL SECTOR
 function renderSectorData(propertyData) {
     console.log("Renderizando datos del sector:", propertyData); // DEBUG
-    
+
     // Perfil del sector
     if (sectorProfile) {
         if (propertyData.perfil_sector) {
@@ -646,7 +647,7 @@ function renderSectorData(propertyData) {
 
     // Servicios - Buscar en diferentes lugares donde pueden venir los datos
     let servicios = {};
-    
+
     if (propertyData.raw?.indicadores) {
         servicios = propertyData.raw.indicadores;
     } else if (propertyData.indicadores) {
@@ -654,7 +655,7 @@ function renderSectorData(propertyData) {
     } else if (propertyData.raw?.servicios) {
         servicios = propertyData.raw.servicios;
     }
-    
+
     console.log("Servicios encontrados:", servicios); // DEBUG
 
     if (saludCount) saludCount.textContent = servicios.salud ?? servicios.health ?? "0";
@@ -669,66 +670,115 @@ function renderSectorData(propertyData) {
 
 function renderAI(propertyData) {
     console.log("Renderizando análisis IA:", propertyData); // DEBUG
-    
+
     if (analisisIA) {
         const analisisTexto = propertyData.analisis_ia || propertyData.analisis || "No hay análisis disponible para este sector.";
         analisisIA.textContent = analisisTexto;
     }
-    
+
     renderSectorData(propertyData);
 }
 
 async function loadAIAnalysis(propertyData) {
-    console.log("Cargando análisis IA para propiedad:", propertyData); // DEBUG
+    console.log("🔵 loadAIAnalysis llamado para propiedad:", propertyData.id);
     
-    if (propertyData.analisis_ia) {
-        console.log("Usando análisis IA cacheado");
-        renderAI(propertyData);
+    // Mostrar estado de carga
+    if (analisisIA) {
+        analisisIA.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizando sector...';
+    }
+    
+    // Si ya tiene análisis guardado, mostrarlo
+    if (propertyData.perfil_sector || propertyData.analisis_ia) {
+        console.log("✅ Usando análisis cacheado");
+        renderSectorData(propertyData);
+        if (analisisIA && propertyData.analisis_ia) {
+            analisisIA.textContent = propertyData.analisis_ia;
+        }
         return;
     }
-
+    
+    // Solicitar análisis al backend
     try {
-        console.log("Solicitando análisis IA al backend...");
+        console.log("Llamando a /api/properties/analyze con ID:", propertyData.id);
+        
         const response = await fetch("/api/properties/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id_propi: propertyData.id })
+            body: JSON.stringify({ id_propi: String(propertyData.id) })
         });
-
+        
         const result = await response.json();
         console.log("Respuesta del backend:", result);
-
+        
         if (result.exito && result.data) {
-            renderAI(result.data);
-        } else {
-            console.error("Error en respuesta:", result.error);
-            if (analisisIA) {
-                analisisIA.textContent = "No se pudo generar el análisis del sector en este momento.";
+            console.log("Análisis recibido, actualizando vista");
+            
+            // Renderizar los datos recibidos
+            renderSectorData(result.data);
+            
+            if (analisisIA && result.data.analisis_ia) {
+                analisisIA.textContent = result.data.analisis_ia;
             }
-            // Mostrar al menos los datos básicos que tengamos
-            renderSectorData(propertyData);
+        } else {
+            console.error("Error en análisis:", result.error);
+            if (analisisIA) {
+                analisisIA.textContent = "No se pudo generar el análisis del sector";
+            }
         }
     } catch (error) {
         console.error("Error en loadAIAnalysis:", error);
         if (analisisIA) {
-            analisisIA.textContent = "Error al cargar el análisis del sector.";
+            analisisIA.textContent = "Error al cargar el análisis";
         }
-        renderSectorData(propertyData);
     }
 }
 
-function renderPropertyDetail() {
-    console.log("Renderizando detalle de propiedad:", property); // DEBUG
+function renderSectorData(data) {
+    console.log("🎨 Renderizando datos del sector:", data);
     
+    // Perfil del sector
+    if (sectorProfile) {
+        if (data.perfil_sector) {
+            sectorProfile.textContent = data.perfil_sector;
+            sectorProfile.style.display = "inline-block";
+        } else {
+            sectorProfile.textContent = "Cargando...";
+        }
+    }
+    
+    // Metro cercano
+    if (metroCercano) {
+        metroCercano.textContent = data.metro_cercano || "No disponible";
+    }
+    if (distanciaMetro) {
+        distanciaMetro.textContent = data.distancia_metro ? `(${data.distancia_metro})` : "";
+    }
+    
+    // Indicadores (servicios)
+    // Los indicadores vienen en data.indicadores o directamente en data
+    const indicadores = data.indicadores || {};
+    
+    if (saludCount) saludCount.textContent = indicadores.salud || data.salud || "0";
+    if (educacionCount) educacionCount.textContent = indicadores.educacion || data.educacion || "0";
+    if (areasVerdesCount) areasVerdesCount.textContent = indicadores.areasVerdes || data.areasVerdes || "0";
+    if (gastronomiaCount) gastronomiaCount.textContent = indicadores.gastronomia || data.gastronomia || "0";
+    if (farmaciasCount) farmaciasCount.textContent = indicadores.farmacias || data.farmacias || "0";
+    if (supermercadosCount) supermercadosCount.textContent = indicadores.supermercados || data.supermercados || "0";
+    if (gimnasiosCount) gimnasiosCount.textContent = indicadores.gimnasios || data.gimnasios || "0";
+    if (transporteCount) transporteCount.textContent = indicadores.transporte || data.transporte || "0";
+}
+
+// Modificar renderPropertyDetail para llamar a loadAIAnalysis
+function renderPropertyDetail() {
     if (!property) return;
 
+    // Renderizar datos básicos
     if (propertyImage) {
         propertyImage.onerror = () => {
             propertyImage.src = DEFAULT_PROPERTY_IMAGE;
         };
         propertyImage.src = property.image;
     }
-
     if (propertyTitle) propertyTitle.textContent = property.title;
     if (propertyPrice) propertyPrice.textContent = property.price;
     if (propertyLocation) propertyLocation.textContent = property.location;
@@ -740,12 +790,9 @@ function renderPropertyDetail() {
     if (operationType) operationType.textContent = property.operationType;
     if (propertyDescription) propertyDescription.textContent = property.description;
     
-    renderPropertyFeatures();
+    renderPropertyFeatures();    
+    loadAIAnalysis(property.raw || property);
     
-    // Cargar análisis IA usando el objeto raw que tiene todos los datos
-    const dataForAnalysis = property.raw || property;
-    loadAIAnalysis(dataForAnalysis);
-
     if (mapFrame && property.location) {
         const addressURL = encodeURIComponent(property.location);
         mapFrame.src = `https://www.google.com/maps?q=${addressURL}&output=embed`;
@@ -754,11 +801,11 @@ function renderPropertyDetail() {
 
 async function loadPropertyDetail() {
     console.log("Cargando detalle de propiedad..."); // DEBUG
-    
+
     const params = new URLSearchParams(window.location.search);
     const propertyId = params.get("id");
     const savedProperty = localStorage.getItem("selectedProperty");
-    
+
     console.log("Property ID:", propertyId);
     console.log("Saved property:", savedProperty);
 
@@ -772,7 +819,7 @@ async function loadPropertyDetail() {
         try {
             const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}?public=true`);
             const result = await response.json();
-            
+
             console.log("Respuesta del backend:", result);
 
             if (result.success && result.data) {
@@ -781,7 +828,7 @@ async function loadPropertyDetail() {
                     setTimeout(() => window.location.replace("search.html"), 1500);
                     return;
                 }
-                
+
                 property = normalizeProperty(result.data);
                 localStorage.setItem("selectedProperty", JSON.stringify(result.data));
                 renderPropertyDetail();
@@ -792,7 +839,7 @@ async function loadPropertyDetail() {
             console.error("Error:", error);
             showToast(error.message, true);
         }
-    } 
+    }
     // Si no hay ID, usar la propiedad guardada
     else if (savedProperty) {
         try {
