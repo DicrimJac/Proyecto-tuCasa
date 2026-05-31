@@ -15,9 +15,10 @@ export const requireAuth = async (c, next) => {
 
   const repo = new SessionRepository();
   const sess = await repo.findSession(sessionId);
-  if (!sess) {
+  if (!sess?.userId) {
     return c.json({ success: false, error: "No autorizado" }, 401);
   }
 
+  c.set("authUserId", sess.userId);
   return next();
 };

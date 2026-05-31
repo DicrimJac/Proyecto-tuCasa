@@ -7,8 +7,12 @@ const propertyController = new PropertyController();
 
 // GET /api/properties
 propertyRoute.get("/", (c) => propertyController.getAllProperties(c));
+// GET /api/properties/mine
+propertyRoute.get("/mine", requireAuth, (c) => propertyController.getMyProperties(c));
 // PATCH /api/properties/:id/status
 propertyRoute.patch("/:id/status", requireAuth, (c) => propertyController.updatePropertyStatus(c));
+// POST /api/properties/:id/photos
+propertyRoute.post("/:id/photos", requireAuth, (c) => propertyController.uploadPropertyPhotos(c));
 // GET /api/properties/:id
 propertyRoute.get("/:id", (c) => propertyController.getPropertyById(c));
 // POST /api/properties

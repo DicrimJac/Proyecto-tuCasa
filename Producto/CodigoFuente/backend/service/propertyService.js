@@ -2,6 +2,7 @@ import { PropertyRepository } from "../repository/propertyRepository.js";
 import { AddressRepository } from "../repository/addressRepository.js";
 import { CharacteristicRepository } from "../repository/characteristicRepository.js";
 import { UserRepository } from "../repository/userRepository.js";
+import { PhotoRepository } from "../repository/photoRepository.js";
 
 export class PropertyService {
 
@@ -10,6 +11,7 @@ export class PropertyService {
         this.addressRepository = new AddressRepository();
         this.characteristicRepository = new CharacteristicRepository();
         this.userRepository = new UserRepository();
+        this.photoRepository = new PhotoRepository();
     }
 
     isPropertyAvailable(property) {
@@ -24,20 +26,47 @@ export class PropertyService {
         return !["no disponible", "inactiva", "inactivo", "inactive", "disabled", "deshabilitada", "deshabilitado", "vendida", "vendido"].includes(stateText);
     }
 
-    async getAllProperties({ publicOnly = false } = {}) {
-        const properties = await this.repository.findAll() || [];
-        const visibleProperties = publicOnly
-            ? properties.filter((property) => this.isPropertyAvailable(property))
-            : properties;
-        const addressIds = [...new Set(visibleProperties.map((property) => property.id_address).filter(Boolean))];
-        const propertyIds = [...new Set(visibleProperties.map((property) => property.id_propi).filter(Boolean))];
-        const ownerIds = [...new Set(visibleProperties
-            .map((property) => property.id_usuario || property.id_user || property.user_id || property.owner_id)
+    getPropertyOwnerId(property) {
+        return property?.id_usuario || property?.id_user || property?.user_id || property?.owner_id;
+    }
+
+    async resolveOwnerId(sessionUserId) {
+        const rawUserId = String(sessionUserId || "").trim();
+        if (!rawUserId) {
+            throw new Error("No autorizado");
+        }
+
+        try {
+            const user = await this.userRepository.findById(rawUserId);
+            return user.id_usuario || user.id || rawUserId;
+        } catch (error) {
+            if (!rawUserId.includes("@")) {
+                throw error;
+            }
+
+            const user = await this.userRepository.findByEmail(rawUserId);
+            return user.id_usuario || user.id || rawUserId;
+        }
+    }
+
+    assertPropertyOwner(property, ownerId) {
+        const propertyOwnerId = this.getPropertyOwnerId(property);
+        if (String(propertyOwnerId || "") !== String(ownerId || "")) {
+            throw new Error("No tienes permiso para modificar esta propiedad");
+        }
+    }
+
+    async attachPropertyRelations(properties = []) {
+        const addressIds = [...new Set(properties.map((property) => property.id_address).filter(Boolean))];
+        const propertyIds = [...new Set(properties.map((property) => property.id_propi).filter(Boolean))];
+        const ownerIds = [...new Set(properties
+            .map((property) => this.getPropertyOwnerId(property))
             .filter(Boolean))];
 
-        const [addresses, characteristics, users] = await Promise.all([
+        const [addresses, characteristics, photos, users] = await Promise.all([
             this.addressRepository.findByIds(addressIds),
             this.characteristicRepository.findByPropertyIds(propertyIds),
+            this.photoRepository.findByPropertyIds(propertyIds),
             ownerIds.length > 0 ? this.userRepository.findAll() : [],
         ]);
 
@@ -56,15 +85,38 @@ export class PropertyService {
                 second_last_name: user.second_last_name,
                 name: user.name || user.nombre,
             };
-            return [id, safeUser];
+            return [String(id), safeUser];
         }));
+        const photosByPropertyId = new Map();
+        photos.forEach((photo) => {
+            const propertyId = String(photo.id_propi);
+            const currentPhotos = photosByPropertyId.get(propertyId) || [];
+            currentPhotos.push(photo);
+            photosByPropertyId.set(propertyId, currentPhotos);
+        });
 
-        return visibleProperties.map((property) => ({
+        return properties.map((property) => ({
             ...property,
             direccion: addressById.get(property.id_address) || null,
             caracteristica: characteristicByPropertyId.get(property.id_propi) || null,
-            usuario: userById.get(property.id_usuario || property.id_user || property.user_id || property.owner_id) || null,
+            fotos: photosByPropertyId.get(String(property.id_propi)) || [],
+            image: photosByPropertyId.get(String(property.id_propi))?.[0]?.url_foto || property.image || property.imagen || null,
+            usuario: userById.get(String(this.getPropertyOwnerId(property))) || null,
         }));
+    }
+
+    async getAllProperties({ publicOnly = false } = {}) {
+        const properties = await this.repository.findAll() || [];
+        const visibleProperties = publicOnly
+            ? properties.filter((property) => this.isPropertyAvailable(property))
+            : properties;
+        return this.attachPropertyRelations(visibleProperties);
+    }
+
+    async getPropertiesByOwner(ownerId) {
+        const resolvedOwnerId = await this.resolveOwnerId(ownerId);
+        const properties = await this.repository.findByOwnerId(resolvedOwnerId) || [];
+        return this.attachPropertyRelations(properties);
     }
 
     async getPropertyById(id, { publicOnly = false } = {}) {
@@ -73,15 +125,18 @@ export class PropertyService {
             return null;
         }
 
-        const [addresses, characteristics] = await Promise.all([
+        const [addresses, characteristics, photos] = await Promise.all([
             property?.id_address ? this.addressRepository.findByIds([property.id_address]) : [],
             property?.id_propi ? this.characteristicRepository.findByPropertyIds([property.id_propi]) : [],
+            property?.id_propi ? this.photoRepository.findByPropertyIds([property.id_propi]) : [],
         ]);
 
         return {
             ...property,
             direccion: addresses[0] || null,
             caracteristica: characteristics[0] || null,
+            fotos: photos,
+            image: photos[0]?.url_foto || property.image || property.imagen || null,
         };
     }
 
@@ -90,20 +145,36 @@ export class PropertyService {
         return data;
     }
 
-    async updateProperty(id, propertyData) {
+    async updateProperty(id, propertyData, { ownerId } = {}) {
+        const resolvedOwnerId = ownerId ? await this.resolveOwnerId(ownerId) : null;
         const { direccion, propiedad, caracteristica } = propertyData || {};
 
         if (!direccion && !propiedad && !caracteristica) {
+            if (resolvedOwnerId) {
+                const property = await this.repository.findById(id);
+                this.assertPropertyOwner(property, resolvedOwnerId);
+                const data = await this.repository.update(id, {
+                    ...propertyData,
+                    id_usuario: this.getPropertyOwnerId(property),
+                });
+                return data;
+            }
             const data = await this.repository.update(id, propertyData);
             return data;
         }
 
         const currentProperty = await this.repository.findById(id);
+        if (resolvedOwnerId) {
+            this.assertPropertyOwner(currentProperty, resolvedOwnerId);
+        }
         const updatedAddress = direccion && currentProperty?.id_address
             ? await this.addressRepository.update(currentProperty.id_address, direccion)
             : null;
-        const updatedProperty = propiedad
-            ? await this.repository.update(id, propiedad)
+        const propertyPayload = propiedad
+            ? { ...propiedad, id_usuario: this.getPropertyOwnerId(currentProperty) }
+            : null;
+        const updatedProperty = propertyPayload
+            ? await this.repository.update(id, propertyPayload)
             : currentProperty;
         const updatedCharacteristic = caracteristica
             ? await this.characteristicRepository.updateByPropertyId(id, caracteristica)
@@ -116,7 +187,13 @@ export class PropertyService {
         };
     }
 
-    async updatePropertyStatus(id, statusData = {}) {
+    async updatePropertyStatus(id, statusData = {}, { ownerId } = {}) {
+        const resolvedOwnerId = ownerId ? await this.resolveOwnerId(ownerId) : null;
+        if (resolvedOwnerId) {
+            const property = await this.repository.findById(id);
+            this.assertPropertyOwner(property, resolvedOwnerId);
+        }
+
         const rawStatus = statusData.active ?? statusData.enabled ?? statusData.disponible;
         const isActive = typeof rawStatus === "string"
             ? ["true", "1", "disponible", "active", "habilitada", "habilitado"].includes(rawStatus.trim().toLowerCase())
@@ -128,11 +205,16 @@ export class PropertyService {
         return this.repository.update(id, statePayload);
     }
 
-    async deleteProperty(id) {
+    async deleteProperty(id, { ownerId } = {}) {
+        const resolvedOwnerId = ownerId ? await this.resolveOwnerId(ownerId) : null;
         const property = await this.repository.findById(id);
+        if (resolvedOwnerId) {
+            this.assertPropertyOwner(property, resolvedOwnerId);
+        }
         const idAddress = property?.id_address;
 
         const deletedCharacteristics = await this.characteristicRepository.deleteByPropertyId(id);
+        const deletedPhotos = await this.photoRepository.deleteByPropertyId(id);
         const deletedProperty = await this.repository.delete(id);
         const deletedAddress = idAddress
             ? await this.addressRepository.delete(idAddress)
@@ -141,8 +223,19 @@ export class PropertyService {
         return {
             propiedad: deletedProperty,
             caracteristicas: deletedCharacteristics,
+            fotos: deletedPhotos,
             direccion: deletedAddress,
         };
+    }
+
+    async uploadPropertyPhotos(id, files, { ownerId } = {}) {
+        const resolvedOwnerId = ownerId ? await this.resolveOwnerId(ownerId) : null;
+        const property = await this.repository.findById(id);
+        if (resolvedOwnerId) {
+            this.assertPropertyOwner(property, resolvedOwnerId);
+        }
+
+        return this.photoRepository.uploadPropertyPhotos(id, files);
     }
 
     /**
@@ -150,7 +243,9 @@ export class PropertyService {
      * Espera un payload con la forma:
      * { direccion: {...}, propiedad: {...}, caracteristica: {...} }
      */
-    async createPropertyWithAll({ direccion, propiedad, caracteristica }) {
+    async createPropertyWithAll({ direccion, propiedad, caracteristica, ownerId }) {
+        const resolvedOwnerId = await this.resolveOwnerId(ownerId);
+
         // 1) Crear dirección
         const createdAddress = await this.addressRepository.create(direccion);
 
@@ -158,6 +253,7 @@ export class PropertyService {
         const propertyPayload = {
             ...propiedad,
             id_address: createdAddress.id_address,
+            id_usuario: resolvedOwnerId,
             state_nbr: propiedad?.state_nbr ?? 1,
             state_desc: propiedad?.state_desc ?? "Disponible",
         };

@@ -237,7 +237,7 @@ function normalizeProperty(rawProperty) {
         bathrooms: Number(characteristic.qty_bath ?? rawProperty.bathrooms ?? rawProperty.banos ?? 0),
         parking: Number(characteristic.h_parkin ? 1 : (rawProperty.parking ?? rawProperty.parkingSpaces ?? 0)),
         area: Number(characteristic.total_mtr ?? rawProperty.area ?? rawProperty.propertyArea ?? 0),
-        image: getCachedPropertyImage(id) || rawProperty.image || rawProperty.imagen || DEFAULT_PROPERTY_IMAGE,
+        image: rawProperty.image || rawProperty.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
         status: isPropertyPublic(rawProperty) ? "disponible" : "no disponible",
     };
 }
