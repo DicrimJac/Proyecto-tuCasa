@@ -1,102 +1,131 @@
-// CALIFICACIONES
-const ratings = {};
+const categoryToField = {
+    communication: "comunicacion_rank",
+    respect: "respect_rank",
+    maintenance: "mainte_rank",
+    punctuality: "timeless_rank",
+    transparency: "trasparency_rank",
+    availability: "availability_rank",
+    reliability: "trust_rank",
+    overallExperience: "general_exp_rank",
+};
 
-// ELEMENTOS
+const ratings = {};
+let reviews = [];
+
 const averageScore = document.getElementById("averageScore");
 const averageStars = document.getElementById("averageStars");
 const totalReviews = document.getElementById("totalReviews");
 const reviewComment = document.getElementById("reviewComment");
 const submitReview = document.getElementById("submitReview");
 const reviewsContainer = document.getElementById("reviewsContainer");
+const reviewParams = new URLSearchParams(window.location.search);
+const reviewedUserId = reviewParams.get("id_usuario");
 
-// STORAGE
-let reviews = JSON.parse(localStorage.getItem("landlordReviews")) || [];
-
-// ========== STARS ==========
 document.querySelectorAll(".star-group").forEach(group => {
     const category = group.dataset.category;
     const stars = group.querySelectorAll(".star");
+
     stars.forEach(star => {
         star.addEventListener("click", () => {
             const value = Number(star.dataset.value);
             ratings[category] = value;
-            stars.forEach(s => {
-                const currentValue = Number(s.dataset.value);
-                if (currentValue <= value) {
-                    s.classList.add("active");
-                } else {
-                    s.classList.remove("active");
-                }
+
+            stars.forEach(item => {
+                item.classList.toggle("active", Number(item.dataset.value) <= value);
             });
         });
     });
 });
 
-// ========== ENVIAR RESEÑA ==========
+async function loadReviews() {
+    try {
+        const query = reviewedUserId ? `?id_usuario=${encodeURIComponent(reviewedUserId)}` : "";
+        const response = await fetch(`/api/landlord-reviews${query}`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const result = await response.json();
 
-submitReview.addEventListener("click", () => {
-    const categories = document.querySelectorAll(".star-group");
-
-    // VALIDAR ESTRELLAS
-    for (const category of categories) {
-        const categoryName = category.dataset.category;
-        if (!ratings[categoryName]) {
-            alert("Debes calificar todas las categorías.");
-            return;
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudieron cargar las resenas");
         }
+
+        reviews = Array.isArray(result.data) ? result.data : [];
+        renderReviews();
+    } catch (error) {
+        console.error("Error cargando evaluaciones de arrendador:", error);
+        reviewsContainer.innerHTML = `
+            <div class="review-card">
+                <p class="review-comment">No se pudieron cargar las resenas.</p>
+            </div>
+        `;
+        updateSummary();
     }
+}
 
-    // VALIDAR COMENTARIO
-    const comment = reviewComment.value.trim();
+function buildReviewPayload() {
+    const payload = {};
 
-    if (comment.length < 10) {
-        alert("Escribe un comentario un poco más largo.");
+    Object.entries(categoryToField).forEach(([category, field]) => {
+        payload[field] = ratings[category];
+    });
+
+    payload.descr = reviewComment.value.trim();
+    if (reviewedUserId) payload.id_usuario = Number(reviewedUserId);
+    return payload;
+}
+
+function validateRatings() {
+    return Object.keys(categoryToField).every(category => Number(ratings[category]) >= 1);
+}
+
+submitReview.addEventListener("click", async () => {
+    if (!validateRatings()) {
+        alert("Debes calificar todas las categorias.");
         return;
     }
 
-    // PROMEDIO
-    const values = Object.values(ratings);
-    const average = values.reduce((acc, value) => acc + value, 0) / values.length;
+    if (reviewComment.value.trim().length < 10) {
+        alert("Escribe un comentario un poco mas largo.");
+        return;
+    }
 
-    // NUEVA REVIEW
-    const newReview = {
-        id: Date.now(),
-        user: "Usuario anónimo",
-        date: new Date().toLocaleDateString("es-CL"),
-        average: average.toFixed(1),
-        comment,
-        ratings
+    const originalText = submitReview.innerHTML;
+    submitReview.disabled = true;
+    submitReview.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
 
-    };
+    try {
+        const response = await fetch("/api/landlord-reviews", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(buildReviewPayload()),
+        });
+        const result = await response.json();
 
-    // GUARDAR
-    reviews.unshift(newReview);
+        if (!response.ok || !result.success) {
+            throw new Error(result?.message || result?.error || "No se pudo enviar la resena");
+        }
 
-    localStorage.setItem(
-        "landlordReviews",
-        JSON.stringify(reviews)
-    );
-
-    // LIMPIAR
-    resetForm();
-
-    // RENDER
-    renderReviews();
-
-    // ALERT
-    alert("Reseña enviada correctamente.");
-
+        resetForm();
+        await loadReviews();
+        alert("Resena enviada correctamente.");
+    } catch (error) {
+        console.error("Error enviando evaluacion de arrendador:", error);
+        alert(error.message || "No se pudo enviar la resena.");
+    } finally {
+        submitReview.disabled = false;
+        submitReview.innerHTML = originalText;
+    }
 });
 
-// ========== RENDER REVIEWS ==========
 function renderReviews() {
     reviewsContainer.innerHTML = "";
+
     if (reviews.length === 0) {
         reviewsContainer.innerHTML = `
             <div class="review-card">
-                <p class="review-comment">
-                    Aún no existen reseñas para este arrendador.
-                </p>
+                <p class="review-comment">Aun no existen resenas para este arrendador.</p>
             </div>
         `;
         updateSummary();
@@ -104,25 +133,15 @@ function renderReviews() {
     }
 
     reviews.forEach(review => {
-        const stars = generateStars(review.average);
         const reviewCard = document.createElement("div");
-
         reviewCard.classList.add("review-card");
         reviewCard.innerHTML = `
             <div class="review-header">
-                <div class="review-user">
-                    ${review.user}
-                </div>
-                <div class="review-date">
-                    ${review.date}
-                </div>
+                <div class="review-user">Usuario anonimo</div>
+                <div class="review-date">${formatDate(review.date)}</div>
             </div>
-            <div class="review-stars">
-                ${stars}
-            </div>
-            <p class="review-comment">
-                ${review.comment}
-            </p>
+            <div class="review-stars">${generateStars(review.total_point)}</div>
+            <p class="review-comment">${escapeHtml(review.descr || "Sin comentario")}</p>
         `;
         reviewsContainer.appendChild(reviewCard);
     });
@@ -130,55 +149,58 @@ function renderReviews() {
     updateSummary();
 }
 
-// ========== RESUMEN ==========
 function updateSummary() {
     totalReviews.textContent = reviews.length;
 
     if (reviews.length === 0) {
         averageScore.textContent = "0.0";
-        averageStars.textContent = "☆☆☆☆☆";
+        averageStars.textContent = "*****".replaceAll("*", "☆");
         return;
     }
 
-    const averages = reviews.map(review => Number(review.average));
-    const total = averages.reduce((acc, value) => acc + value, 0);
-    const finalAverage = (total / averages.length).toFixed(1);
+    const total = reviews.reduce((sum, review) => sum + Number(review.total_point || 0), 0);
+    const finalAverage = (total / reviews.length).toFixed(1);
     averageScore.textContent = finalAverage;
     averageStars.innerHTML = generateStars(finalAverage);
-
 }
 
-// ========== GENERAR ESTRELLAS ==========
 function generateStars(score) {
-    const rounded = Math.round(score);
+    const rounded = Math.round(Number(score || 0));
     let stars = "";
 
     for (let i = 1; i <= 5; i++) {
-        if (i <= rounded) {
-            stars += "★";
-        } else {
-            stars += "☆";
-        }
+        stars += i <= rounded ? "★" : "☆";
     }
+
     return stars;
 }
 
-// ========== RESET ==========
-
 function resetForm() {
-    // LIMPIAR RATINGS
     Object.keys(ratings).forEach(key => {
         delete ratings[key];
     });
 
-    // LIMPIAR ESTRELLAS
     document.querySelectorAll(".star").forEach(star => {
         star.classList.remove("active");
     });
 
-    // LIMPIAR TEXTO
     reviewComment.value = "";
 }
 
-// ========== INIT ==========
-renderReviews();
+function formatDate(value) {
+    if (!value) return "Sin fecha";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Sin fecha";
+    return date.toLocaleDateString("es-CL");
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+loadReviews();

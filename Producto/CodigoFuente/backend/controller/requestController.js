@@ -54,7 +54,9 @@ export class RequestController {
         try {
             const id = c.req.param("id");
             const payload = await c.req.json();
-            const data = await this.requestService.updateRequestStatus(id, payload, this.getAuthenticatedUserId(c));
+            const data = await this.requestService.updateRequestStatus(id, payload, this.getAuthenticatedUserId(c), {
+                baseUrl: new URL(c.req.url).origin,
+            });
             return c.json({ success: true, data }, 200);
         } catch (error) {
             const isValidationError = /invalido|permiso|no existe/i.test(error.message);

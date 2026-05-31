@@ -17,6 +17,8 @@ const totalReviews = document.getElementById("totalReviews");
 const reviewComment = document.getElementById("reviewComment");
 const submitReview = document.getElementById("submitReview");
 const reviewsContainer = document.getElementById("reviewsContainer");
+const reviewParams = new URLSearchParams(window.location.search);
+const reviewedUserId = reviewParams.get("id_usuario");
 
 document.querySelectorAll(".star-group").forEach(group => {
     const category = group.dataset.category;
@@ -36,9 +38,10 @@ document.querySelectorAll(".star-group").forEach(group => {
 
 async function loadReviews() {
     try {
-        const response = await fetch("/api/tenant-reviews", {
+        const query = reviewedUserId ? `?id_usuario=${encodeURIComponent(reviewedUserId)}` : "";
+        const response = await fetch(`/api/tenant-reviews${query}`, {
             method: "GET",
-            credentials: "same-origin",
+            credentials: "include",
         });
         const result = await response.json();
 
@@ -67,6 +70,7 @@ function buildReviewPayload() {
     });
 
     payload.comment = reviewComment.value.trim();
+    if (reviewedUserId) payload.id_usuario = Number(reviewedUserId);
     return payload;
 }
 
@@ -87,7 +91,7 @@ submitReview.addEventListener("click", async () => {
     try {
         const response = await fetch("/api/tenant-reviews", {
             method: "POST",
-            credentials: "same-origin",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(buildReviewPayload()),
         });
