@@ -1,42 +1,42 @@
 import { BaseRepository } from "./baseRepository.js";
 
-export class TenantReviewRepository extends BaseRepository {
+export class LandlordReviewRepository extends BaseRepository {
     async findAll({ userId } = {}) {
         let query = this.supabase
-            .from("EVALTENANT")
+            .from("EVALULANDLORD")
             .select("*")
-            .order("date_review", { ascending: false })
-            .order("id_review", { ascending: false });
+            .order("date", { ascending: false })
+            .order("id_landlord", { ascending: false });
 
         if (userId) {
             query = query.eq("id_usuario", userId);
         }
 
         const { data, error } = await query;
-        if (error) throw new Error(`Error al obtener evaluaciones de arrendatario: ${error.message}`);
+        if (error) throw new Error(`Error al obtener evaluaciones de arrendador: ${error.message}`);
         return data || [];
     }
 
     async create(reviewData) {
         const { data, error } = await this.supabase
-            .from("EVALTENANT")
+            .from("EVALULANDLORD")
             .insert(reviewData)
             .select()
             .single();
 
-        if (error) throw new Error(`Error al crear evaluacion de arrendatario: ${error.message}`);
+        if (error) throw new Error(`Error al crear evaluacion de arrendador: ${error.message}`);
         return data;
     }
 
     async delete(id) {
         const { data, error } = await this.supabase
-            .from("EVALTENANT")
+            .from("EVALULANDLORD")
             .delete()
-            .eq("id_review", id)
+            .eq("id_landlord", id)
             .select()
             .maybeSingle();
 
-        if (error) throw new Error(`Error al eliminar evaluacion de arrendatario: ${error.message}`);
+        if (error) throw new Error(`Error al eliminar evaluacion de arrendador: ${error.message}`);
         if (!data) throw new Error("La evaluacion no existe");
         return data;
     }
