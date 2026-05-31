@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { PropertyController } from "../controller/propertyController.js";
 import { requireAuth } from "../middleware/auth.js";
-import { handler as analyzeHandler } from "../controller/analizy.js";
+import { handler as analyzeHandler } from "../controller/analyze.ts";
 
 const propertyRoute = new Hono();
 const propertyController = new PropertyController();

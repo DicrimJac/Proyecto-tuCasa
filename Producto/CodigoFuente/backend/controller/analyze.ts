@@ -1,5 +1,5 @@
 import { analizarSector } from "./analisisController.ts";
-import { PropertyRepository } from "../repository/propertyRepository.ts";
+import { PropertyRepository } from "../repository/propertyRepository.js";
 
 const propertyRepository = new PropertyRepository();
 
