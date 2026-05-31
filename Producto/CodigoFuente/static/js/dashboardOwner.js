@@ -211,11 +211,49 @@ function getStoredRentRequests() {
 }
 
 function normalizeRequestStatus(status) {
+    if (Number(status) === 1) return "pendiente";
+    if (Number(status) === 2) return "aprobada";
+    if (Number(status) === 3) return "rechazada";
+    if (Number(status) === 4) return "finalizada";
+
     return {
         pending: "pendiente",
         approved: "aprobada",
         rejected: "rechazada",
-    }[status] || status || "pendiente";
+        completed: "finalizada",
+        Pendiente: "pendiente",
+        Aprobada: "aprobada",
+        Rechazada: "rechazada",
+        Finalizada: "finalizada",
+    }[status] || normalizeText(status) || "pendiente";
+}
+
+function normalizeText(value) {
+    return String(value || "")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .trim()
+        .toLowerCase();
+}
+
+function getMessageValue(message, label) {
+    const normalizedLabel = normalizeText(label);
+    const line = String(message || "")
+        .split(/\r?\n/)
+        .find((value) => normalizeText(value).startsWith(`${normalizedLabel}:`));
+
+    return line ? line.slice(line.indexOf(":") + 1).trim() : "";
+}
+
+function buildFullName(user = {}) {
+    const names = [
+        user.first_name,
+        user.second_name,
+        user.first_last_name,
+        user.second_last_name,
+    ].filter(Boolean);
+
+    return names.join(" ") || user.fullName || user.name || user.nombre || "";
 }
 
 function normalizeRequest(request) {
@@ -228,9 +266,59 @@ function normalizeRequest(request) {
     };
 }
 
-function loadReceivedRequests() {
+function normalizeApiRequest(request) {
+    const property = request.propiedad || {};
+    const user = request.usuario || {};
+    const requestId = request.id_request;
+    const applicantName = getMessageValue(request.message, "Nombre") || buildFullName(user) || "Solicitante";
+    const propertyId = request.id_propi || property.id_propi || "";
+
+    return normalizeRequest({
+        id: requestId,
+        source: "api",
+        propertyId: String(propertyId),
+        propertyTitle: property.title || property.titulo || property.name || property.type_desc || `Propiedad ${propertyId}`,
+        applicant: applicantName,
+        fullName: applicantName,
+        rut: getMessageValue(request.message, "RUT"),
+        email: getMessageValue(request.message, "Correo") || user.mail || user.email || "",
+        phone: getMessageValue(request.message, "Telefono") || user.fono || user.phone || "",
+        startDate: getMessageValue(request.message, "Fecha de inicio deseada"),
+        duration: `${Number(request.contract_time || 0)} meses`,
+        occupants: `${Number(request.qty_person || 0)} persona${Number(request.qty_person || 0) === 1 ? "" : "s"}`,
+        employment: request.work_situation_desc || "",
+        income: Number(request.income || 0),
+        message: request.message || "",
+        status: request.status_nbr || request.status_desc || request.status || "pendiente",
+        statusUpdatedAt: request.statusUpdatedAt,
+        date: request.date,
+    });
+}
+
+async function getReceivedRequestsFromApi() {
+    const response = await fetch("/api/requests/received", {
+        method: "GET",
+        credentials: "include",
+    });
+    const result = await response.json();
+
+    if (!response.ok || !result?.success) {
+        throw new Error(result?.message || result?.error || "No se pudieron cargar las solicitudes");
+    }
+
+    return (result.data || []).map(normalizeApiRequest);
+}
+
+async function loadReceivedRequests() {
     const ownerPropertyIds = new Set(ownerProperties.map((property) => String(property.id)));
-    const storedRequests = getStoredRentRequests().map(normalizeRequest);
+    let storedRequests = [];
+
+    try {
+        storedRequests = await getReceivedRequestsFromApi();
+    } catch (error) {
+        console.error("Error cargando solicitudes recibidas desde Supabase:", error);
+        storedRequests = getStoredRentRequests().map(normalizeRequest);
+    }
 
     receivedRequests = ownerPropertyIds.size > 0
         ? storedRequests.filter((request) => ownerPropertyIds.has(request.propertyId))
@@ -243,8 +331,8 @@ function loadReceivedRequests() {
     }));
 }
 
-function refreshReceivedRequests() {
-    loadReceivedRequests();
+async function refreshReceivedRequests() {
+    await loadReceivedRequests();
     renderRecentActivity();
     renderRequests();
     updateStats();
@@ -359,7 +447,6 @@ function viewRequestDetail(requestId) {
         <div class="detail-row"><span class="detail-label">Inicio deseado:</span><span class="detail-value">${formatDate(request.startDate)}</span></div>
         <div class="detail-row"><span class="detail-label">Duracion:</span><span class="detail-value">${request.duration || 'No informada'}</span></div>
         <div class="detail-row"><span class="detail-label">Ocupantes:</span><span class="detail-value">${request.occupants || 'No informado'}</span></div>
-        <div class="detail-row"><span class="detail-label">Mascotas:</span><span class="detail-value">${request.pets === 'si' ? 'Si' : 'No'}</span></div>
         <div class="detail-row"><span class="detail-label">Situacion laboral:</span><span class="detail-value">${request.employment || 'No informada'}</span></div>
         <div class="detail-row"><span class="detail-label">Ingreso mensual:</span><span class="detail-value">$${Number(request.income || 0).toLocaleString()}</span></div>
         <div class="detail-row"><span class="detail-label">Mensaje:</span><span class="detail-value">${request.message}</span></div>
@@ -415,6 +502,40 @@ async function disablePropertyAfterApproval(propertyId) {
 async function updateRequestStatus(requestId, nextStatus) {
     const validStatuses = new Set(['aprobada', 'rechazada']);
     if (!validStatuses.has(nextStatus)) return;
+    const apiRequest = receivedRequests.find((request) => Number(request.id) === Number(requestId) && request.source === "api");
+
+    if (apiRequest) {
+        try {
+            const response = await fetch(`/api/requests/${encodeURIComponent(requestId)}/status`, {
+                method: "PATCH",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: nextStatus }),
+            });
+            const result = await response.json();
+
+            if (!response.ok || !result?.success) {
+                throw new Error(result?.message || result?.error || "No se pudo actualizar la solicitud");
+            }
+        } catch (error) {
+            console.error("Error actualizando solicitud:", error);
+            showToast(error.message || "No se pudo actualizar la solicitud", true);
+            return;
+        }
+
+        apiRequest.status = nextStatus;
+        apiRequest.statusUpdatedAt = new Date().toISOString();
+        renderRecentActivity();
+        renderRequests();
+        updateStats();
+
+        if (nextStatus === 'aprobada') {
+            await disablePropertyAfterApproval(apiRequest.propertyId);
+        }
+
+        showToast(`Solicitud ${getStatusText(nextStatus).toLowerCase()}`);
+        return;
+    }
 
     const storedRequests = getStoredRentRequests();
     const requestIndex = storedRequests.findIndex((request) => Number(request.id) === Number(requestId));
@@ -571,14 +692,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         showToast(error.message || "No se pudieron cargar tus propiedades", true);
     }
 
-    refreshReceivedRequests();
+    await refreshReceivedRequests();
     renderProperties();
     
     document.getElementById('requestModal')?.addEventListener('click', (e) => {
         if (e.target === document.getElementById('requestModal')) closeRequestModal();
     });
 
-    window.addEventListener('focus', refreshReceivedRequests);
+    window.addEventListener('focus', () => {
+        refreshReceivedRequests();
+    });
     window.addEventListener('storage', (event) => {
         if (event.key === 'rentRequests') refreshReceivedRequests();
     });
