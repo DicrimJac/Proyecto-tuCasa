@@ -182,194 +182,242 @@ function renderPropertyFeatures() {
 
 }
 
+function renderSectorData(propertyData) {
+    if (sectorProfile && propertyData.perfil_sector) {
+        sectorProfile.textContent = propertyData.perfil_sector;
+        sectorProfile.style.display = "block";
+    } else if (sectorProfile) {
+        sectorProfile.style.display = "none";
+    }
+
+    if (metroCercano && propertyData.metro_cercano) {
+        metroCercano.textContent = propertyData.metro_cercano;
+        if (distanciaMetro && propertyData.distancia_metro) {
+            distanciaMetro.textContent = `(${propertyData.distancia_metro})`;
+        }
+    } else if (metroCercano) {
+        metroCercano.textContent = "No hay estación de metro cercana";
+        if (distanciaMetro) distanciaMetro.textContent = "";
+    }
+    const indicadores = propertyData.raw?.indicadores || propertyData.indicadores || {};
+
+    if (saludCount) saludCount.textContent = indicadores.salud ?? propertyData.salud_count ?? "0";
+    if (educacionCount) educacionCount.textContent = indicadores.educacion ?? propertyData.educacion_count ?? "0";
+    if (areasVerdesCount) areasVerdesCount.textContent = indicadores.areasVerdes ?? propertyData.areas_verdes_count ?? "0";
+    if (gastronomiaCount) gastronomiaCount.textContent = indicadores.gastronomia ?? propertyData.gastronomia_count ?? "0";
+    if (farmaciasCount) farmaciasCount.textContent = indicadores.farmacias ?? propertyData.farmacias_count ?? "0";
+    if (supermercadosCount) supermercadosCount.textContent = indicadores.supermercados ?? propertyData.supermercados_count ?? "0";
+    if (gimnasiosCount) gimnasiosCount.textContent = indicadores.gimnasios ?? propertyData.gimnasios_count ?? "0";
+    if (transporteCount) transporteCount.textContent = indicadores.transporte ?? propertyData.transporte_count ?? "0";
+}
+
+function renderAI(propertyData) {
+    if (analisisIA) {
+        const analisisTexto = propertyData.analisis_ia || propertyData.analisis || "No hay análisis disponible para este sector.";
+        analisisIA.textContent = analisisTexto;
+    }
+    renderSectorData(propertyData);
+}
+
 async function loadAIAnalysis(property) {
     if (property.analisis_ia) {
         renderAI(property);
         return;
     }
-
-    const response = await fetch("/api/properties/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            id_propi: property.id
-        })
-    });
-
-    const result = await response.json();
-
-    if (result.exito) {
-        renderAI(result.data);
-    }
-}
-
-function renderPropertyDetail() {
-    if (!property) return;
-
-    if (propertyImage) {
-        propertyImage.onerror = () => {
-            propertyImage.src = DEFAULT_PROPERTY_IMAGE;
-        };
-        propertyImage.src = property.image;
-    }
-
-    if (propertyTitle) propertyTitle.textContent = property.title;
-    if (propertyPrice) propertyPrice.textContent = property.price;
-    if (propertyLocation) propertyLocation.textContent = property.location;
-    if (bedrooms) bedrooms.textContent = property.bedrooms;
-    if (bathrooms) bathrooms.textContent = property.bathrooms;
-    if (parkingSpaces) parkingSpaces.textContent = property.parkingSpaces;
-    if (propertyArea) propertyArea.textContent = property.propertyArea;
-    if (propertyType) propertyType.textContent = property.propertyType;
-    if (operationType) operationType.textContent = property.operationType;
-    if (propertyDescription) propertyDescription.textContent = property.description;
-    renderPropertyFeatures();
-    loadAIAnalysis(property.raw || property);
-
-    if (mapFrame && property.location) {
-        const addressURL = encodeURIComponent(property.location);
-        mapFrame.src = `https://www.google.com/maps?q=${addressURL}&output=embed`;
-    }
-}
-
-function getSelectedPropertyFromStorage() {
-    const savedProperty = localStorage.getItem("selectedProperty");
-    if (!savedProperty) return null;
-
     try {
-        return JSON.parse(savedProperty);
-    } catch (error) {
-        console.error("Error leyendo propiedad seleccionada:", error);
-        return null;
-    }
-}
-
-function propertyMatchesId(savedProperty, propertyId) {
-    return savedProperty
-        && (String(savedProperty.id) === String(propertyId)
-            || String(savedProperty.id_propi) === String(propertyId)
-            || String(savedProperty.raw?.id_propi) === String(propertyId));
-}
-
-async function loadPropertyDetail() {
-    const params = new URLSearchParams(window.location.search);
-    const propertyId = params.get("id");
-    const savedProperty = getSelectedPropertyFromStorage();
-
-    if (!propertyId) {
-        if (savedProperty?.id || savedProperty?.id_propi || savedProperty?.raw?.id_propi) {
-            if (!isPropertyPublic(savedProperty)) {
-                redirectUnavailableProperty();
-                return;
-            }
-
-            property = normalizeProperty(savedProperty);
-            renderPropertyDetail();
-        } else {
-            localStorage.removeItem("selectedProperty");
-            showToast("No se encontro la propiedad seleccionada", true);
-        }
-        return;
-    }
-
-    try {
-        const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}?public=true`, {
-            method: "GET",
-            credentials: "same-origin",
+        const response = await fetch("/api/properties/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id_propi: property.id
+            })
         });
+
         const result = await response.json();
 
-        if (!response.ok || !result.success) {
-            throw new Error(result?.message || result?.error || "No se pudo cargar la propiedad");
+        if (result.exito) {
+            renderAI(result.data);
+        } else {
+            console.error("Error al obtener análisis:", result.error);
+            if (analisisIA) {
+                analisisIA.textContent = "No se pudo generar el análisis del sector en este momento.";
+            }
+        }
+    } catch (error) {
+        console.error("Error en loadAIAnalysis:", error);
+        if (analisisIA) {
+            analisisIA.textContent = "Error al cargar el análisis del sector.";
+        }
+    }
+
+
+    function renderPropertyDetail() {
+        if (!property) return;
+
+        if (propertyImage) {
+            propertyImage.onerror = () => {
+                propertyImage.src = DEFAULT_PROPERTY_IMAGE;
+            };
+            propertyImage.src = property.image;
         }
 
-        property = normalizeProperty(result.data);
-        if (!isPropertyPublic(result.data)) {
-            redirectUnavailableProperty();
+        if (propertyTitle) propertyTitle.textContent = property.title;
+        if (propertyPrice) propertyPrice.textContent = property.price;
+        if (propertyLocation) propertyLocation.textContent = property.location;
+        if (bedrooms) bedrooms.textContent = property.bedrooms;
+        if (bathrooms) bathrooms.textContent = property.bathrooms;
+        if (parkingSpaces) parkingSpaces.textContent = property.parkingSpaces;
+        if (propertyArea) propertyArea.textContent = property.propertyArea;
+        if (propertyType) propertyType.textContent = property.propertyType;
+        if (operationType) operationType.textContent = property.operationType;
+        if (propertyDescription) propertyDescription.textContent = property.description;
+        renderPropertyFeatures();
+        loadAIAnalysis(property.raw || property);
+
+        if (mapFrame && property.location) {
+            const addressURL = encodeURIComponent(property.location);
+            mapFrame.src = `https://www.google.com/maps?q=${addressURL}&output=embed`;
+        }
+    }
+
+    function getSelectedPropertyFromStorage() {
+        const savedProperty = localStorage.getItem("selectedProperty");
+        if (!savedProperty) return null;
+
+        try {
+            return JSON.parse(savedProperty);
+        } catch (error) {
+            console.error("Error leyendo propiedad seleccionada:", error);
+            return null;
+        }
+    }
+
+    function propertyMatchesId(savedProperty, propertyId) {
+        return savedProperty
+            && (String(savedProperty.id) === String(propertyId)
+                || String(savedProperty.id_propi) === String(propertyId)
+                || String(savedProperty.raw?.id_propi) === String(propertyId));
+    }
+
+    async function loadPropertyDetail() {
+        const params = new URLSearchParams(window.location.search);
+        const propertyId = params.get("id");
+        const savedProperty = getSelectedPropertyFromStorage();
+
+        if (!propertyId) {
+            if (savedProperty?.id || savedProperty?.id_propi || savedProperty?.raw?.id_propi) {
+                if (!isPropertyPublic(savedProperty)) {
+                    redirectUnavailableProperty();
+                    return;
+                }
+
+                property = normalizeProperty(savedProperty);
+                renderPropertyDetail();
+            } else {
+                localStorage.removeItem("selectedProperty");
+                showToast("No se encontro la propiedad seleccionada", true);
+            }
             return;
         }
 
-        localStorage.setItem("selectedProperty", JSON.stringify(result.data));
-        renderPropertyDetail();
-    } catch (error) {
-        console.error("Error cargando detalle de propiedad:", error);
+        try {
+            const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}?public=true`, {
+                method: "GET",
+                credentials: "same-origin",
+            });
+            const result = await response.json();
 
-        if (propertyMatchesId(savedProperty, propertyId)) {
-            if (!isPropertyPublic(savedProperty)) {
+            if (!response.ok || !result.success) {
+                throw new Error(result?.message || result?.error || "No se pudo cargar la propiedad");
+            }
+
+            property = normalizeProperty(result.data);
+            if (!isPropertyPublic(result.data)) {
                 redirectUnavailableProperty();
                 return;
             }
 
-            property = normalizeProperty(savedProperty);
+            localStorage.setItem("selectedProperty", JSON.stringify(result.data));
             renderPropertyDetail();
+        } catch (error) {
+            console.error("Error cargando detalle de propiedad:", error);
+
+            if (propertyMatchesId(savedProperty, propertyId)) {
+                if (!isPropertyPublic(savedProperty)) {
+                    redirectUnavailableProperty();
+                    return;
+                }
+
+                property = normalizeProperty(savedProperty);
+                renderPropertyDetail();
+            }
+
+            showToast(error.message || "No se pudo cargar la propiedad", true);
         }
-
-        showToast(error.message || "No se pudo cargar la propiedad", true);
-    }
-}
-
-const requestRentButton = document.getElementById("requestRentButton");
-
-function hasActiveSession() {
-    const userData = localStorage.getItem("userData");
-    const userProfile = localStorage.getItem("userProfile");
-    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true"
-        || localStorage.getItem("isLoggedIn") === "true";
-
-    return isLoggedIn && !!(userData || userProfile);
-}
-
-function requestRent() {
-    if (!hasActiveSession()) {
-        window.location.href = "login.html";
-        return;
     }
 
-    const idParam = property?.id ? `?id=${encodeURIComponent(property.id)}` : "";
-    window.location.href = `requestRent.html${idParam}`;
-}
+    const requestRentButton = document.getElementById("requestRentButton");
 
-if (requestRentButton) requestRentButton.addEventListener("click", requestRent);
+    function hasActiveSession() {
+        const userData = localStorage.getItem("userData");
+        const userProfile = localStorage.getItem("userProfile");
+        const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true"
+            || localStorage.getItem("isLoggedIn") === "true";
 
-function showToast(message, isError = false) {
-    const toast = document.getElementById("notificationToast");
-    const toastMessage = document.getElementById("toastMessage");
-    const toastHeader = toast?.querySelector(".toast-header");
-
-    if (!toast) return;
-    if (toastMessage) toastMessage.textContent = message;
-
-    if (isError) {
-        toast.style.borderLeftColor = "#dc3545";
-        const icon = toastHeader?.querySelector("i");
-        if (icon) {
-            icon.className = "bi bi-exclamation-triangle-fill";
-            icon.style.color = "#dc3545";
-        }
-        const strong = toastHeader?.querySelector("strong");
-        if (strong) strong.textContent = "Error";
-    } else {
-        toast.style.borderLeftColor = "#2C5A6E";
-        const icon = toastHeader?.querySelector("i");
-        if (icon) {
-            icon.className = "bi bi-check-circle-fill";
-            icon.style.color = "#2C5A6E";
-        }
-        const strong = toastHeader?.querySelector("strong");
-        if (strong) strong.textContent = "Exito";
+        return isLoggedIn && !!(userData || userProfile);
     }
 
-    toast.style.display = "block";
-    setTimeout(() => {
-        toast.style.display = "none";
-        if (toastHeader) {
-            const icon = toastHeader.querySelector("i");
-            if (icon) icon.className = "bi bi-info-circle-fill";
-            const strong = toastHeader.querySelector("strong");
-            if (strong) strong.textContent = "Informacion";
+    function requestRent() {
+        if (!hasActiveSession()) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const idParam = property?.id ? `?id=${encodeURIComponent(property.id)}` : "";
+        window.location.href = `requestRent.html${idParam}`;
+    }
+
+    if (requestRentButton) requestRentButton.addEventListener("click", requestRent);
+
+    function showToast(message, isError = false) {
+        const toast = document.getElementById("notificationToast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastHeader = toast?.querySelector(".toast-header");
+
+        if (!toast) return;
+        if (toastMessage) toastMessage.textContent = message;
+
+        if (isError) {
+            toast.style.borderLeftColor = "#dc3545";
+            const icon = toastHeader?.querySelector("i");
+            if (icon) {
+                icon.className = "bi bi-exclamation-triangle-fill";
+                icon.style.color = "#dc3545";
+            }
+            const strong = toastHeader?.querySelector("strong");
+            if (strong) strong.textContent = "Error";
+        } else {
             toast.style.borderLeftColor = "#2C5A6E";
+            const icon = toastHeader?.querySelector("i");
+            if (icon) {
+                icon.className = "bi bi-check-circle-fill";
+                icon.style.color = "#2C5A6E";
+            }
+            const strong = toastHeader?.querySelector("strong");
+            if (strong) strong.textContent = "Exito";
         }
-    }, 3000);
-}
 
-document.addEventListener("DOMContentLoaded", loadPropertyDetail);
+        toast.style.display = "block";
+        setTimeout(() => {
+            toast.style.display = "none";
+            if (toastHeader) {
+                const icon = toastHeader.querySelector("i");
+                if (icon) icon.className = "bi bi-info-circle-fill";
+                const strong = toastHeader.querySelector("strong");
+                if (strong) strong.textContent = "Informacion";
+                toast.style.borderLeftColor = "#2C5A6E";
+            }
+        }, 3000);
+    }
+
+    document.addEventListener("DOMContentLoaded", loadPropertyDetail);

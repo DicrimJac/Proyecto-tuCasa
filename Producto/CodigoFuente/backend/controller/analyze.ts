@@ -56,7 +56,8 @@ export const handler = async (req: Request) => {
         return Response.json({
             exito: true,
             cached: false,
-            data: propiedadActualizada
+            data: propiedadActualizada,
+            indicadores: resultado.indicadores
         });
 
     } catch (error) {
