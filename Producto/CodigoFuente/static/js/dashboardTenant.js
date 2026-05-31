@@ -138,7 +138,7 @@ function getRentRequestsForCurrentTenant() {
 async function getRentRequestsFromApi() {
     const response = await fetch("/api/requests/mine", {
         method: "GET",
-        credentials: "same-origin",
+        credentials: "include",
     });
     const result = await response.json();
 

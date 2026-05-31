@@ -1,8 +1,10 @@
 // backend/controller/analizy.ts
 import { analizarSector } from "./analisisController.ts";
 import { PropertyRepository } from "../repository/propertyRepository.js";
+import { PropertyService } from "../service/propertyService.js";
 
 const propertyRepository = new PropertyRepository();
+const propertyService = new PropertyService();
 
 // Función para construir la dirección a partir del objeto
 function construirDireccion(propiedad: any): string | null {
@@ -65,7 +67,7 @@ export const handler = async (c: any) => {
             );
         }
 
-        const propiedad = await propertyRepository.findById2(id_propi);
+        const propiedad = await propertyService.getPropertyById(id_propi);
         console.log("🏠 Propiedad encontrada, tipo de dirección:", typeof propiedad.direccion);
 
         if (!propiedad) {
@@ -105,6 +107,12 @@ export const handler = async (c: any) => {
         }
 
         const i = resultado.indicadores;
+        if (!i) {
+            return c.json(
+                { exito: false, error: "El analisis no devolvio indicadores del sector" },
+                500
+            );
+        }
 
         const updateData = {
             perfil_sector: i.perfilSector || null,
@@ -130,7 +138,7 @@ export const handler = async (c: any) => {
     } catch (error) {
         console.error("🔴 Error en analyze handler:", error);
         return c.json(
-            { exito: false, error: "Error interno del servidor: " + error.message },
+            { exito: false, error: "Error interno del servidor: " + (error instanceof Error ? error.message : String(error)) },
             500
         );
     }

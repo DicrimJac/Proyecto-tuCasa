@@ -10,6 +10,8 @@ const propertyController = new PropertyController();
 propertyRoute.get("/", (c) => propertyController.getAllProperties(c));
 // GET /api/properties/mine
 propertyRoute.get("/mine", requireAuth, (c) => propertyController.getMyProperties(c));
+// POST /api/properties/analyze
+propertyRoute.post("/analyze", (c) => analyzeHandler(c));
 // PATCH /api/properties/:id/status
 propertyRoute.patch("/:id/status", requireAuth, (c) => propertyController.updatePropertyStatus(c));
 // POST /api/properties/:id/photos
@@ -24,5 +26,4 @@ propertyRoute.post("/", requireAuth, (c) => propertyController.createProperty(c)
 propertyRoute.put("/:id", requireAuth, (c) => propertyController.updateProperty(c));
 // DELETE /api/properties/:id
 propertyRoute.delete("/:id", requireAuth, (c) => propertyController.deleteProperty(c));
-propertyRoute.post("/analyze", analyzeHandler);
 export default propertyRoute;
