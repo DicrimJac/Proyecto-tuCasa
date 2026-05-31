@@ -42,3 +42,26 @@ on "PROPIEDAD"
 for delete
 to anon
 using (true);
+
+INSERT INTO public.PROPIEDAD (
+  type_nbr, type_desc, state_nbr, state_desc, 
+  id_address, date, describe, id_usuario
+) VALUES (
+  1, 'Casa', 1, 'Excelente', 1, DEFAULT, 'Casa de 3 habitaciones', 1
+)
+
+SELECT * FROM public.PROPIEDAD
+
+UPDATE public.PROPIEDAD
+SET 
+  type_nbr = 2,
+  type_desc = 'Departamento',
+  state_nbr = 1,
+  state_desc = 'Excelente',
+  id_address = 2,
+  date = CURRENT_DATE,
+  describe = 'Departamento recién renovado',
+  id_usuario = 1
+WHERE id_propi = 1
+
+DELETE FROM public.PROPIEDAD WHERE id_propi = 1

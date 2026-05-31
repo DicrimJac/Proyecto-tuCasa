@@ -36,3 +36,23 @@ on "DIRECCION"
 for delete
 to anon
 using (true);
+
+INSERT INTO public.DIRECCION (
+  street, number, comuna, city, state
+) VALUES (
+  'Av. Siempre Viva', '123', 'Santiago Centro', 'Santiago', 'Región Metropolitana'
+)
+
+SELECT * FROM public.DIRECCION ORDER BY id_address;
+
+UPDATE public.DIRECCION
+SET 
+  street = 'Av. Los Pajaritos',
+  number = '999',
+  comuna = 'Maipú',
+  city = 'Santiago',
+  state = 'Región Metropolitana'
+WHERE id_address = 1
+
+DELETE FROM public.DIRECCION 
+WHERE id_address = 1
