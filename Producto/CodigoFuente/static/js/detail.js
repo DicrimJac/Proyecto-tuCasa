@@ -558,6 +558,27 @@ function getOperationType(rawProperty) {
     return normalizeText(operation).includes("venta") ? "Venta" : "Arriendo";
 }
 
+function getCachedPropertyImage(propertyId) {
+    try {
+        const cache = JSON.parse(localStorage.getItem("propertyImageCache") || "{}");
+        return cache[String(propertyId)] || "";
+    } catch (error) {
+        console.error("Error leyendo cache de imagenes:", error);
+        return "";
+    }
+}
+
+function getPropertyImage(rawProperty, propertyId) {
+    const photos = rawProperty.fotos || rawProperty.photos || rawProperty.imagenes || rawProperty.raw?.fotos || [];
+    return photos[0]?.url_foto
+        || photos[0]?.url
+        || rawProperty.url_foto
+        || rawProperty.image
+        || rawProperty.imagen
+        || getCachedPropertyImage(propertyId)
+        || DEFAULT_PROPERTY_IMAGE;
+}
+
 function isPropertyPublic(rawProperty) {
     const stateNumber = rawProperty?.state_nbr ?? rawProperty?.status_nbr ?? rawProperty?.raw?.state_nbr;
     const stateText = normalizeText(rawProperty?.state_desc || rawProperty?.status_desc || rawProperty?.estado || rawProperty?.status || rawProperty?.raw?.state_desc);
@@ -598,7 +619,7 @@ function normalizeProperty(rawProperty) {
         features: Object.entries(featureLabels)
             .filter(([field]) => characteristic[field] === true)
             .map(([field, data]) => ({ field, ...data })),
-        image: DEFAULT_PROPERTY_IMAGE,
+        image: getPropertyImage(rawProperty, id),
         raw: rawProperty,
     };
 }
@@ -798,7 +819,14 @@ function renderPropertyDetail() {
     console.log("Raw de propiedad:", property.raw);
     
     // Renderizar datos básicos...
-    if (propertyImage) propertyImage.src = property.image;
+    if (propertyImage) {
+        propertyImage.onerror = async () => {
+            propertyImage.onerror = null;
+            const fallbackImage = await resolvePropertyImageFallback(property.id);
+            propertyImage.src = fallbackImage || DEFAULT_PROPERTY_IMAGE;
+        };
+        propertyImage.src = property.image || DEFAULT_PROPERTY_IMAGE;
+    }
     if (propertyTitle) propertyTitle.textContent = property.title;
     if (propertyPrice) propertyPrice.textContent = property.price;
     if (propertyLocation) propertyLocation.textContent = property.location;
@@ -818,6 +846,25 @@ function renderPropertyDetail() {
     if (mapFrame && property.location) {
         const addressURL = encodeURIComponent(property.location);
         mapFrame.src = `https://www.google.com/maps?q=${addressURL}&output=embed`;
+    }
+}
+
+async function resolvePropertyImageFallback(propertyId) {
+    if (!propertyId) return "";
+
+    try {
+        const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}/photos`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const result = await response.json().catch(() => null);
+        const photos = Array.isArray(result?.data) ? result.data : [];
+        return response.ok && result?.success
+            ? photos[0]?.url_foto || photos[0]?.url || ""
+            : "";
+    } catch (error) {
+        console.error("Error cargando foto fallback:", error);
+        return "";
     }
 }
 
