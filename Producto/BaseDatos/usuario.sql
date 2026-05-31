@@ -43,3 +43,36 @@ on "USUARIO"
 for delete
 to anon
 using (true);
+
+INSERT INTO public.USUARIO (
+  first_name, second_name, first_last_name, second_last_name,
+  rut, rut_dv, fono, mail, nacionalidad, rol_nbr, rol_desc,
+  date_birth, gender_nbr, gender_desc, pass
+) VALUES (
+  'Juan', 'Carlos', 'Pérez', 'González',
+  12345678, 5, 912345678, 'juan.perez@email.com', 'Chilena',
+  1, 'Arrendatario', '1990-05-15', 1, 'Masculino', 'hash_del_password'
+)
+
+SELECT * FROM public.USUARIO
+
+UPDATE public.USUARIO
+SET 
+  first_name = 'Juan',
+  second_name = 'Andrés',
+  first_last_name = 'Pérez',
+  second_last_name = 'González',
+  rut = 12345678,
+  rut_dv = 5,
+  fono = 987654321,
+  mail = 'juan.andres@email.com',
+  nacionalidad = 'Chilena',
+  rol_nbr = 2,
+  rol_desc = 'Arrendador',
+  date_birth = '1990-05-15',
+  gender_nbr = 1,
+  gender_desc = 'Masculino',
+  pass = 'nuevo_hash_password'
+WHERE id_usuario = 1
+
+DELETE FROM public.USUARIO WHERE id_usuario = 1
