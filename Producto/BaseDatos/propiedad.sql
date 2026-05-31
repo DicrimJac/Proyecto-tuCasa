@@ -4,9 +4,13 @@ CREATE TABLE public.PROPIEDAD (
   type_desc character varying,
   state_nbr numeric,
   state_desc character varying,
-  address_nbr numeric,
   id_address bigint,
-  CONSTRAINT PROPIEDAD_pkey PRIMARY KEY (id_propi)
+  date date DEFAULT CURRENT_DATE,
+  describe character varying,
+  id_usuario integer,
+  CONSTRAINT PROPIEDAD_pkey PRIMARY KEY (id_propi),
+  CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES public.USUARIO(id_usuario),
+  CONSTRAINT fk_direccion FOREIGN KEY (id_address) REFERENCES public.DIRECCION(id_address)
 );
 
 -- PERMISOS PARA PROPIEDAD
