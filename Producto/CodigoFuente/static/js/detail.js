@@ -150,6 +150,11 @@ function normalizeProperty(rawProperty) {
         propertyType: getPropertyType(rawProperty),
         operationType: operation,
         description: rawProperty.describe || rawProperty.description || rawProperty.descripcion || characteristic.description || "Sin descripcion disponible.",
+        perfil_sector: rawProperty.perfil_sector || null,
+        resumen_sector: rawProperty.resumen_sector || null,
+        metro_cercano: rawProperty.metro_cercano || null,
+        distancia_metro: rawProperty.distancia_metro || null,
+        analisis_ia: rawProperty.analisis_ia || null,
         features: Object.entries(featureLabels)
             .filter(([field]) => characteristic[field] === true)
             .map(([field, data]) => ({ field, ...data })),
@@ -174,6 +179,28 @@ function renderPropertyFeatures() {
             <span>${feature.label}</span>
         </div>
     `).join("");
+
+}
+
+async function loadAIAnalysis(property) {
+    if (property.analisis_ia) {
+        renderAI(property);
+        return;
+    }
+
+    const response = await fetch("/api/properties/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_propi: property.id
+        })
+    });
+
+    const result = await response.json();
+
+    if (result.exito) {
+        renderAI(result.data);
+    }
 }
 
 function renderPropertyDetail() {
@@ -197,6 +224,7 @@ function renderPropertyDetail() {
     if (operationType) operationType.textContent = property.operationType;
     if (propertyDescription) propertyDescription.textContent = property.description;
     renderPropertyFeatures();
+    loadAIAnalysis(property.raw || property);
 
     if (mapFrame && property.location) {
         const addressURL = encodeURIComponent(property.location);
