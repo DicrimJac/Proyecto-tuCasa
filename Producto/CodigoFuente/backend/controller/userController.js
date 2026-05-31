@@ -26,6 +26,19 @@ function base64UrlEncode(value) {
     .replaceAll("=", "");
 }
 
+function getSessionCookieOptions(c) {
+  const requestUrl = new URL(c.req.url);
+  const origin = c.req.header("origin");
+  const isCrossOrigin = origin && new URL(origin).host !== requestUrl.host;
+
+  return {
+    httpOnly: true,
+    path: "/",
+    sameSite: isCrossOrigin ? "None" : "Lax",
+    secure: requestUrl.protocol === "https:" || isCrossOrigin,
+  };
+}
+
 function base64UrlDecode(value) {
   const normalized = value.replaceAll("-", "+").replaceAll("_", "/");
   const padded = normalized.padEnd(
@@ -138,10 +151,7 @@ export class UserController {
         const token = await sessionRepo.createSession(userId);
         // Establecer cookie HttpOnly para mantener la sesión
         setCookie(c, "session_id", token, {
-          httpOnly: true,
-          path: "/",
-          sameSite: "Lax",
-          secure: new URL(c.req.url).protocol === "https:",
+          ...getSessionCookieOptions(c),
           maxAge: sessionRepo.maxAge,
         });
       }
@@ -164,9 +174,7 @@ export class UserController {
     }
 
     setCookie(c, "session_id", "", {
-      httpOnly: true,
-      path: "/",
-      sameSite: "Lax",
+      ...getSessionCookieOptions(c),
       maxAge: 0,
     });
 
@@ -269,10 +277,7 @@ export class UserController {
       const sessionRepo = new SessionRepository();
       const token = await sessionRepo.createSession(email || googleUser.sub);
       setCookie(c, "session_id", token, {
-        httpOnly: true,
-        path: "/",
-        sameSite: "Lax",
-        secure: new URL(c.req.url).protocol === "https:",
+        ...getSessionCookieOptions(c),
         maxAge: sessionRepo.maxAge,
       });
 

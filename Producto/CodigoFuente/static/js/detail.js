@@ -88,6 +88,17 @@ function getCachedPropertyImage(propertyId) {
     }
 }
 
+function getPropertyImage(rawProperty, propertyId) {
+    const photos = rawProperty.fotos || rawProperty.photos || rawProperty.imagenes || rawProperty.raw?.fotos || [];
+    return photos[0]?.url_foto
+        || photos[0]?.url
+        || rawProperty.url_foto
+        || rawProperty.image
+        || rawProperty.imagen
+        || getCachedPropertyImage(propertyId)
+        || DEFAULT_PROPERTY_IMAGE;
+}
+
 function isPropertyPublic(rawProperty) {
     const stateNumber = rawProperty?.state_nbr ?? rawProperty?.status_nbr ?? rawProperty?.raw?.state_nbr;
     const stateText = normalizeText(rawProperty?.state_desc || rawProperty?.status_desc || rawProperty?.estado || rawProperty?.status || rawProperty?.raw?.state_desc);
@@ -142,7 +153,7 @@ function normalizeProperty(rawProperty) {
         features: Object.entries(featureLabels)
             .filter(([field]) => characteristic[field] === true)
             .map(([field, data]) => ({ field, ...data })),
-        image: rawProperty.image || rawProperty.imagen || getCachedPropertyImage(id) || DEFAULT_PROPERTY_IMAGE,
+        image: getPropertyImage(rawProperty, id),
         raw: rawProperty,
     };
 }
