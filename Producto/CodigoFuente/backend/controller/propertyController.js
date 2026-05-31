@@ -149,6 +149,17 @@ export class PropertyController {
         }
     }
 
+    // GET /api/properties/:id/photos
+    async getPropertyPhotos(c) {
+        try {
+            const id = c.req.param("id");
+            const data = await this.propertyService.getPropertyPhotos(id);
+            return c.json({ success: true, data, total: data.length }, 200);
+        } catch (error) {
+            return c.json({ success: false, error: "Error interno del servidor", message: error.message }, 500);
+        }
+    }
+
     // PATCH /api/properties/:id/status
     async updatePropertyStatus(c) {
         try {

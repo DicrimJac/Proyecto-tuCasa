@@ -111,6 +111,25 @@ async function hydratePropertyImage(property) {
     }
 
     try {
+        const photosResponse = await fetch(`/api/properties/${encodeURIComponent(property.id)}/photos`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const photosResult = await photosResponse.json().catch(() => null);
+        const photos = Array.isArray(photosResult?.data) ? photosResult.data : [];
+        const photoUrl = photos[0]?.url_foto || photos[0]?.url;
+        if (photosResponse.ok && photosResult?.success && photoUrl) {
+            return {
+                ...property,
+                image: photoUrl,
+                raw: {
+                    ...property.raw,
+                    fotos: photos,
+                    image: photoUrl,
+                },
+            };
+        }
+
         const response = await fetch(`/api/properties/${encodeURIComponent(property.id)}`, {
             method: "GET",
             credentials: "include",

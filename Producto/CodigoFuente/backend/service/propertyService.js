@@ -238,6 +238,10 @@ export class PropertyService {
         return this.photoRepository.uploadPropertyPhotos(id, files);
     }
 
+    async getPropertyPhotos(id) {
+        return this.photoRepository.findByPropertyId(id);
+    }
+
     /**
      * Crea una publicación completa: DIRECCION + PROPIEDAD + CARACTERISTICA.
      * Espera un payload con la forma:

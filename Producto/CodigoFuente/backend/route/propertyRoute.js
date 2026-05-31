@@ -13,6 +13,8 @@ propertyRoute.get("/mine", requireAuth, (c) => propertyController.getMyPropertie
 propertyRoute.patch("/:id/status", requireAuth, (c) => propertyController.updatePropertyStatus(c));
 // POST /api/properties/:id/photos
 propertyRoute.post("/:id/photos", requireAuth, (c) => propertyController.uploadPropertyPhotos(c));
+// GET /api/properties/:id/photos
+propertyRoute.get("/:id/photos", (c) => propertyController.getPropertyPhotos(c));
 // GET /api/properties/:id
 propertyRoute.get("/:id", (c) => propertyController.getPropertyById(c));
 // POST /api/properties
