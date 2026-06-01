@@ -4,7 +4,17 @@ export class LandlordReviewRepository extends BaseRepository {
     async findAll({ userId } = {}) {
         let query = this.supabase
             .from("EVALULANDLORD")
-            .select("*")
+            .select(`
+                *,
+                usuario:USUARIO!EVALULANDLORD_id_usuario_fkey(
+                    id_usuario,
+                    first_name,
+                    second_name,
+                    first_last_name,
+                    second_last_name,
+                    mail
+                )
+            `)
             .order("date", { ascending: false })
             .order("id_landlord", { ascending: false });
 
@@ -21,7 +31,17 @@ export class LandlordReviewRepository extends BaseRepository {
         const { data, error } = await this.supabase
             .from("EVALULANDLORD")
             .insert(reviewData)
-            .select()
+            .select(`
+                *,
+                usuario:USUARIO!EVALULANDLORD_id_usuario_fkey(
+                    id_usuario,
+                    first_name,
+                    second_name,
+                    first_last_name,
+                    second_last_name,
+                    mail
+                )
+            `)
             .single();
 
         if (error) throw new Error(`Error al crear evaluacion de arrendador: ${error.message}`);

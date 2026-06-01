@@ -4,7 +4,17 @@ export class TenantReviewRepository extends BaseRepository {
     async findAll({ userId } = {}) {
         let query = this.supabase
             .from("EVALTENANT")
-            .select("*")
+            .select(`
+                *,
+                usuario:USUARIO!EVALTENANT_id_usuario_fkey(
+                    id_usuario,
+                    first_name,
+                    second_name,
+                    first_last_name,
+                    second_last_name,
+                    mail
+                )
+            `)
             .order("date_review", { ascending: false })
             .order("id_review", { ascending: false });
 
@@ -21,7 +31,17 @@ export class TenantReviewRepository extends BaseRepository {
         const { data, error } = await this.supabase
             .from("EVALTENANT")
             .insert(reviewData)
-            .select()
+            .select(`
+                *,
+                usuario:USUARIO!EVALTENANT_id_usuario_fkey(
+                    id_usuario,
+                    first_name,
+                    second_name,
+                    first_last_name,
+                    second_last_name,
+                    mail
+                )
+            `)
             .single();
 
         if (error) throw new Error(`Error al crear evaluacion de arrendatario: ${error.message}`);
