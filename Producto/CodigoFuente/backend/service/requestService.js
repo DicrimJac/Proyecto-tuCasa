@@ -96,12 +96,28 @@ export class RequestService {
 
     async getReceivedRequests(sessionUserId) {
         const ownerId = await this.resolveUserId(sessionUserId);
+        const requestsById = new Map();
+        const propertyById = new Map();
+
+        try {
+            const directRequests = await this.repository.findReceivedByOwnerId(ownerId);
+            directRequests.forEach((request) => {
+                requestsById.set(String(request.id_request), request);
+                if (request.propiedad) {
+                    propertyById.set(String(request.id_propi), request.propiedad);
+                }
+            });
+        } catch (error) {
+            console.error("Error cargando solicitudes recibidas con join directo:", error);
+        }
+
         const properties = await this.propertyService.getPropertiesByOwner(ownerId);
         const propertyIds = properties
             .map((property) => property.id_propi || property.id)
             .filter(Boolean);
-        const propertyById = new Map(properties.map((property) => [String(property.id_propi || property.id), property]));
-        const requestsById = new Map();
+        properties.forEach((property) => {
+            propertyById.set(String(property.id_propi || property.id), property);
+        });
 
         const requests = await this.repository.findByPropertyIds(propertyIds);
         requests.forEach((request) => {
@@ -132,7 +148,7 @@ export class RequestService {
         return [...requestsById.values()].map((request) => ({
             ...request,
             propiedad: propertyById.get(String(request.id_propi)) || null,
-            usuario: userById.get(String(request.id_usuario)) || null,
+            usuario: request.usuario || userById.get(String(request.id_usuario)) || null,
         })).sort((a, b) => {
             const dateDiff = new Date(b.date || 0) - new Date(a.date || 0);
             return dateDiff || Number(b.id_request || 0) - Number(a.id_request || 0);

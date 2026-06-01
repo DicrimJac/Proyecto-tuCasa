@@ -35,6 +35,22 @@ export class RequestRepository extends BaseRepository {
         return data || [];
     }
 
+    async findReceivedByOwnerId(ownerId) {
+        const { data, error } = await this.supabase
+            .from("SOLICITUD")
+            .select(`
+                *,
+                propiedad:PROPIEDAD!SOLICITUD_id_propi_fkey!inner(*),
+                usuario:USUARIO!SOLICITUD_id_usuario_fkey(*)
+            `)
+            .eq("propiedad.id_usuario", ownerId)
+            .order("date", { ascending: false })
+            .order("id_request", { ascending: false });
+
+        if (error) throw new Error(`Error al obtener solicitudes recibidas del arrendador: ${error.message}`);
+        return data || [];
+    }
+
     async findByPropertyIds(propertyIds = []) {
         if (propertyIds.length === 0) return [];
 
