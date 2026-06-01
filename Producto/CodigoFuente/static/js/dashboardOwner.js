@@ -629,7 +629,7 @@ function renderRecentActivity() {
   const sorted = [...recentActivity].sort((a, b) =>
     new Date(b.date) - new Date(a.date)
   );
-  const recent = sorted.slice(0, 5);
+  const recent = sorted.slice(0, 3);
 
   if (recent.length === 0) {
     container.innerHTML =
@@ -654,14 +654,17 @@ function renderRecentActivity() {
 function renderRequests() {
   const container = document.getElementById("requestsList");
   if (!container) return;
+  const pendingRequests = receivedRequests.filter((r) =>
+    r.status === "pendiente"
+  );
 
-  if (receivedRequests.length === 0) {
+  if (pendingRequests.length === 0) {
     container.innerHTML =
-      '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay solicitudes</p></div>';
+      '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay solicitudes pendientes</p></div>';
     return;
   }
 
-  container.innerHTML = receivedRequests.map((r) => `
+  container.innerHTML = pendingRequests.map((r) => `
         <div class="request-item">
             <div class="request-info">
                 <h4>${r.propertyTitle}</h4>
@@ -672,14 +675,8 @@ function renderRequests() {
             </div>
             <div class="request-actions">
                 <button class="btn-view" onclick="viewRequestDetail(${r.id})">Ver</button>
-                ${
-    r.status === "pendiente"
-      ? `
-                    <button class="btn-approve" onclick="updateRequestStatus(${r.id}, 'aprobada')">Aprobar</button>
-                    <button class="btn-reject" onclick="updateRequestStatus(${r.id}, 'rechazada')">Rechazar</button>
-                `
-      : ""
-  }
+                <button class="btn-approve" onclick="updateRequestStatus(${r.id}, 'aprobada')">Aprobar</button>
+                <button class="btn-reject" onclick="updateRequestStatus(${r.id}, 'rechazada')">Rechazar</button>
             </div>
         </div>
     `).join("");

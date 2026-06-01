@@ -338,6 +338,7 @@ function updateStats() {
 function renderNotifications() {
   const container = document.getElementById("notificationsList");
   const unread = userNotifications.filter((n) => !n.read);
+  const visibleNotifications = unread.slice(0, 3);
 
   if (unread.length === 0) {
     container.innerHTML =
@@ -345,7 +346,7 @@ function renderNotifications() {
     return;
   }
 
-  container.innerHTML = unread.map((n) => `
+  container.innerHTML = visibleNotifications.map((n) => `
         <div class="notification-item unread" onclick="markAsRead('${n.id}')">
             <div class="notification-icon"><i class="fas fa-${
     getIcon(n.type)
@@ -412,9 +413,6 @@ function renderActiveRequests() {
             <span class="status-badge status-${r.status}">${
     r.status === "pendiente" ? "Pendiente" : "Aprobada"
   }</span>
-            <div class="request-actions">
-                <button class="btn-outline-sm" onclick="window.location.href='requestHistory.html'">Ver detalles</button>
-            </div>
         </div>
     `).join("");
 }
@@ -440,7 +438,6 @@ function renderActiveRentals() {
   }</div>
             <span class="status-badge status-aprobada">Activo</span>
             <div class="request-actions">
-                <button class="btn-outline-sm" onclick="window.location.href='requestHistory.html'">Ver detalles</button>
                 <button class="btn-outline-sm" onclick="window.location.href='propertyReview.html?id=${
     encodeURIComponent(r.propertyId || r.id)
   }'">Calificar</button>
