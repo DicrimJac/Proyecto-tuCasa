@@ -51,7 +51,8 @@ function base64UrlDecode(value) {
 
 async function getResetSigningKey() {
   const secret = Deno.env.get("SESSION_SECRET") ||
-    Deno.env.get("RESEND_API_KEY") ||
+    Deno.env.get("EMAIL_API_TOKEN") ||
+    Deno.env.get("SMTP_LOCAL_SECRET") ||
     "tu-casa-reset-dev-secret";
 
   return await crypto.subtle.importKey(
@@ -337,7 +338,8 @@ export class UserController {
   // GET /api/users/email/:mail
   async getUserByEmail(c) {
     try {
-      const mail = decodeURIComponent(c.req.param("mail") || "").trim().toLowerCase();
+      const mail = decodeURIComponent(c.req.param("mail") || "").trim()
+        .toLowerCase();
       const result = await this.userService.getUserByEmail(mail);
 
       const status = result.success ? 200 : 404;
@@ -451,7 +453,9 @@ export class UserController {
         return c.json({ success: false, error: "Email requerido" }, 400);
       }
 
-      const userResult = await this.userService.validateUserEmail(normalizedEmail);
+      const userResult = await this.userService.validateUserEmail(
+        normalizedEmail,
+      );
       if (!userResult.success) {
         return c.json(userResult, 404);
       }
@@ -463,7 +467,10 @@ export class UserController {
         expiresAt,
       });
 
-      const emailResult = await this.emailService.sendPasswordResetCode(normalizedEmail, code);
+      const emailResult = await this.emailService.sendPasswordResetCode(
+        normalizedEmail,
+        code,
+      );
       const resetCookieValue = await createResetCookieValue({
         email: normalizedEmail,
         code,
@@ -515,20 +522,29 @@ export class UserController {
       }
 
       if (!normalizedEmail || !normalizedCode || !newPassword) {
-        return c.json({ success: false, error: "Email, codigo y nueva contrasena son requeridos" }, 400);
+        return c.json({
+          success: false,
+          error: "Email, codigo y nueva contrasena son requeridos",
+        }, 400);
       }
 
       if (!resetData || resetData.expiresAt < Date.now()) {
         passwordResetCodes.delete(normalizedEmail);
         clearResetCookie(c);
-        return c.json({ success: false, error: "Codigo expirado o inexistente" }, 400);
+        return c.json({
+          success: false,
+          error: "Codigo expirado o inexistente",
+        }, 400);
       }
 
       if (resetData.code !== normalizedCode) {
         return c.json({ success: false, error: "Codigo incorrecto" }, 400);
       }
 
-      const result = await this.userService.resetPasswordByMail(normalizedEmail, newPassword);
+      const result = await this.userService.resetPasswordByMail(
+        normalizedEmail,
+        newPassword,
+      );
       if (result.success) {
         passwordResetCodes.delete(normalizedEmail);
         clearResetCookie(c);
@@ -547,7 +563,8 @@ export class UserController {
   // Delete user by mail
   async deleteUserByMail(c) {
     try {
-      const mail = decodeURIComponent(c.req.param("mail") || "").trim().toLowerCase();
+      const mail = decodeURIComponent(c.req.param("mail") || "").trim()
+        .toLowerCase();
       const result = await this.userService.deleteUserByMail(mail);
       const status = result?.success ? 200 : 400;
       return c.json(result, status);
