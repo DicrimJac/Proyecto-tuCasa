@@ -130,7 +130,7 @@ function renderReviews() {
         reviewCard.classList.add("review-card");
         reviewCard.innerHTML = `
             <div class="review-header">
-                <div class="review-user">Usuario anonimo</div>
+                <div class="review-user">${escapeHtml(getUserDisplayName(review.usuario))}</div>
                 <div class="review-date">${formatDate(review.date_review)}</div>
             </div>
             <div class="review-stars">${generateStars(review.total_rank)}</div>
@@ -147,7 +147,7 @@ function updateSummary() {
 
     if (reviews.length === 0) {
         averageScore.textContent = "0.0";
-        averageStars.textContent = "☆☆☆☆☆";
+        averageStars.textContent = "\u2606".repeat(5);
         return;
     }
 
@@ -162,10 +162,27 @@ function generateStars(score) {
     let stars = "";
 
     for (let i = 1; i <= 5; i++) {
-        stars += i <= rounded ? "★" : "☆";
+        stars += i <= rounded ? "\u2605" : "\u2606";
     }
 
     return stars;
+}
+
+function getUserDisplayName(user = {}) {
+    const names = [
+        user.first_name,
+        user.second_name,
+        user.first_last_name,
+        user.second_last_name,
+    ].filter(Boolean);
+
+    return names.join(" ").trim()
+        || user.fullName
+        || user.name
+        || user.nombre
+        || user.mail
+        || user.email
+        || "Usuario";
 }
 
 function resetForm() {
