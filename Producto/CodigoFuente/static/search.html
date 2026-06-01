@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tu Casa · Buscar Propiedades</title>
@@ -8,46 +8,52 @@
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/search.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    >
+  </head>
+  <body>
     <!-- HEADER (se carga dinámicamente) -->
     <div id="header"></div>
 
     <main>
-        <!-- Hero section - ANCHO COMPLETO -->
-        <div class="search-hero">
-            <div class="search-hero-container">
-                <h1>Buscar Propiedades</h1>
-                <p>Encuentra la propiedad de tus sueños</p>
-            </div>
+      <!-- Hero section - ANCHO COMPLETO -->
+      <div class="search-hero">
+        <div class="search-hero-container">
+          <h1>Buscar Propiedades</h1>
+          <p>Encuentra la propiedad de tus sueños</p>
+        </div>
+      </div>
+
+      <!-- Resultados -->
+      <div class="results-section">
+        <div class="results-header">
+          <h2>Propiedades encontradas</h2>
+          <div class="results-count" id="resultsCount">0 propiedades</div>
+          <div class="sort-options">
+            <label><i class="fas fa-sort"></i> Ordenar por:</label>
+            <select id="sortBy">
+              <option value="relevance">Relevancia</option>
+              <option value="price-asc">Precio: menor a mayor</option>
+              <option value="price-desc">Precio: mayor a menor</option>
+              <option value="rooms">Más habitaciones</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Resultados -->
-        <div class="results-section">
-            <div class="results-header">
-                <h2>Propiedades encontradas</h2>
-                <div class="results-count" id="resultsCount">0 propiedades</div>
-                <div class="sort-options">
-                    <label><i class="fas fa-sort"></i> Ordenar por:</label>
-                    <select id="sortBy">
-                        <option value="relevance">Relevancia</option>
-                        <option value="price-asc">Precio: menor a mayor</option>
-                        <option value="price-desc">Precio: mayor a menor</option>
-                        <option value="rooms">Más habitaciones</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="properties-grid" id="propertiesGrid">
-                <!-- Las propiedades se cargarán dinámicamente con JavaScript -->
-            </div>
-
-            <div class="pagination" id="pagination">
-                <!-- Paginación dinámica -->
-            </div>
+        <div class="properties-grid" id="propertiesGrid">
+          <!-- Las propiedades se cargarán dinámicamente con JavaScript -->
         </div>
+
+        <div class="pagination" id="pagination">
+          <!-- Paginación dinámica -->
+        </div>
+      </div>
     </main>
 
     <!-- FOOTER (se carga dinámicamente) -->
@@ -55,15 +61,17 @@
 
     <!-- Toast de notificaciones -->
     <div class="toast-custom" id="notificationToast">
-        <div class="toast-header">
-            <i class="bi bi-info-circle-fill"></i>
-            <strong>Información</strong>
-        </div>
-        <div class="toast-body" id="toastMessage"></div>
+      <div class="toast-header">
+        <i class="bi bi-info-circle-fill"></i>
+        <strong>Información</strong>
+      </div>
+      <div class="toast-body" id="toastMessage"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    ></script>
     <script src="js/headerFooter.js?v=profile-backend-2"></script>
-    <script src="js/search.js?v=photos-render-1"></script>
-</body>
+    <script src="js/search.js?v=detail-button-1"></script>
+  </body>
 </html>

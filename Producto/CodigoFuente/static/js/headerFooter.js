@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Cargar header
-  fetch("components/header.html?v=admin-nav-3")
+  fetch("components/header.html?v=static-greeting-1")
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Error cargando header: ${response.status}`);
@@ -209,7 +209,7 @@ function updateHeaderSessionState() {
   if (isLoggedIn) {
     if (greetingLink && greetingTextSpan) {
       greetingTextSpan.textContent = firstName ? `Hola! ${firstName}` : "Hola!";
-      greetingLink.href = isAdmin ? "admin.html" : "profile.html";
+      greetingLink.removeAttribute("href");
     }
     if (greetingItem) {
       greetingItem.style.display = isAdmin ? "none" : "list-item";
