@@ -1,6 +1,6 @@
 // backend/service/geminiService.ts - VERSIÓN SIMPLE QUE FUNCIONA
 
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || Deno.env.get("GOOGLE_AI_API_KEY") || "";
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
 export class GeminiService {
     private apiKey: string;
