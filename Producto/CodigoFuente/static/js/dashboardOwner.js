@@ -552,6 +552,7 @@ async function updateRequestStatus(requestId, nextStatus) {
     const apiRequest = receivedRequests.find((request) => Number(request.id) === Number(requestId) && request.source === "api");
 
     if (apiRequest) {
+        let result = null;
         try {
             const response = await fetch(`/api/requests/${encodeURIComponent(requestId)}/status`, {
                 method: "PATCH",
@@ -559,7 +560,7 @@ async function updateRequestStatus(requestId, nextStatus) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: nextStatus }),
             });
-            const result = await response.json();
+            result = await response.json();
 
             if (!response.ok || !result?.success) {
                 throw new Error(result?.message || result?.error || "No se pudo actualizar la solicitud");
@@ -580,7 +581,13 @@ async function updateRequestStatus(requestId, nextStatus) {
             await disablePropertyAfterApproval(apiRequest.propertyId);
         }
 
-        showToast(`Solicitud ${getStatusText(nextStatus).toLowerCase()}`);
+        const failedEmail = (result?.data?.reviewEmailDelivery || []).find((item) => item && item.success === false);
+        if (failedEmail) {
+            console.warn("Correo de resena no enviado:", failedEmail);
+            showToast(`Solicitud ${getStatusText(nextStatus).toLowerCase()}, pero fallo un correo de resena`, true);
+        } else {
+            showToast(`Solicitud ${getStatusText(nextStatus).toLowerCase()}`);
+        }
         return;
     }
 
