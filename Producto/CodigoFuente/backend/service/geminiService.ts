@@ -7,7 +7,7 @@ export class GeminiService {
     private apiUrl: string;
 
     constructor(apiKey?: string) {
-        this.apiKey = apiKey || GEMINI_API_KEY;
+        this.apiKey = apiKey || GEMINI_API_KEY || "";
         this.apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.apiKey}`;
     }
 

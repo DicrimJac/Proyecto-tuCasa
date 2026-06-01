@@ -4,7 +4,7 @@ export class GoogleMapsService {
     private apiKey: string;
 
     constructor(apiKey?: string) {
-        this.apiKey = apiKey || GOOGLE_MAPS_API_KEY;
+        this.apiKey = apiKey || GOOGLE_MAPS_API_KEY || "";
     }
 
     async geocodeAddress(direccion: string) {
