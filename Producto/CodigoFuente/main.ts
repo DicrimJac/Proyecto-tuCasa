@@ -10,7 +10,7 @@ import propertyReviewRoute from "./backend/route/propertyReviewRoute.js";
 import requestRoute from "./backend/route/requestRoute.js";
 
 const app = new Hono();
-const APP_VERSION = "received-requests-refresh-1";
+const APP_VERSION = "received-requests-fallback-1";
 
 // ============================================
 // MIDDLEWARES GLOBALES

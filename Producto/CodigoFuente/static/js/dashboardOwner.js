@@ -306,6 +306,15 @@ async function getReceivedRequestsFromApi() {
         throw new Error(result?.message || result?.error || "No se pudieron cargar las solicitudes");
     }
 
+    console.info("Solicitudes recibidas desde API:", {
+        total: result.total,
+        ids: (result.data || []).map((request) => ({
+            id_request: request.id_request,
+            id_propi: request.id_propi,
+            status: request.status_desc || request.status_nbr,
+        })),
+    });
+
     return (result.data || []).map(normalizeApiRequest);
 }
 
