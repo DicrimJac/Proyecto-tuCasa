@@ -100,16 +100,43 @@ export class RequestService {
         const propertyIds = properties
             .map((property) => property.id_propi || property.id)
             .filter(Boolean);
-        const requests = await this.repository.findByPropertyIds(propertyIds);
         const propertyById = new Map(properties.map((property) => [String(property.id_propi || property.id), property]));
+        const requestsById = new Map();
+
+        const requests = await this.repository.findByPropertyIds(propertyIds);
+        requests.forEach((request) => {
+            requestsById.set(String(request.id_request), request);
+        });
+
+        const allRequests = await this.repository.findAll();
+        await Promise.all(allRequests.map(async (request) => {
+            if (!request.id_propi || requestsById.has(String(request.id_request))) return;
+
+            try {
+                const property = propertyById.get(String(request.id_propi)) ||
+                    await this.propertyService.getPropertyById(request.id_propi);
+                const propertyOwnerId = this.propertyService.getPropertyOwnerId(property);
+
+                if (String(propertyOwnerId || "") === String(ownerId || "")) {
+                    requestsById.set(String(request.id_request), request);
+                    propertyById.set(String(request.id_propi), property);
+                }
+            } catch (error) {
+                console.error(`Error validando solicitud ${request.id_request} para propiedad ${request.id_propi}:`, error);
+            }
+        }));
+
         const users = await this.userRepository.findAll();
         const userById = new Map(users.map((user) => [String(user.id_usuario || user.id), user]));
 
-        return requests.map((request) => ({
+        return [...requestsById.values()].map((request) => ({
             ...request,
             propiedad: propertyById.get(String(request.id_propi)) || null,
             usuario: userById.get(String(request.id_usuario)) || null,
-        }));
+        })).sort((a, b) => {
+            const dateDiff = new Date(b.date || 0) - new Date(a.date || 0);
+            return dateDiff || Number(b.id_request || 0) - Number(a.id_request || 0);
+        });
     }
 
     normalizeRequestStatus(status) {

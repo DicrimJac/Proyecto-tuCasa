@@ -306,21 +306,34 @@ async function getReceivedRequestsFromApi() {
         throw new Error(result?.message || result?.error || "No se pudieron cargar las solicitudes");
     }
 
+    console.info("Solicitudes recibidas desde API:", {
+        total: result.total,
+        ids: (result.data || []).map((request) => ({
+            id_request: request.id_request,
+            id_propi: request.id_propi,
+            status: request.status_desc || request.status_nbr,
+        })),
+    });
+
     return (result.data || []).map(normalizeApiRequest);
 }
 
 async function loadReceivedRequests() {
     const ownerPropertyIds = new Set(ownerProperties.map((property) => String(property.id)));
     let storedRequests = [];
+    let loadedFromApi = false;
 
     try {
         storedRequests = await getReceivedRequestsFromApi();
+        loadedFromApi = true;
     } catch (error) {
         console.error("Error cargando solicitudes recibidas desde Supabase:", error);
         storedRequests = getStoredRentRequests().map(normalizeRequest);
     }
 
-    receivedRequests = ownerPropertyIds.size > 0
+    receivedRequests = loadedFromApi
+        ? storedRequests
+        : ownerPropertyIds.size > 0
         ? storedRequests.filter((request) => ownerPropertyIds.has(request.propertyId))
         : storedRequests;
 
@@ -761,6 +774,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('storage', (event) => {
         if (event.key === 'rentRequests') refreshReceivedRequests();
     });
+    setInterval(refreshReceivedRequests, 30000);
 });
 
 window.viewRequestDetail = viewRequestDetail;
