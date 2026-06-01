@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-
-
   function loadStylesheetOnce(href) {
     return new Promise((resolve, reject) => {
       const existingLink = document.querySelector(`link[href="${href}"]`);
@@ -35,8 +33,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function ensureBootstrap() {
-    const bootstrapCss = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
-    const bootstrapJs = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
+    const bootstrapCss =
+      "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
+    const bootstrapJs =
+      "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
     const profileCss = "css/profile.css";
 
     const cssTasks = [
@@ -52,31 +52,31 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function reinitBootstrapComponents() {
-
     if (!window.bootstrap) return;
 
-    const offcanvasElements = document.querySelectorAll('.offcanvas');
-    offcanvasElements.forEach(el => {
-      if (!el.hasAttribute('data-bs-offcanvas-initialized')) {
+    const offcanvasElements = document.querySelectorAll(".offcanvas");
+    offcanvasElements.forEach((el) => {
+      if (!el.hasAttribute("data-bs-offcanvas-initialized")) {
         new bootstrap.Offcanvas(el);
-        el.setAttribute('data-bs-offcanvas-initialized', 'true');
+        el.setAttribute("data-bs-offcanvas-initialized", "true");
       }
     });
 
-    const modalElements = document.querySelectorAll('.modal');
-    modalElements.forEach(el => {
-      if (!el.hasAttribute('data-bs-modal-initialized')) {
+    const modalElements = document.querySelectorAll(".modal");
+    modalElements.forEach((el) => {
+      if (!el.hasAttribute("data-bs-modal-initialized")) {
         new bootstrap.Modal(el);
-        el.setAttribute('data-bs-modal-initialized', 'true');
+        el.setAttribute("data-bs-modal-initialized", "true");
       }
     });
   }
 
-
   // Cargar header
   fetch("components/header.html?v=admin-nav-3")
     .then((response) => {
-      if (!response.ok) throw new Error(`Error cargando header: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`Error cargando header: ${response.status}`);
+      }
       return response.text();
     })
     .then((data) => {
@@ -89,45 +89,49 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch((error) => console.error("Error:", error));
 
-// Cargar footer
-fetch("components/footer.html")
-  .then((response) => {
-    if (!response.ok) throw new Error(`Error cargando footer: ${response.status}`);
-    return response.text();
-  })
-  .then((data) => {
-    const footer = document.getElementById("footer");
-    if (footer) footer.innerHTML = data;
-  })
-  .catch((error) => console.error("Error:", error));
+  // Cargar footer
+  fetch("components/footer.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Error cargando footer: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then((data) => {
+      const footer = document.getElementById("footer");
+      if (footer) footer.innerHTML = data;
+    })
+    .catch((error) => console.error("Error:", error));
 
-// Cargar perfil (offcanvas + modales)
-fetch("components/profile.html")
-  .then((response) => {
-    if (!response.ok) throw new Error(`Error cargando perfil: ${response.status}`);
-    return response.text();
-  })
-  .then((data) => {
-    let profile = document.getElementById("profileContainer");
-    if (!profile) {
-      profile = document.createElement("div");
-      profile.id = "profileContainer";
-      document.body.appendChild(profile);
-    }
+  // Cargar perfil (offcanvas + modales)
+  fetch("components/profile.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Error cargando perfil: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then((data) => {
+      let profile = document.getElementById("profileContainer");
+      if (!profile) {
+        profile = document.createElement("div");
+        profile.id = "profileContainer";
+        document.body.appendChild(profile);
+      }
 
-    profile.innerHTML = data.replace(/<script[\s\S]*?<\/script>/gi, "");
+      profile.innerHTML = data.replace(/<script[\s\S]*?<\/script>/gi, "");
 
-    return ensureBootstrap()
-      .then(() => {
-        reinitBootstrapComponents();
-        return loadScriptOnce("js/profile.js?v=profile-password-1");
-      });
-  })
-  .then(() => {
-    if (typeof loadUserData === "function") loadUserData();
-    if (typeof initNavigation === "function") initNavigation();
-  })
-  .catch((error) => console.error("Error:", error));
+      return ensureBootstrap()
+        .then(() => {
+          reinitBootstrapComponents();
+          return loadScriptOnce("js/profile.js?v=user-reviews-1");
+        });
+    })
+    .then(() => {
+      if (typeof loadUserData === "function") loadUserData();
+      if (typeof initNavigation === "function") initNavigation();
+    })
+    .catch((error) => console.error("Error:", error));
 });
 
 function initHeader() {
@@ -175,8 +179,8 @@ function updateHeaderSessionState() {
   const adminEmail = "admin@duoc.cl";
   const userData = localStorage.getItem("userData");
   const userProfile = localStorage.getItem("userProfile");
-  const hasActiveSession = sessionStorage.getItem("isLoggedIn") === "true"
-    || localStorage.getItem("isLoggedIn") === "true";
+  const hasActiveSession = sessionStorage.getItem("isLoggedIn") === "true" ||
+    localStorage.getItem("isLoggedIn") === "true";
   const isLoggedIn = hasActiveSession && !!(userData || userProfile);
 
   const registerBtn = document.querySelector(".btn-register-nav");
@@ -186,14 +190,17 @@ function updateHeaderSessionState() {
   const publicNavItems = document.querySelectorAll(".public-nav-item");
   const adminNavItem = document.getElementById("adminNavItem");
   const greetingLink = document.getElementById("userGreeting");
-  const greetingTextSpan = greetingLink ? greetingLink.querySelector(".user-greeting-text") : null;
+  const greetingTextSpan = greetingLink
+    ? greetingLink.querySelector(".user-greeting-text")
+    : null;
   const greetingItem = document.querySelector(".user-greeting-item");
 
   let firstName = "";
   let email = "";
   if (isLoggedIn) {
     const data = getStoredSessionData(userData, userProfile);
-    firstName = data.first_name || data.firstName || data.nombre || data.name || "";
+    firstName = data.first_name || data.firstName || data.nombre || data.name ||
+      "";
     email = getStoredUserEmail(data);
   }
 
@@ -204,14 +211,20 @@ function updateHeaderSessionState() {
       greetingTextSpan.textContent = firstName ? `Hola! ${firstName}` : "Hola!";
       greetingLink.href = isAdmin ? "admin.html" : "profile.html";
     }
-    if (greetingItem) greetingItem.style.display = isAdmin ? "none" : "list-item";
-    if (adminNavItem) adminNavItem.style.display = isAdmin ? "list-item" : "none";
+    if (greetingItem) {
+      greetingItem.style.display = isAdmin ? "none" : "list-item";
+    }
+    if (adminNavItem) {
+      adminNavItem.style.display = isAdmin ? "list-item" : "none";
+    }
     publicNavItems.forEach((item) => {
       item.style.display = isAdmin ? "none" : "list-item";
     });
     if (registerBtn) registerBtn.style.display = "none";
     if (loginBtn) loginBtn.style.display = "none";
-    if (profileNavItem) profileNavItem.style.display = isAdmin ? "none" : "list-item";
+    if (profileNavItem) {
+      profileNavItem.style.display = isAdmin ? "none" : "list-item";
+    }
     if (profileButton) {
       profileButton.disabled = false;
       profileButton.setAttribute("aria-hidden", "false");
@@ -234,7 +247,6 @@ function updateHeaderSessionState() {
     }
   }
 }
-
 
 // document.addEventListener("DOMContentLoaded", function () {
 //   // Cargar header

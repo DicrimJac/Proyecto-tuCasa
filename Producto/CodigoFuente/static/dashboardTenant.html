@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tu Casa · Dashboard Arrendatario</title>
@@ -9,160 +8,171 @@
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/dashboardTenant.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-</head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    >
+  </head>
 
-<body>
+  <body>
     <div id="header"></div>
     <main>
-        <!-- HERO -->
-        <div class="page-hero">
-            <div class="page-hero-container">
-                <h1>Dashboard Arrendatario</h1>
-                <p>Bienvenido a tu panel de control</p>
+      <!-- HERO -->
+      <div class="page-hero">
+        <div class="page-hero-container">
+          <h1>Dashboard Arrendatario</h1>
+          <p>Bienvenido a tu panel de control</p>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="dashboard-container">
+        <!-- STATS -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-file-alt"></i>
             </div>
+            <div class="stat-info">
+              <h3 id="totalRequests">0</h3>
+              <p>Solicitudes</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-home"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="activeRentals">0</h3>
+              <p>Arriendos activos</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="avgRating">0.0</h3>
+              <p>Como arrendatario</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="pendingNotifications">0</h3>
+              <p>Notificaciones</p>
+            </div>
+          </div>
         </div>
 
-        <!-- DASHBOARD -->
-        <div class="dashboard-container">
-            <!-- STATS -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="totalRequests">0</h3>
-                        <p>Solicitudes</p>
-                    </div>
-                </div>
+        <!-- NOTIFICACIONES -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2><i class="fas fa-bell"></i> Notificaciones</h2>
+            <button class="btn-clear" onclick="markAllNotificationsAsRead()">
+              Marcar todas como leídas
+            </button>
+          </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="activeRentals">0</h3>
-                        <p>Arriendos activos</p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="avgRating">0.0</h3>
-                        <p>Calificación</p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="pendingNotifications">0</h3>
-                        <p>Notificaciones</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- NOTIFICACIONES -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-bell"></i> Notificaciones</h2>
-                    <button class="btn-clear"
-                        onclick="markAllNotificationsAsRead()"> Marcar todas como leídas </button>
-                </div>
-
-                <div id="notificationsList" class="notifications-list">
-                    <div class="empty-state"> Cargando... </div>
-                </div>
-            </div>
-
-            <!-- SOLICITUDES -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-clock"></i> Solicitudes activas</h2>
-                    <a href="search.html" class="btn-primary"> + Nueva solicitud </a>
-                </div>
-
-                <div id="activeRequestsList" class="requests-grid">
-                    <div class="empty-state"> Cargando... </div>
-                </div>
-            </div>
-
-            <!-- ARRIENDOS ACTIVOS -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-house-user"></i> Arriendos activos</h2>
-                </div>
-
-                <div id="activeRentalsList" class="requests-grid">
-                    <div class="empty-state"> Cargando... </div>
-                </div>
-            </div>
-
-            <!-- HISTORIAL -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2><i class="fas fa-history"></i> Historial de arriendos</h2>
-                </div>
-
-                <div id="historyList" class="history-list">
-                    <div class="empty-state"> Cargando... </div>
-                </div>
-            </div>
-
+          <div id="notificationsList" class="notifications-list">
+            <div class="empty-state">Cargando...</div>
+          </div>
         </div>
+
+        <!-- SOLICITUDES -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2><i class="fas fa-clock"></i> Solicitudes activas</h2>
+            <a href="search.html" class="btn-primary"> + Nueva solicitud </a>
+          </div>
+
+          <div id="activeRequestsList" class="requests-grid">
+            <div class="empty-state">Cargando...</div>
+          </div>
+        </div>
+
+        <!-- ARRIENDOS ACTIVOS -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2><i class="fas fa-house-user"></i> Arriendos activos</h2>
+          </div>
+
+          <div id="activeRentalsList" class="requests-grid">
+            <div class="empty-state">Cargando...</div>
+          </div>
+        </div>
+
+        <!-- HISTORIAL -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2><i class="fas fa-history"></i> Historial de arriendos</h2>
+          </div>
+
+          <div id="historyList" class="history-list">
+            <div class="empty-state">Cargando...</div>
+          </div>
+        </div>
+      </div>
     </main>
     <div id="footer"></div>
 
     <!-- MODAL -->
     <div class="modal-overlay" id="ratingModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Calificar experiencia</h3>
-                <button class="modal-close" onclick="closeRatingModal()">
-                    &times;
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <p> ¿Cómo calificas tu arriendo de <strong id="rentalTitle"></strong>?</p>
-                <div class="stars-container" id="ratingStars">
-                    <i class="far fa-star" data-value="1"></i>
-                    <i class="far fa-star" data-value="2"></i>
-                    <i class="far fa-star" data-value="3"></i>
-                    <i class="far fa-star" data-value="4"></i>
-                    <i class="far fa-star" data-value="5"></i>
-                </div>
-
-                <textarea id="ratingComment"
-                    rows="3"
-                    placeholder="Tu opinión nos ayuda a mejorar..."></textarea>
-                <button class="btn-submit" onclick="submitRating()"> Enviar calificación </button>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Calificar experiencia</h3>
+          <button class="modal-close" onclick="closeRatingModal()">
+            &times;
+          </button>
         </div>
+
+        <div class="modal-body">
+          <p>
+            ¿Cómo calificas tu arriendo de <strong id="rentalTitle"></strong>?
+          </p>
+          <div class="stars-container" id="ratingStars">
+            <i class="far fa-star" data-value="1"></i>
+            <i class="far fa-star" data-value="2"></i>
+            <i class="far fa-star" data-value="3"></i>
+            <i class="far fa-star" data-value="4"></i>
+            <i class="far fa-star" data-value="5"></i>
+          </div>
+
+          <textarea
+            id="ratingComment"
+            rows="3"
+            placeholder="Tu opinión nos ayuda a mejorar..."
+          ></textarea>
+          <button class="btn-submit" onclick="submitRating()">
+            Enviar calificación
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- TOAST -->
     <div class="toast-custom" id="notificationToast">
-
-        <div class="toast-header">
-            <i class="bi bi-check-circle-fill text-success"></i>
-            <strong>Éxito</strong>
-        </div>
-        <div class="toast-body" id="toastMessage"></div>
-
+      <div class="toast-header">
+        <i class="bi bi-check-circle-fill text-success"></i>
+        <strong>Éxito</strong>
+      </div>
+      <div class="toast-body" id="toastMessage"></div>
     </div>
 
     <!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    ></script>
     <script src="js/headerFooter.js?v=profile-backend-2"></script>
-    <script src="js/dashboardTenant.js?v=deploy-sync-1"></script>
-
-</body>
+    <script src="js/dashboardTenant.js?v=user-review-rating-1"></script>
+  </body>
 </html>
