@@ -1,250 +1,289 @@
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tu Casa · Panel Administrador</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- HEADER -->
     <div id="header"></div>
 
     <main class="admin-main">
-        <div class="admin-container">
-            <!-- Sidebar del Administrador -->
-            <aside class="admin-sidebar">
-                <div class="admin-user">
-                    <img src="https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=80&bold=true&name=Admin"
-                        alt="Admin" class="admin-avatar">
-                    <h5>Administrador</h5>
-                    <p>Super Admin</p>
-                </div>
+      <div class="admin-container">
+        <!-- Sidebar del Administrador -->
+        <aside class="admin-sidebar">
+          <div class="admin-user">
+            <img
+              src="https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=80&bold=true&name=Admin"
+              alt="Admin"
+              class="admin-avatar"
+            >
+            <h5>Administrador</h5>
+            <p>Super Admin</p>
+          </div>
 
-                <nav class="admin-nav">
-                    <a href="#" class="nav-item active" data-section="dashboard">
-                        <i class="bi bi-speedometer2"></i>
-                        <span>Panel de Administración</span>
-                    </a>
-                    <a href="#" class="nav-item" data-section="users">
-                        <i class="bi bi-people"></i>
-                        <span>Gestionar Usuarios</span>
-                        <span class="badge" id="usersCount">0</span>
-                    </a>
-                    <a href="#" class="nav-item" data-section="properties">
-                        <i class="bi bi-building"></i>
-                        <span>Gestionar Propiedades</span>
-                        <span class="badge" id="propertiesCount">0</span>
-                    </a>
-                    <a href="#" class="nav-item" data-section="reviews">
-                        <i class="bi bi-star"></i>
-                        <span>Moderar Evaluaciones</span>
-                        <span class="badge pending-badge" id="reviewsCount">0</span>
-                    </a>
-                </nav>
+          <nav class="admin-nav">
+            <a href="#" class="nav-item active" data-section="dashboard">
+              <i class="bi bi-speedometer2"></i>
+              <span>Panel de Administración</span>
+            </a>
+            <a href="#" class="nav-item" data-section="users">
+              <i class="bi bi-people"></i>
+              <span>Gestionar Usuarios</span>
+              <span class="badge" id="usersCount">0</span>
+            </a>
+            <a href="#" class="nav-item" data-section="properties">
+              <i class="bi bi-building"></i>
+              <span>Gestionar Propiedades</span>
+              <span class="badge" id="propertiesCount">0</span>
+            </a>
+            <a href="#" class="nav-item" data-section="reviews">
+              <i class="bi bi-star"></i>
+              <span>Moderar Evaluaciones</span>
+              <span class="badge pending-badge" id="reviewsCount">0</span>
+            </a>
+          </nav>
 
-                <div class="admin-logout">
-                    <a href="#" id="adminLogoutBtn">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <span>Cerrar Sesión</span>
-                    </a>
-                </div>
-            </aside>
+          <div class="admin-logout">
+            <a href="#" id="adminLogoutBtn">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Cerrar Sesión</span>
+            </a>
+          </div>
+        </aside>
 
-            <!-- Contenido Principal -->
-            <div class="admin-content">
-                <!-- DASHBOARD -->
-                <div id="dashboard-section" class="admin-section active">
-                    <div class="section-header">
-                        <h2><i class="bi bi-speedometer2"></i> Panel de Administración</h2>
-                        <p>Bienvenido al panel de control</p>
-                    </div>
-
-                    <!-- Tarjetas de estadísticas -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: #e8f5e9;">
-                                <i class="bi bi-people" style="color: #4caf50;"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="statUsers">0</h3>
-                                <p>Usuarios Registrados</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: #e3f2fd;">
-                                <i class="bi bi-building" style="color: #2196f3;"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="statProperties">0</h3>
-                                <p>Propiedades Publicadas</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: #fff3e0;">
-                                <i class="bi bi-star" style="color: #ff9800;"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="statReviews">0</h3>
-                                <p>Evaluaciones Pendientes</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Propiedades recientes -->
-                    <div class="recent-section">
-                        <h3>Últimas Propiedades</h3>
-                        <div class="table-responsive">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Título</th>
-                                        <th>Propietario</th>
-                                        <th>Fecha</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recentPropertiesTable"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Gráfico de Visualizaciones vs Interesados (DENTRO del dashboard y con margen superior) -->
-                    <div class="chart-row" style="margin-top: 2rem;">
-                        <div class="chart-card">
-                            <div class="chart-header">
-                                <h3><i class="bi bi-graph-up"></i> Visualizaciones vs Interesados</h3>
-                                <p>Comparativa de rendimiento de propiedades</p>
-                            </div>
-                            <div class="chart-container-graph">
-                                <canvas id="propertiesChart" width="400" height="200"></canvas>
-                            </div>
-                            <div class="chart-legend">
-                                <div class="legend-item">
-                                    <span class="legend-color" style="background: #2C5A6E;"></span>
-                                    <span>Visualizaciones</span>
-                                </div>
-                                <div class="legend-item">
-                                    <span class="legend-color" style="background: #ff9800;"></span>
-                                    <span>Interesados</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- SECCIÓN GESTIONAR USUARIOS -->
-                <div id="users-section" class="admin-section">
-                    <div class="section-header">
-                        <h2><i class="bi bi-people"></i> Gestionar Usuarios</h2>
-                        <input type="text" id="searchUser" class="search-input" placeholder="Buscar usuario...">
-                    </div>
-                    <div class="table-responsive">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Usuario</th>
-                                    <th>Email</th>
-                                    <th>Miembro Desde</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usersTable"></tbody>
-                        </table>
-                    </div>
-                    <div class="pagination" id="usersPagination"></div>
-                </div>
-
-                <!-- SECCIÓN GESTIONAR PROPIEDADES -->
-                <div id="properties-section" class="admin-section">
-                    <div class="section-header">
-                        <h2><i class="bi bi-building"></i> Gestionar Propiedades</h2>
-                        <div class="filter-group">
-                            <select id="propertyStatusFilter" class="filter-select">
-                                <option value="all">Todos</option>
-                                <option value="active">Activas</option>
-                                <option value="pending">Pendientes</option>
-                                <option value="rejected">Rechazadas</option>
-                            </select>
-                            <input type="text" id="searchProperty" class="search-input"
-                                placeholder="Buscar propiedad...">
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Título</th>
-                                    <th>Ubicación</th>
-                                    <th>Propietario</th>
-                                    <th>Precio</th>
-                                    <th>Fecha</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="propertiesTable"></tbody>
-                        </table>
-                    </div>
-                    <div class="pagination" id="propertiesPagination"></div>
-                </div>
-
-                <!-- SECCIÓN MODERAR EVALUACIONES -->
-                <div id="reviews-section" class="admin-section">
-                    <div class="section-header">
-                        <h2><i class="bi bi-star"></i> Moderar Evaluaciones</h2>
-                        <div class="filter-group">
-                            <select id="reviewStatusFilter" class="filter-select">
-                                <option value="all">Todas</option>
-                                <option value="pending">Pendientes</option>
-                                <option value="approved">Aprobadas</option>
-                                <option value="rejected">Rechazadas</option>
-                            </select>
-                            <input type="text" id="searchReview" class="search-input"
-                                placeholder="Buscar por comentario...">
-                        </div>
-                    </div>
-
-                    <!-- Resumen de evaluaciones -->
-                    <div class="reviews-summary">
-                        <div class="summary-card">
-                            <i class="bi bi-star-fill"></i>
-                            <div>
-                                <h4 id="avgRating">0.0</h4>
-                                <p>Promedio General</p>
-                            </div>
-                        </div>
-                        <div class="summary-card">
-                            <i class="bi bi-chat-dots"></i>
-                            <div>
-                                <h4 id="totalReviewsCount">0</h4>
-                                <p>Total Evaluaciones</p>
-                            </div>
-                        </div>
-                        <div class="summary-card">
-                            <i class="bi bi-clock-history"></i>
-                            <div>
-                                <h4 id="pendingReviewsCount">0</h4>
-                                <p>Pendientes Moderación</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lista de evaluaciones -->
-                    <div class="reviews-list" id="reviewsList"></div>
-                    <div class="pagination" id="reviewsPagination"></div>
-                </div>
+        <!-- Contenido Principal -->
+        <div class="admin-content">
+          <!-- DASHBOARD -->
+          <div id="dashboard-section" class="admin-section active">
+            <div class="section-header">
+              <h2>
+                <i class="bi bi-speedometer2"></i> Panel de Administración
+              </h2>
+              <p>Bienvenido al panel de control</p>
             </div>
+
+            <!-- Tarjetas de estadísticas -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon" style="background: #e8f5e9">
+                  <i class="bi bi-people" style="color: #4caf50"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 id="statUsers">0</h3>
+                  <p>Usuarios Registrados</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon" style="background: #e3f2fd">
+                  <i class="bi bi-building" style="color: #2196f3"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 id="statProperties">0</h3>
+                  <p>Propiedades Publicadas</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon" style="background: #fff3e0">
+                  <i class="bi bi-star" style="color: #ff9800"></i>
+                </div>
+                <div class="stat-info">
+                  <h3 id="statReviews">0</h3>
+                  <p>Evaluaciones</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Propiedades recientes -->
+            <div class="recent-section">
+              <h3>Últimas Propiedades</h3>
+              <div class="table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Título</th>
+                      <th>Propietario</th>
+                      <th>Fecha</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentPropertiesTable"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Gráfico de Visualizaciones vs Interesados (DENTRO del dashboard y con margen superior) -->
+            <div class="chart-row" style="margin-top: 2rem">
+              <div class="chart-card">
+                <div class="chart-header">
+                  <h3>
+                    <i class="bi bi-graph-up"></i> Visualizaciones vs
+                    Interesados
+                  </h3>
+                  <p>Comparativa de rendimiento de propiedades</p>
+                </div>
+                <div class="chart-container-graph">
+                  <canvas
+                    id="propertiesChart"
+                    width="400"
+                    height="200"
+                  ></canvas>
+                </div>
+                <div class="chart-legend">
+                  <div class="legend-item">
+                    <span
+                      class="legend-color"
+                      style="background: #2c5a6e"
+                    ></span>
+                    <span>Visualizaciones</span>
+                  </div>
+                  <div class="legend-item">
+                    <span
+                      class="legend-color"
+                      style="background: #ff9800"
+                    ></span>
+                    <span>Interesados</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- SECCIÓN GESTIONAR USUARIOS -->
+          <div id="users-section" class="admin-section">
+            <div class="section-header">
+              <h2><i class="bi bi-people"></i> Gestionar Usuarios</h2>
+              <input
+                type="text"
+                id="searchUser"
+                class="search-input"
+                placeholder="Buscar usuario..."
+              >
+            </div>
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Miembro Desde</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="usersPagination"></div>
+          </div>
+
+          <!-- SECCIÓN GESTIONAR PROPIEDADES -->
+          <div id="properties-section" class="admin-section">
+            <div class="section-header">
+              <h2><i class="bi bi-building"></i> Gestionar Propiedades</h2>
+              <div class="filter-group">
+                <select id="propertyStatusFilter" class="filter-select">
+                  <option value="all">Todos</option>
+                  <option value="active">Activas</option>
+                  <option value="pending">Pendientes</option>
+                  <option value="rejected">Rechazadas</option>
+                </select>
+                <input
+                  type="text"
+                  id="propertyOwnerFilter"
+                  class="search-input"
+                  placeholder="Filtrar por propietario..."
+                >
+                <input
+                  type="text"
+                  id="propertyIdFilter"
+                  class="search-input"
+                  placeholder="Filtrar por ID..."
+                >
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Ubicación</th>
+                    <th>Propietario</th>
+                    <th>Precio</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="propertiesTable"></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="propertiesPagination"></div>
+          </div>
+
+          <!-- SECCIÓN MODERAR EVALUACIONES -->
+          <div id="reviews-section" class="admin-section">
+            <div class="section-header">
+              <h2><i class="bi bi-star"></i> Moderar Evaluaciones</h2>
+              <div class="filter-group">
+                <select id="reviewTypeFilter" class="filter-select">
+                  <option value="all">Todas</option>
+                  <option value="tenant">Arrendatario</option>
+                  <option value="landlord">Arrendador</option>
+                  <option value="property">Propiedad</option>
+                </select>
+                <input
+                  type="text"
+                  id="searchReview"
+                  class="search-input"
+                  placeholder="Buscar por comentario..."
+                >
+              </div>
+            </div>
+
+            <!-- Resumen de evaluaciones -->
+            <div class="reviews-summary">
+              <div class="summary-card">
+                <i class="bi bi-star-fill"></i>
+                <div>
+                  <h4 id="avgRating">0.0</h4>
+                  <p>Promedio General</p>
+                </div>
+              </div>
+              <div class="summary-card">
+                <i class="bi bi-chat-dots"></i>
+                <div>
+                  <h4 id="totalReviewsCount">0</h4>
+                  <p>Total Evaluaciones</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lista de evaluaciones -->
+            <div class="reviews-list" id="reviewsList"></div>
+            <div class="pagination" id="reviewsPagination"></div>
+          </div>
         </div>
+      </div>
     </main>
 
     <!-- FOOTER -->
@@ -252,60 +291,70 @@
 
     <!-- MODAL VER/EDITAR USUARIO -->
     <div class="modal fade" id="userModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detalles del Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="userModalBody"></div>
-            </div>
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detalles del Usuario</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+          </div>
+          <div class="modal-body" id="userModalBody"></div>
         </div>
+      </div>
     </div>
 
     <!-- MODAL VER PROPIEDAD -->
     <div class="modal fade" id="propertyModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detalles de la Propiedad</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="propertyModalBody"></div>
-            </div>
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detalles de la Propiedad</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+          </div>
+          <div class="modal-body" id="propertyModalBody"></div>
         </div>
+      </div>
     </div>
 
     <!-- MODAL VER EVALUACIÓN -->
     <div class="modal fade" id="reviewModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detalles de la Evaluación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="reviewModalBody"></div>
-                <div class="modal-footer">
-                    <button class="btn-approve-review" id="approveReviewBtn">Aprobar</button>
-                    <button class="btn-reject-review" id="rejectReviewBtn">Rechazar</button>
-                </div>
-            </div>
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detalles de la Evaluación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+          </div>
+          <div class="modal-body" id="reviewModalBody"></div>
+          <div class="modal-footer">
+            <button class="btn-approve-review" id="approveReviewBtn">
+              Aprobar
+            </button>
+            <button class="btn-reject-review" id="rejectReviewBtn">
+              Rechazar
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- TOAST -->
     <div class="toast-custom" id="adminToast">
-        <div class="toast-header">
-            <i class="bi bi-check-circle-fill"></i>
-            <strong>Éxito</strong>
-        </div>
-        <div class="toast-body" id="toastMessage"></div>
+      <div class="toast-header">
+        <i class="bi bi-check-circle-fill"></i>
+        <strong>Éxito</strong>
+      </div>
+      <div class="toast-body" id="toastMessage"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    ></script>
     <script src="js/headerFooter.js?v=profile-backend-2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="js/admin.js?v=users-no-phone-1"></script>
-</body>
-
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+    ></script>
+    <script src="js/admin.js?v=admin-filter-fields-1"></script>
+  </body>
 </html>
