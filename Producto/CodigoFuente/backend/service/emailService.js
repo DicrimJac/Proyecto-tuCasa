@@ -85,27 +85,54 @@ export class EmailService {
   }
 
   async sendRentalApprovedReviewLinks({ ownerEmail, tenantEmail, tenantReviewUrl, landlordReviewUrl }) {
-    const results = await Promise.allSettled([
-      this.sendReviewLink(ownerEmail, {
+    const emails = [
+      {
+        role: "owner",
+        to: ownerEmail,
+        payload: {
         subject: "Evalua a tu arrendatario - Tu Casa",
         title: "Solicitud de arriendo aprobada",
         message: "Ya puedes evaluar al arrendatario asociado a esta solicitud.",
         url: tenantReviewUrl,
-      }),
-      this.sendReviewLink(tenantEmail, {
+        },
+      },
+      {
+        role: "tenant",
+        to: tenantEmail,
+        payload: {
         subject: "Evalua a tu arrendador - Tu Casa",
         title: "Tu solicitud fue aprobada",
         message: "Ya puedes evaluar al arrendador de la propiedad.",
         url: landlordReviewUrl,
-      }),
-    ]);
+        },
+      },
+    ];
 
-    results.forEach((result) => {
+    const results = await Promise.allSettled(
+      emails.map((email) => this.sendReviewLink(email.to, email.payload)),
+    );
+
+    return results.map((result, index) => {
+      const email = emails[index];
       if (result.status === "rejected") {
-        console.error("Error enviando correo de resena:", result.reason);
+        console.error(`Error enviando correo de resena a ${email.role} (${email.to || "sin correo"}):`, result.reason);
+        return {
+          role: email.role,
+          to: email.to || null,
+          success: false,
+          error: result.reason?.message || String(result.reason),
+        };
       }
-    });
 
-    return results;
+      if (!result.value?.success) {
+        console.warn(`Correo de resena no enviado a ${email.role}:`, result.value);
+      }
+
+      return {
+        role: email.role,
+        to: email.to || null,
+        ...result.value,
+      };
+    });
   }
 }

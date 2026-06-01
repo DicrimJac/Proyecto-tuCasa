@@ -138,6 +138,10 @@ export class RequestService {
         return String(user.mail || user.email || user.correo || "").trim().toLowerCase();
     }
 
+    getRequestEmail(request = {}) {
+        return String(this.getMessageValue(request.message, "Correo") || "").trim().toLowerCase();
+    }
+
     buildReviewUrl(baseUrl, pathname, params = {}) {
         const url = new URL(pathname, baseUrl);
         Object.entries(params).forEach(([key, value]) => {
@@ -162,16 +166,24 @@ export class RequestService {
 
         const updatedRequest = await this.repository.updateStatus(id, statusPayload);
         const property = properties.find((item) => String(item.id_propi || item.id) === String(updatedRequest.id_propi)) || null;
+        let reviewEmailDelivery = [];
 
         if (statusPayload.status_desc === "Aprobada" && baseUrl) {
             try {
-                const [ownerUser, tenantUser] = await Promise.all([
-                    this.userRepository.findById(ownerId),
-                    this.userRepository.findById(updatedRequest.id_usuario),
-                ]);
-                await this.emailService.sendRentalApprovedReviewLinks({
-                    ownerEmail: this.getUserEmail(ownerUser),
-                    tenantEmail: this.getUserEmail(tenantUser),
+                const ownerUser = await this.userRepository.findById(ownerId);
+                let tenantUser = {};
+                try {
+                    tenantUser = await this.userRepository.findById(updatedRequest.id_usuario);
+                } catch (error) {
+                    console.error(`No se pudo resolver usuario arrendatario ${updatedRequest.id_usuario}:`, error);
+                }
+
+                const ownerEmail = this.getUserEmail(ownerUser);
+                const tenantEmail = this.getUserEmail(tenantUser) || this.getRequestEmail(updatedRequest);
+
+                reviewEmailDelivery = await this.emailService.sendRentalApprovedReviewLinks({
+                    ownerEmail,
+                    tenantEmail,
                     tenantReviewUrl: this.buildReviewUrl(baseUrl, "/tenantReview.html", {
                         id_usuario: updatedRequest.id_usuario,
                         id_request: updatedRequest.id_request,
@@ -183,12 +195,14 @@ export class RequestService {
                 });
             } catch (error) {
                 console.error("No se pudieron enviar los correos de resena:", error);
+                reviewEmailDelivery = [{ success: false, error: error.message }];
             }
         }
 
         return {
             ...updatedRequest,
             propiedad: property,
+            reviewEmailDelivery,
         };
     }
 

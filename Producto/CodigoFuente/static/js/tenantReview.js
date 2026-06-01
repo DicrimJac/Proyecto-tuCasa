@@ -130,7 +130,7 @@ function renderReviews() {
         reviewCard.classList.add("review-card");
         reviewCard.innerHTML = `
             <div class="review-header">
-                <div class="review-user">${escapeHtml(getUserDisplayName(review.usuario))}</div>
+                <div class="review-user">Arrendatario evaluado: ${escapeHtml(getUserDisplayName(review.usuario))}</div>
                 <div class="review-date">${formatDate(review.date_review)}</div>
             </div>
             <div class="review-stars">${generateStars(review.total_rank)}</div>
