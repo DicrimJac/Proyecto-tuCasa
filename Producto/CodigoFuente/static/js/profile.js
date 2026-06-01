@@ -1,559 +1,523 @@
 // ===================== UTILIDADES =====================
 
 function getStoredJson(key) {
-    try {
-        const value = localStorage.getItem(key);
-        return value ? JSON.parse(value) : null;
-    } catch (error) {
-        return null;
-    }
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : null;
+  } catch (error) {
+    return null;
+  }
 }
 
 function getCurrentUser() {
-    return (
-        getStoredJson("userData") ||
-        getStoredJson("userProfile") ||
-        null
-    );
+  return (
+    getStoredJson("userData") ||
+    getStoredJson("userProfile") ||
+    null
+  );
 }
 
 function setText(id, value) {
-    const el = document.getElementById(id);
+  const el = document.getElementById(id);
 
-    if (el) {
-        el.textContent = value;
-    }
+  if (el) {
+    el.textContent = value;
+  }
 }
 
 function setMemberSince(year) {
-    const badge = document.getElementById("memberSinceBadge");
+  const badge = document.getElementById("memberSinceBadge");
 
-    if (badge) {
-        badge.innerHTML = `<i class="bi bi-calendar-check me-1"></i> Miembro desde ${year}`;
-    }
+  if (badge) {
+    badge.innerHTML =
+      `<i class="bi bi-calendar-check me-1"></i> Miembro desde ${year}`;
+  }
 }
 
 function buildFullName(user) {
+  if (!user) return "Usuario";
 
-    if (!user) return "Usuario";
+  const names = [
+    user.first_name,
+    user.second_name,
+    user.first_last_name,
+    user.second_last_name,
+  ].filter(Boolean);
 
-    const names = [
-        user.first_name,
-        user.second_name,
-        user.first_last_name,
-        user.second_last_name
-    ].filter(Boolean);
+  if (names.length > 0) {
+    return names.join(" ");
+  }
 
-    if (names.length > 0) {
-        return names.join(" ");
-    }
-
-    return (
-        user.fullName ||
-        user.name ||
-        user.nombre ||
-        "Usuario"
-    );
+  return (
+    user.fullName ||
+    user.name ||
+    user.nombre ||
+    "Usuario"
+  );
 }
 
 function getEmail(user) {
-
-    return (
-        user.email ||
-        user.mail ||
-        "Sin correo"
-    );
+  return (
+    user.email ||
+    user.mail ||
+    "Sin correo"
+  );
 }
 
 function formatPhone(user) {
-
-    return (
-        user.phone ||
-        user.fono ||
-        user.telefono ||
-        "No registrado"
-    );
+  return (
+    user.phone ||
+    user.fono ||
+    user.telefono ||
+    "No registrado"
+  );
 }
 
 function formatBirthdate(user) {
-
-    return (
-        user.birthdate ||
-        user.date_birth ||
-        "No registrada"
-    );
+  return (
+    user.birthdate ||
+    user.date_birth ||
+    "No registrada"
+  );
 }
 
 function getUserIdentifier(user) {
-    return user?.mail || user?.email || localStorage.getItem("userEmail") || "";
+  return user?.mail || user?.email || localStorage.getItem("userEmail") || "";
 }
 
 function splitFullName(fullName) {
-    const parts = String(fullName || "").trim().split(/\s+/).filter(Boolean);
+  const parts = String(fullName || "").trim().split(/\s+/).filter(Boolean);
 
-    return {
-        first_name: parts[0] || "",
-        second_name: parts.length > 3 ? parts[1] : "",
-        first_last_name: parts.length > 1 ? parts[parts.length - 2] : "",
-        second_last_name: parts.length > 2 ? parts[parts.length - 1] : "",
-    };
+  return {
+    first_name: parts[0] || "",
+    second_name: parts.length > 3 ? parts[1] : "",
+    first_last_name: parts.length > 1 ? parts[parts.length - 2] : "",
+    second_last_name: parts.length > 2 ? parts[parts.length - 1] : "",
+  };
 }
 
 function normalizeDateForInput(value) {
-    if (!value) return "";
-    const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+  if (!value) return "";
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) return `${match[1]}-${match[2]}-${match[3]}`;
 
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return "";
-    return parsed.toISOString().split("T")[0];
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toISOString().split("T")[0];
 }
 
 function persistUserSession(user) {
-    const currentUser = getCurrentUser() || {};
-    const mergedUser = { ...currentUser, ...user };
+  const currentUser = getCurrentUser() || {};
+  const mergedUser = { ...currentUser, ...user };
 
-    localStorage.setItem("userData", JSON.stringify(mergedUser));
-    localStorage.setItem("userProfile", JSON.stringify(mergedUser));
-    localStorage.setItem("userEmail", getEmail(mergedUser));
-    localStorage.setItem("userName", mergedUser.first_name || buildFullName(mergedUser));
+  localStorage.setItem("userData", JSON.stringify(mergedUser));
+  localStorage.setItem("userProfile", JSON.stringify(mergedUser));
+  localStorage.setItem("userEmail", getEmail(mergedUser));
+  localStorage.setItem(
+    "userName",
+    mergedUser.first_name || buildFullName(mergedUser),
+  );
 
-    return mergedUser;
+  return mergedUser;
 }
 
 function getRegisterYear(user) {
+  const registerDate = user?.date_register ||
+    user?.dateRegister ||
+    user?.created_at ||
+    user?.createdAt ||
+    null;
 
-    const registerDate =
-        user?.date_register ||
-        user?.dateRegister ||
-        user?.created_at ||
-        user?.createdAt ||
-        null;
+  if (!registerDate) return new Date().getFullYear();
 
-    if (!registerDate) return new Date().getFullYear();
+  const parsedDate = new Date(registerDate);
+  const year = parsedDate.getFullYear();
 
-    const parsedDate = new Date(registerDate);
-    const year = parsedDate.getFullYear();
-
-    return Number.isNaN(year) ? new Date().getFullYear() : year;
+  return Number.isNaN(year) ? new Date().getFullYear() : year;
 }
 
 function avatarUrl(name, avatar) {
+  if (avatar) return avatar;
 
-    if (avatar) return avatar;
-
-    return `https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=120&bold=true&name=${encodeURIComponent(name)}`;
+  return `https://ui-avatars.com/api/?background=2C5A6E&color=fff&rounded=true&size=120&bold=true&name=${
+    encodeURIComponent(name)
+  }`;
 }
 
 // ===================== CARGAR PERFIL =====================
 
 function updateProfileDisplay(user) {
+  if (!user) return;
 
-    if (!user) return;
+  const fullName = buildFullName(user);
+  const email = getEmail(user);
+  const phone = formatPhone(user);
+  const birthdate = formatBirthdate(user);
+  const registerYear = getRegisterYear(user);
 
-    const fullName = buildFullName(user);
-    const email = getEmail(user);
-    const phone = formatPhone(user);
-    const birthdate = formatBirthdate(user);
-    const registerYear = getRegisterYear(user);
+  // Header / Offcanvas
+  setText("userNameDisplay", fullName);
+  setText("userEmailDisplay", email);
 
-    // Header / Offcanvas
-    setText("userNameDisplay", fullName);
-    setText("userEmailDisplay", email);
+  // Página profile.html
+  setText("fullName", fullName);
+  setText("email", email);
+  setText("phone", phone);
+  setText("birthdate", birthdate);
+  setMemberSince(registerYear);
 
-    // Página profile.html
-    setText("fullName", fullName);
-    setText("email", email);
-    setText("phone", phone);
-    setText("birthdate", birthdate);
-    setMemberSince(registerYear);
+  const avatar = avatarUrl(fullName, user.avatar);
 
-    const avatar = avatarUrl(fullName, user.avatar);
+  const avatarImg = document.getElementById("avatarImg");
+  const avatarPreview = document.getElementById("avatarPreview");
 
-    const avatarImg = document.getElementById("avatarImg");
-    const avatarPreview = document.getElementById("avatarPreview");
-
-    if (avatarImg) avatarImg.src = avatar;
-    if (avatarPreview) avatarPreview.src = avatar;
+  if (avatarImg) avatarImg.src = avatar;
+  if (avatarPreview) avatarPreview.src = avatar;
 }
 
 function loadUserData() {
+  const user = getCurrentUser();
 
-    const user = getCurrentUser();
+  if (!user) {
+    console.warn("No hay usuario en localStorage");
+    return;
+  }
 
-    if (!user) {
-        console.warn("No hay usuario en localStorage");
-        return;
-    }
-
-    updateProfileDisplay(user);
+  updateProfileDisplay(user);
 }
 
 // ===================== NAVEGACIÓN =====================
 
 function initNavigation() {
+  const navLinks = document.querySelectorAll(".nav-link[data-section]");
 
-    const navLinks =
-        document.querySelectorAll(".nav-link[data-section]");
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
 
-    navLinks.forEach(link => {
+      const sectionId = link.dataset.section;
 
-        link.addEventListener("click", (e) => {
+      navLinks.forEach((nav) => {
+        nav.classList.remove("active");
+      });
 
-            e.preventDefault();
+      link.classList.add("active");
 
-            const sectionId = link.dataset.section;
+      switch (sectionId) {
+        case "dashboard":
+          window.location.href = "dashboardOwner.html";
+          break;
 
-            navLinks.forEach(nav => {
-                nav.classList.remove("active");
-            });
+        case "properties":
+          window.location.href = "dashboardTenant.html";
+          break;
 
-            link.classList.add("active");
+        case "favorites":
+          window.location.href = "favorites.html";
+          break;
 
-            switch (sectionId) {
-
-                case "dashboard":
-                    window.location.href =
-                        "dashboardOwner.html";
-                    break;
-
-                case "properties":
-                    window.location.href =
-                        "dashboardTenant.html";
-                    break;
-
-                case "favorites":
-                    window.location.href =
-                        "favorites.html";
-                    break;
-
-                case "review":
-                    window.location.href =
-                        "tenantReview.html";
-                    break;
-            }
-        });
+        case "review":
+          window.location.href = "userReviews.html";
+          break;
+      }
     });
+  });
 }
 
 // ===================== EDITAR PERFIL =====================
 
-const editProfileForm =
-    document.getElementById("editProfileForm");
+const editProfileForm = document.getElementById("editProfileForm");
 
 if (editProfileForm) {
+  editProfileForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    editProfileForm.addEventListener("submit", async (e) => {
+    const currentUser = getCurrentUser() || {};
+    const currentEmail = getUserIdentifier(currentUser).trim().toLowerCase();
+    const fullName = document.getElementById("editFullName").value.trim();
+    const email = document.getElementById("editEmail").value.trim()
+      .toLowerCase();
+    const phone = document.getElementById("editPhone").value.trim();
+    const birthdate = document.getElementById("editBirthdate").value;
 
-        e.preventDefault();
+    if (!currentEmail) {
+      alert("No se pudo identificar el correo actual del usuario");
+      return;
+    }
 
-        const currentUser =
-            getCurrentUser() || {};
-        const currentEmail =
-            getUserIdentifier(currentUser).trim().toLowerCase();
-        const fullName =
-            document.getElementById("editFullName").value.trim();
-        const email =
-            document.getElementById("editEmail").value.trim().toLowerCase();
-        const phone =
-            document.getElementById("editPhone").value.trim();
-        const birthdate =
-            document.getElementById("editBirthdate").value;
+    if (!fullName || !email) {
+      alert("Nombre y correo son obligatorios");
+      return;
+    }
 
-        if (!currentEmail) {
-            alert("No se pudo identificar el correo actual del usuario");
-            return;
-        }
+    const payload = {
+      ...splitFullName(fullName),
+      mail: email,
+      fono: phone,
+      date_birth: birthdate || null,
+    };
 
-        if (!fullName || !email) {
-            alert("Nombre y correo son obligatorios");
-            return;
-        }
+    const submitBtn = editProfileForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn?.innerHTML;
 
-        const payload = {
-            ...splitFullName(fullName),
-            mail: email,
-            fono: phone,
-            date_birth: birthdate || null,
-        };
+    if (submitBtn) {
+      submitBtn.innerHTML = "Guardando...";
+      submitBtn.disabled = true;
+    }
 
-        const submitBtn = editProfileForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn?.innerHTML;
+    try {
+      const response = await fetch(
+        `/api/users/${encodeURIComponent(currentEmail)}`,
+        {
+          method: "PUT",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
 
-        if (submitBtn) {
-            submitBtn.innerHTML = "Guardando...";
-            submitBtn.disabled = true;
-        }
+      const result = await response.json();
 
-        try {
-            const response = await fetch(`/api/users/${encodeURIComponent(currentEmail)}`, {
-                method: "PUT",
-                credentials: "same-origin",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result?.error || result?.message || "No se pudo actualizar el perfil",
+        );
+      }
 
-            const result = await response.json();
+      const updatedUser = persistUserSession({
+        ...result.data,
+        avatar: document.getElementById("avatarImg")?.src,
+      });
 
-            if (!response.ok || !result.success) {
-                throw new Error(result?.error || result?.message || "No se pudo actualizar el perfil");
-            }
+      updateProfileDisplay(updatedUser);
+      if (typeof updateHeaderSessionState === "function") {
+        updateHeaderSessionState();
+      }
 
-            const updatedUser = persistUserSession({
-                ...result.data,
-                avatar: document.getElementById("avatarImg")?.src,
-            });
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("editProfileModal"),
+      );
 
-            updateProfileDisplay(updatedUser);
-            if (typeof updateHeaderSessionState === "function") {
-                updateHeaderSessionState();
-            }
+      if (modal) {
+        modal.hide();
+      }
 
-            const modal = bootstrap.Modal.getInstance(
-                document.getElementById("editProfileModal")
-            );
-
-            if (modal) {
-                modal.hide();
-            }
-
-            alert("Perfil actualizado");
-        } catch (error) {
-            console.error("Error actualizando perfil:", error);
-            alert(error.message || "No se pudo actualizar el perfil");
-        } finally {
-            if (submitBtn) {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        }
-    });
+      alert("Perfil actualizado");
+    } catch (error) {
+      console.error("Error actualizando perfil:", error);
+      alert(error.message || "No se pudo actualizar el perfil");
+    } finally {
+      if (submitBtn) {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+  });
 }
 
 // ===================== PRECARGAR MODAL =====================
 
-const editProfileModal =
-    document.getElementById("editProfileModal");
+const editProfileModal = document.getElementById("editProfileModal");
 
 if (editProfileModal) {
+  editProfileModal.addEventListener(
+    "show.bs.modal",
+    () => {
+      const user = getCurrentUser();
 
-    editProfileModal.addEventListener(
-        "show.bs.modal",
-        () => {
+      if (!user) return;
 
-            const user = getCurrentUser();
+      const fullName = buildFullName(user);
 
-            if (!user) return;
+      document.getElementById("editFullName").value = fullName;
 
-            const fullName =
-                buildFullName(user);
+      document.getElementById("editEmail").value = getEmail(user);
 
-            document.getElementById("editFullName").value =
-                fullName;
+      document.getElementById("editPhone").value =
+        formatPhone(user) === "No registrado" ? "" : formatPhone(user);
 
-            document.getElementById("editEmail").value =
-                getEmail(user);
-
-            document.getElementById("editPhone").value =
-                formatPhone(user) === "No registrado" ? "" : formatPhone(user);
-
-            document.getElementById("editBirthdate").value =
-                normalizeDateForInput(user.date_birth || user.birthdate);
-        }
-    );
+      document.getElementById("editBirthdate").value = normalizeDateForInput(
+        user.date_birth || user.birthdate,
+      );
+    },
+  );
 }
 
 // ===================== AVATAR =====================
 
-const avatarUpload =
-    document.getElementById("avatarUpload");
+const avatarUpload = document.getElementById("avatarUpload");
 
 if (avatarUpload) {
+  avatarUpload.addEventListener("change", (e) => {
+    const file = e.target.files[0];
 
-    avatarUpload.addEventListener("change", (e) => {
+    if (!file) return;
 
-        const file = e.target.files[0];
+    const reader = new FileReader();
 
-        if (!file) return;
+    reader.onload = function (event) {
+      const image = event.target.result;
 
-        const reader = new FileReader();
+      const avatarPreview = document.getElementById("avatarPreview");
 
-        reader.onload = function (event) {
+      if (avatarPreview) {
+        avatarPreview.src = image;
+      }
+    };
 
-            const image = event.target.result;
-
-            const avatarPreview =
-                document.getElementById("avatarPreview");
-
-            if (avatarPreview) {
-                avatarPreview.src = image;
-            }
-        };
-
-        reader.readAsDataURL(file);
-    });
+    reader.readAsDataURL(file);
+  });
 }
 
-const saveAvatar =
-    document.getElementById("saveAvatar");
+const saveAvatar = document.getElementById("saveAvatar");
 
 if (saveAvatar) {
+  saveAvatar.addEventListener("click", () => {
+    const avatarPreview = document.getElementById("avatarPreview");
 
-    saveAvatar.addEventListener("click", () => {
+    if (!avatarPreview) return;
 
-        const avatarPreview =
-            document.getElementById("avatarPreview");
+    const image = avatarPreview.src;
 
-        if (!avatarPreview) return;
+    const avatarImg = document.getElementById("avatarImg");
 
-        const image = avatarPreview.src;
+    if (avatarImg) {
+      avatarImg.src = image;
+    }
 
-        const avatarImg =
-            document.getElementById("avatarImg");
+    const user = getCurrentUser() || {};
 
-        if (avatarImg) {
-            avatarImg.src = image;
-        }
+    user.avatar = image;
 
-        const user =
-            getCurrentUser() || {};
+    localStorage.setItem(
+      "userProfile",
+      JSON.stringify(user),
+    );
 
-        user.avatar = image;
+    const modal = bootstrap.Modal.getInstance(
+      document.getElementById("avatarModal"),
+    );
 
-        localStorage.setItem(
-            "userProfile",
-            JSON.stringify(user)
-        );
+    if (modal) {
+      modal.hide();
+    }
 
-        const modal = bootstrap.Modal.getInstance(
-            document.getElementById("avatarModal")
-        );
-
-        if (modal) {
-            modal.hide();
-        }
-
-        alert("Avatar actualizado");
-    });
+    alert("Avatar actualizado");
+  });
 }
 
 // ===================== CONTRASEÑA =====================
 
-const passwordChangeForm =
-    document.getElementById("passwordChangeForm");
+const passwordChangeForm = document.getElementById("passwordChangeForm");
 
 if (passwordChangeForm) {
+  passwordChangeForm.addEventListener(
+    "submit",
+    async (e) => {
+      e.preventDefault();
 
-    passwordChangeForm.addEventListener(
-        "submit",
-        async (e) => {
+      const currentUser = getCurrentUser() || {};
+      const currentEmail = getUserIdentifier(currentUser).trim().toLowerCase();
+      const currentPassword = document.getElementById("currentPassword").value;
+      const newPass = document.getElementById("newPass").value;
 
-            e.preventDefault();
+      const confirmPass = document.getElementById("confirmNewPass").value;
 
-            const currentUser =
-                getCurrentUser() || {};
-            const currentEmail =
-                getUserIdentifier(currentUser).trim().toLowerCase();
-            const currentPassword =
-                document.getElementById("currentPassword").value;
-            const newPass =
-                document.getElementById("newPass").value;
+      if (!currentEmail) {
+        alert("No se pudo identificar el correo actual del usuario");
+        return;
+      }
 
-            const confirmPass =
-                document.getElementById("confirmNewPass").value;
+      if (!currentPassword) {
+        alert("Ingresa tu contraseña actual");
+        return;
+      }
 
-            if (!currentEmail) {
-                alert("No se pudo identificar el correo actual del usuario");
-                return;
-            }
+      if (newPass.length < 6) {
+        alert("La nueva contraseña debe tener al menos 6 caracteres");
+        return;
+      }
 
-            if (!currentPassword) {
-                alert("Ingresa tu contraseña actual");
-                return;
-            }
+      if (newPass !== confirmPass) {
+        alert("Las contraseñas no coinciden");
+        return;
+      }
 
-            if (newPass.length < 6) {
-                alert("La nueva contraseña debe tener al menos 6 caracteres");
-                return;
-            }
+      const submitBtn = passwordChangeForm.querySelector(
+        'button[type="submit"]',
+      );
+      const originalText = submitBtn?.innerHTML;
 
-            if (newPass !== confirmPass) {
+      if (submitBtn) {
+        submitBtn.innerHTML = "Actualizando...";
+        submitBtn.disabled = true;
+      }
 
-                alert("Las contraseñas no coinciden");
-                return;
-            }
+      try {
+        const response = await fetch(
+          `/api/users/${encodeURIComponent(currentEmail)}/password`,
+          {
+            method: "PUT",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              currentPassword,
+              newPassword: newPass,
+            }),
+          },
+        );
 
-            const submitBtn = passwordChangeForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn?.innerHTML;
+        const result = await response.json();
 
-            if (submitBtn) {
-                submitBtn.innerHTML = "Actualizando...";
-                submitBtn.disabled = true;
-            }
-
-            try {
-                const response = await fetch(`/api/users/${encodeURIComponent(currentEmail)}/password`, {
-                    method: "PUT",
-                    credentials: "same-origin",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        currentPassword,
-                        newPassword: newPass,
-                    }),
-                });
-
-                const result = await response.json();
-
-                if (!response.ok || !result.success) {
-                    throw new Error(result?.error || result?.message || "No se pudo actualizar la contraseña");
-                }
-
-                alert("Contraseña actualizada");
-
-                passwordChangeForm.reset();
-
-                const modal =
-                    bootstrap.Modal.getInstance(
-                        document.getElementById(
-                            "passwordModal"
-                        )
-                    );
-
-                if (modal) {
-                    modal.hide();
-                }
-            } catch (error) {
-                console.error("Error actualizando contraseña:", error);
-                alert(error.message || "No se pudo actualizar la contraseña");
-            } finally {
-                if (submitBtn) {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }
-            }
+        if (!response.ok || !result.success) {
+          throw new Error(
+            result?.error || result?.message ||
+              "No se pudo actualizar la contraseña",
+          );
         }
-    );
+
+        alert("Contraseña actualizada");
+
+        passwordChangeForm.reset();
+
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById(
+            "passwordModal",
+          ),
+        );
+
+        if (modal) {
+          modal.hide();
+        }
+      } catch (error) {
+        console.error("Error actualizando contraseña:", error);
+        alert(error.message || "No se pudo actualizar la contraseña");
+      } finally {
+        if (submitBtn) {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+        }
+      }
+    },
+  );
 }
 
 // ===================== LOGOUT =====================
 
-const logoutBtn =
-    document.getElementById("logoutBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
 if (logoutBtn) {
-
-    logoutBtn.addEventListener("click", () => {
-        window.location.href = "logout.html";
-    });
+  logoutBtn.addEventListener("click", () => {
+    window.location.href = "logout.html";
+  });
 }
 
 // ===================== INIT =====================
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadUserData();
 
-    loadUserData();
-
-    initNavigation();
+  initNavigation();
 });
 // function initNavigation() {
 //     const navLinks = document.querySelectorAll('.nav-link[data-section]');
@@ -1020,7 +984,6 @@ document.addEventListener("DOMContentLoaded", () => {
 //     showToast('Funcionalidad de edición próximamente');
 // };
 
-
 // // ===================== NAVEGACIÓN ENTRE SECCIONES =====================
 // function initNavigation() {
 //     const navLinks = document.querySelectorAll('.nav-link[data-section]');
@@ -1060,7 +1023,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //                     break;
 //                 case 'Arri':
 //                     window.location.href = "dashboardTenant.html";
-//                     break; 
+//                     break;
 //                 case 'review':
 //                     window.location.href = "tenantreview.html";
 //                     break;
