@@ -39,9 +39,13 @@
 
 /* ========== IMAGEN ========== */
 .imagen-box {
+  align-self: start;
   background: #f8f9fa;
   border-radius: 1rem;
+  height: fit-content;
   overflow: hidden;
+  position: sticky;
+  top: 100px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -54,6 +58,84 @@
 
 .imagen-box img:hover {
   transform: scale(1.02);
+}
+
+.imagen-box .carousel-control {
+  align-items: center;
+  background: rgba(31, 59, 76, 0.82);
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  height: 42px;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+  transition: background 0.2s ease, transform 0.2s ease;
+  width: 42px;
+  z-index: 2;
+}
+
+.imagen-box .carousel-control[hidden] {
+  display: none;
+}
+
+.imagen-box .carousel-control:hover {
+  background: #1f3b4c;
+  transform: translateY(-50%) scale(1.06);
+}
+
+.imagen-box .carousel-control-prev {
+  left: 1rem;
+  right: auto;
+}
+
+.imagen-box .carousel-control-next {
+  left: auto;
+  right: 1rem;
+}
+
+.carousel-counter {
+  background: rgba(31, 59, 76, 0.82);
+  border-radius: 2rem;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  z-index: 2;
+}
+
+.carousel-dots {
+  bottom: 0.8rem;
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.carousel-dot {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(31, 59, 76, 0.35);
+  border-radius: 50%;
+  cursor: pointer;
+  height: 9px;
+  padding: 0;
+  transition: background 0.2s ease, transform 0.2s ease;
+  width: 9px;
+}
+
+.carousel-dot.active {
+  background: white;
+  transform: scale(1.35);
 }
 
 /* ========== INFORMACIÓN ========== */
@@ -96,6 +178,54 @@
 .ubicacion i {
   color: #2c5a6e;
   font-size: 1rem;
+}
+
+/* Calificación general del propietario */
+.owner-rating-card {
+  align-items: center;
+  background: #f8fbfc;
+  border: 1px solid #dbe8ed;
+  border-radius: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+}
+
+.owner-rating-heading {
+  align-items: center;
+  color: #1f3b4c;
+  display: flex;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.owner-rating-heading i {
+  color: #2c5a6e;
+}
+
+.owner-rating-summary {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.owner-rating-summary strong {
+  color: #1f3b4c;
+  font-size: 1.15rem;
+}
+
+.owner-rating-stars {
+  color: #d99a18;
+  letter-spacing: 1px;
+}
+
+.owner-rating-summary small {
+  color: #6c7f8b;
+  font-size: 0.75rem;
 }
 
 /* ========== GRID DE DATOS ========== */
@@ -494,6 +624,10 @@
     gap: 1.5rem;
   }
 
+  .imagen-box {
+    position: static;
+  }
+
   .imagen-box img {
     height: 350px;
   }
@@ -519,6 +653,15 @@
 
   .precio {
     font-size: 1.5rem;
+  }
+
+  .owner-rating-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .owner-rating-summary {
+    justify-content: flex-start;
   }
 
   .datos-grid {

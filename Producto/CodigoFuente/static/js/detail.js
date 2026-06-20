@@ -422,10 +422,15 @@
 //     document.addEventListener("DOMContentLoaded", loadPropertyDetail);
 
 let property = null;
+let currentPropertyImageIndex = 0;
 const DEFAULT_PROPERTY_IMAGE = "assets/image/casa1.png";
 
 // Elementos DOM
 const propertyImage = document.getElementById("propertyImage");
+const propertyImagePrev = document.getElementById("propertyImagePrev");
+const propertyImageNext = document.getElementById("propertyImageNext");
+const propertyImageCounter = document.getElementById("propertyImageCounter");
+const propertyImageDots = document.getElementById("propertyImageDots");
 const propertyTitle = document.getElementById("propertyTitle");
 const propertyPrice = document.getElementById("propertyPrice");
 const propertyLocation = document.getElementById("propertyLocation");
@@ -463,6 +468,10 @@ const propertyAverageScore = document.getElementById("propertyAverageScore");
 const propertyAverageStars = document.getElementById("propertyAverageStars");
 const propertyReviewsCount = document.getElementById("propertyReviewsCount");
 const propertyReviewsList = document.getElementById("propertyReviewsList");
+const ownerRatingCard = document.getElementById("ownerRatingCard");
+const ownerAverageScore = document.getElementById("ownerAverageScore");
+const ownerAverageStars = document.getElementById("ownerAverageStars");
+const ownerReviewsCount = document.getElementById("ownerReviewsCount");
 
 const featureLabels = {
   h_store: { label: "Bodega", icon: "fa-box" },
@@ -575,6 +584,58 @@ function getReviewScore(review) {
   return Number.isFinite(score) ? score : 0;
 }
 
+function renderOwnerRating(reviews = []) {
+  if (!ownerRatingCard) return;
+
+  const validReviews = reviews.filter((review) => getReviewScore(review) > 0);
+  const totalReviews = validReviews.length;
+  const average = totalReviews
+    ? validReviews.reduce((sum, review) => sum + getReviewScore(review), 0) /
+      totalReviews
+    : 0;
+
+  if (ownerAverageScore) {
+    ownerAverageScore.textContent = totalReviews ? average.toFixed(1) : "—";
+  }
+  if (ownerAverageStars) {
+    ownerAverageStars.textContent = generateReviewStars(average);
+  }
+  if (ownerReviewsCount) {
+    ownerReviewsCount.textContent = totalReviews
+      ? `${totalReviews} evaluación${totalReviews === 1 ? "" : "es"}`
+      : "Sin evaluaciones";
+  }
+}
+
+async function loadOwnerRating(ownerId) {
+  if (!ownerId) {
+    renderOwnerRating([]);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `/api/landlord-reviews?id_usuario=${encodeURIComponent(ownerId)}`,
+      { credentials: "include" },
+    );
+    const result = await response.json();
+
+    if (!response.ok || !result?.success) {
+      throw new Error(
+        result?.message || result?.error ||
+          "No se pudo cargar la calificación del propietario",
+      );
+    }
+
+    renderOwnerRating(Array.isArray(result.data) ? result.data : []);
+  } catch (error) {
+    console.error("Error cargando calificación del propietario:", error);
+    if (ownerAverageScore) ownerAverageScore.textContent = "—";
+    if (ownerAverageStars) ownerAverageStars.textContent = "☆☆☆☆☆";
+    if (ownerReviewsCount) ownerReviewsCount.textContent = "No disponible";
+  }
+}
+
 function getPropertyLocation(rawProperty) {
   const address = rawProperty.direccion || rawProperty.address ||
     rawProperty.raw?.direccion || {};
@@ -629,6 +690,76 @@ function getPropertyImage(rawProperty, propertyId) {
     DEFAULT_PROPERTY_IMAGE;
 }
 
+function getPropertyImages(rawProperty, propertyId) {
+  const photos = rawProperty.fotos || rawProperty.photos ||
+    rawProperty.imagenes || rawProperty.raw?.fotos || [];
+  const imageUrls = photos
+    .map((photo) =>
+      typeof photo === "string"
+        ? photo
+        : photo?.url_foto || photo?.url || photo?.image || ""
+    )
+    .filter(Boolean);
+
+  if (imageUrls.length === 0) {
+    imageUrls.push(getPropertyImage(rawProperty, propertyId));
+  }
+
+  return [...new Set(imageUrls)];
+}
+
+function renderPropertyCarousel() {
+  if (!propertyImage || !property) return;
+
+  const images = property.images?.length
+    ? property.images
+    : [property.image || DEFAULT_PROPERTY_IMAGE];
+  currentPropertyImageIndex =
+    ((currentPropertyImageIndex % images.length) + images.length) %
+    images.length;
+  const hasMultipleImages = images.length > 1;
+
+  propertyImage.onerror = () => {
+    propertyImage.onerror = null;
+    propertyImage.src = DEFAULT_PROPERTY_IMAGE;
+  };
+  propertyImage.src = images[currentPropertyImageIndex];
+  propertyImage.alt = `${property.title}, foto ${
+    currentPropertyImageIndex + 1
+  } de ${images.length}`;
+
+  if (propertyImagePrev) propertyImagePrev.hidden = !hasMultipleImages;
+  if (propertyImageNext) propertyImageNext.hidden = !hasMultipleImages;
+  if (propertyImageCounter) {
+    propertyImageCounter.hidden = !hasMultipleImages;
+    propertyImageCounter.textContent = `${
+      currentPropertyImageIndex + 1
+    } / ${images.length}`;
+  }
+  if (propertyImageDots) {
+    propertyImageDots.innerHTML = hasMultipleImages
+      ? images.map((_, index) => `
+          <button
+            class="carousel-dot${
+        index === currentPropertyImageIndex ? " active" : ""
+      }"
+            type="button"
+            data-image-index="${index}"
+            aria-label="Ver foto ${index + 1}"
+            aria-current="${
+        index === currentPropertyImageIndex ? "true" : "false"
+      }"
+          ></button>
+        `).join("")
+      : "";
+  }
+}
+
+function changePropertyImage(step) {
+  currentPropertyImageIndex += step;
+  renderPropertyCarousel();
+}
+
 function isPropertyPublic(rawProperty) {
   const stateNumber = rawProperty?.state_nbr ?? rawProperty?.status_nbr ??
     rawProperty?.raw?.state_nbr;
@@ -673,6 +804,10 @@ function normalizeProperty(rawProperty) {
 
   return {
     id,
+    ownerId: rawProperty.id_usuario || rawProperty.id_user ||
+      rawProperty.user_id || rawProperty.owner_id ||
+      rawProperty.usuario?.id_usuario || rawProperty.usuario?.id ||
+      rawProperty.raw?.id_usuario || "",
     title: rawProperty.title || rawProperty.titulo || rawProperty.name ||
       rawProperty.type_desc || rawProperty.raw?.type_desc || "Propiedad",
     price: priceValue
@@ -703,6 +838,7 @@ function normalizeProperty(rawProperty) {
       .filter(([field]) => characteristic[field] === true)
       .map(([field, data]) => ({ field, ...data })),
     image: getPropertyImage(rawProperty, id),
+    images: getPropertyImages(rawProperty, id),
     raw: rawProperty,
   };
 }
@@ -1055,14 +1191,8 @@ function renderPropertyDetail() {
   console.log("Raw de propiedad:", property.raw);
 
   // Renderizar datos básicos...
-  if (propertyImage) {
-    propertyImage.onerror = async () => {
-      propertyImage.onerror = null;
-      const fallbackImage = await resolvePropertyImageFallback(property.id);
-      propertyImage.src = fallbackImage || DEFAULT_PROPERTY_IMAGE;
-    };
-    propertyImage.src = property.image || DEFAULT_PROPERTY_IMAGE;
-  }
+  currentPropertyImageIndex = 0;
+  renderPropertyCarousel();
   if (propertyTitle) propertyTitle.textContent = property.title;
   if (propertyPrice) propertyPrice.textContent = property.price;
   if (propertyLocation) propertyLocation.textContent = property.location;
@@ -1078,6 +1208,7 @@ function renderPropertyDetail() {
 
   renderPropertyFeatures();
   loadPropertyReviews(property.id);
+  loadOwnerRating(property.ownerId);
 
   // Pasar la propiedad completa (tiene el id)
   loadAIAnalysis(property);
@@ -1190,6 +1321,15 @@ function requestRent() {
 if (requestRentButton) {
   requestRentButton.addEventListener("click", requestRent);
 }
+
+propertyImagePrev?.addEventListener("click", () => changePropertyImage(-1));
+propertyImageNext?.addEventListener("click", () => changePropertyImage(1));
+propertyImageDots?.addEventListener("click", (event) => {
+  const dot = event.target.closest("[data-image-index]");
+  if (!dot) return;
+  currentPropertyImageIndex = Number(dot.dataset.imageIndex || 0);
+  renderPropertyCarousel();
+});
 
 // Iniciar
 document.addEventListener("DOMContentLoaded", loadPropertyDetail);
