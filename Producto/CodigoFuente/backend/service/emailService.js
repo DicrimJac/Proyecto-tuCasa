@@ -1,3 +1,28 @@
+function sanitizeLogError(error) {
+  const message = error instanceof Error
+    ? error.message
+    : String(error || "Error desconocido");
+
+  return message
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[EMAIL_REDACTED]")
+    .replace(/https?:\/\/[^\s"'<>]+/gi, "[URL_REDACTED]")
+    .replace(/\bBearer\s+[^\s"'<>]+/gi, "Bearer [TOKEN_REDACTED]")
+    .replace(
+      /\b(token|secret|password|authorization)\s*[:=]\s*[^\s,;]+/gi,
+      "$1=[REDACTED]",
+    );
+}
+
+function logEmailEvent(level, data) {
+  const logMethod = ["info", "warn", "error"].includes(level) ? level : "info";
+
+  console[logMethod](JSON.stringify({
+    timestamp: new Date().toISOString(),
+    service: "EmailService",
+    ...data,
+  }));
+}
+
 export class EmailService {
   constructor() {
     const defaultApiUrl = "http://chokitaapi.dev:3000/api/send";
@@ -19,18 +44,34 @@ export class EmailService {
     return Array.isArray(to) ? to.filter(Boolean) : [to].filter(Boolean);
   }
 
-  async sendEmail({ to, subject, html, attachments = [] }) {
+  async sendEmail({
+    to,
+    subject,
+    html,
+    attachments = [],
+    emailType = "generic",
+  }) {
+    const startedAt = Date.now();
     const recipients = this.normalizeRecipients(to);
     if (!recipients.length) {
+      logEmailEvent("warn", {
+        operation: "sendEmail",
+        emailType,
+        result: "skipped",
+        reason: "missing_recipient",
+      });
       return { success: false, skipped: true };
     }
 
     if (!this.enabled) {
-      console.log(`[DEV] Correo para ${recipients.join(", ")}: ${subject}`);
+      logEmailEvent("warn", {
+        operation: "sendEmail",
+        emailType,
+        result: "dev_mode",
+        recipientCount: recipients.length,
+      });
       return { success: true, devMode: true };
     }
-
-    console.log(`[EmailService] Enviando correo via ${this.apiUrl}`);
 
     let response;
     try {
@@ -49,27 +90,56 @@ export class EmailService {
         signal: AbortSignal.timeout(this.timeoutMs),
       });
     } catch (error) {
+      logEmailEvent("error", {
+        operation: "sendEmail",
+        emailType,
+        result: "connection_error",
+        error: sanitizeLogError(error),
+        durationMs: Date.now() - startedAt,
+      });
       if (error?.name === "TimeoutError" || error?.name === "AbortError") {
         throw new Error(
           `La API de correo no respondio en ${this.timeoutMs} ms`,
         );
       }
-      throw new Error(`No se pudo conectar con la API de correo: ${error.message}`);
+      throw new Error(
+        `No se pudo conectar con la API de correo: ${error.message}`,
+      );
     }
 
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
+      const providerError = result?.message || result?.error ||
+        "No se pudo enviar el correo";
+      logEmailEvent("error", {
+        operation: "sendEmail",
+        emailType,
+        result: "provider_error",
+        statusCode: response.status,
+        error: sanitizeLogError(providerError),
+        durationMs: Date.now() - startedAt,
+      });
       throw new Error(
-        result?.message || result?.error || "No se pudo enviar el correo",
+        providerError,
       );
     }
 
+    logEmailEvent("info", {
+      operation: "sendEmail",
+      emailType,
+      result: "success",
+      statusCode: response.status,
+      recipientCount: recipients.length,
+      attachmentCount: attachments.length,
+      durationMs: Date.now() - startedAt,
+    });
     return { success: true, data: result };
   }
 
   async sendPasswordResetCode(to, code) {
     return await this.sendEmail({
       to,
+      emailType: "password_reset",
       subject: "Codigo de recuperacion - Tu Casa",
       html: `
         <div style="font-family:Arial,sans-serif;color:#1F3B4C;line-height:1.5">
@@ -139,6 +209,12 @@ export class EmailService {
     baseUrl = "",
   }) {
     if (!to) {
+      logEmailEvent("warn", {
+        operation: "sendRentalRequestNotification",
+        emailType: "rental_request",
+        result: "skipped",
+        reason: "owner_without_email",
+      });
       return { success: false, skipped: true, reason: "owner_without_email" };
     }
 
@@ -198,6 +274,7 @@ export class EmailService {
 
     return this.sendEmail({
       to,
+      emailType: "rental_request",
       subject: `Nueva solicitud de arriendo para ${title} - Tu Casa`,
       html: `
         <div style="margin:0;background:#f3f6f7;padding:24px 10px;font-family:Arial,sans-serif;color:#1f3b4c;line-height:1.5">
@@ -332,6 +409,12 @@ export class EmailService {
 
   async sendReviewLink(to, { subject, title, message, url }) {
     if (!to || !url) {
+      logEmailEvent("warn", {
+        operation: "sendReviewLink",
+        emailType: "review_link",
+        result: "skipped",
+        reason: !to ? "missing_recipient" : "missing_url",
+      });
       return { success: false, skipped: true };
     }
 
@@ -341,6 +424,7 @@ export class EmailService {
 
     return await this.sendEmail({
       to,
+      emailType: "review_link",
       subject,
       html: `
         <div style="margin:0;background:#f3f6f7;padding:24px 10px;font-family:Arial,sans-serif;color:#1f3b4c;line-height:1.5">
@@ -407,12 +491,13 @@ export class EmailService {
     return results.map((result, index) => {
       const email = emails[index];
       if (result.status === "rejected") {
-        console.error(
-          `Error enviando correo de resena a ${email.role} (${
-            email.to || "sin correo"
-          }):`,
-          result.reason,
-        );
+        logEmailEvent("error", {
+          operation: "sendRentalApprovedReviewLinks",
+          emailType: "review_link",
+          role: email.role,
+          result: "failed",
+          error: sanitizeLogError(result.reason),
+        });
         return {
           role: email.role,
           to: email.to || null,
@@ -422,10 +507,15 @@ export class EmailService {
       }
 
       if (!result.value?.success) {
-        console.warn(
-          `Correo de resena no enviado a ${email.role}:`,
-          result.value,
-        );
+        logEmailEvent("warn", {
+          operation: "sendRentalApprovedReviewLinks",
+          emailType: "review_link",
+          role: email.role,
+          result: "skipped",
+          error: sanitizeLogError(
+            result.value?.error || result.value?.reason || "Envio omitido",
+          ),
+        });
       }
 
       return {
