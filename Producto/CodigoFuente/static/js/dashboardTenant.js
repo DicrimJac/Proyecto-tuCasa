@@ -191,11 +191,16 @@ function getMessageValue(message, label) {
 function normalizeApiRequest(request) {
   const property = request.propiedad || {};
   const propertyId = request.id_propi || property.id_propi || "";
+  const propertyOwner = property.usuario || property.user || property.owner ||
+    {};
+  const ownerId = property.id_usuario || property.id_user || property.user_id ||
+    property.owner_id || propertyOwner.id_usuario || propertyOwner.id || "";
   const startDate = getMessageValue(request.message, "Fecha de inicio deseada");
 
   return {
     id: request.id_request,
     propertyId,
+    ownerId,
     propertyTitle: property.title || property.titulo || property.name ||
       property.type_desc || "Propiedad",
     propertyLocation: getPropertyLocation(property),
@@ -299,14 +304,17 @@ async function loadTenantDashboardData() {
 
   userRequests = requests;
   userRentals = requests
-    .filter((request) => request.status === "aprobada")
+    .filter((request) =>
+      request.status === "aprobada" || request.status === "finalizada"
+    )
     .map((request) => ({
       id: request.id,
       propertyId: request.propertyId,
+      ownerId: request.ownerId,
       propertyTitle: request.propertyTitle,
       startDate: request.startDate,
       endDate: getRentalEndDate(request.startDate, request.duration),
-      status: "activo",
+      status: request.status === "finalizada" ? "finalizado" : "activo",
       rating: 0,
       rated: userRatings.some((rating) =>
         Number(rating.rentalId) === Number(request.id)
@@ -318,8 +326,7 @@ async function loadTenantDashboardData() {
 
 function updateStats() {
   document.getElementById("totalRequests").textContent = userRequests.length;
-  document.getElementById("activeRentals").textContent =
-    userRentals.filter((r) => r.status === "activo").length;
+  document.getElementById("activeRentals").textContent = userRentals.length;
 
   let avgRating = 0;
   if (receivedTenantReviews.length > 0) {
@@ -423,7 +430,7 @@ function renderActiveRentals() {
 
   if (userRentals.length === 0) {
     container.innerHTML =
-      '<div class="empty-state"><i class="fas fa-home"></i><p>No hay arriendos activos</p></div>';
+      '<div class="empty-state"><i class="fas fa-home"></i><p>No hay arriendos</p></div>';
     return;
   }
 
@@ -436,7 +443,9 @@ function renderActiveRentals() {
             <div class="request-location"><i class="fas fa-calendar-alt"></i> Termino estimado: ${
     formatDate(r.endDate)
   }</div>
-            <span class="status-badge status-aprobada">Activo</span>
+            <span class="status-badge status-${
+    r.status === "finalizado" ? "finalizada" : "aprobada"
+  }">${r.status === "finalizado" ? "Finalizado" : "Activo"}</span>
             <div class="request-actions">
                 <button class="btn-outline-sm" onclick="window.location.href='propertyReview.html?id=${
     encodeURIComponent(r.propertyId || r.id)
@@ -463,16 +472,13 @@ function renderHistory() {
                 <p>${formatDate(r.startDate)} - ${formatDate(r.endDate)}</p>
             </div>
             <div class="history-rating">
-                ${
-    r.rated
-      ? `
-                    <div class="stars-small">${generateStars(r.rating)}</div>
-                    <span class="btn-rated">Calificado</span>
-                `
-      : `
-                    <button class="btn-rate" onclick="openRatingModal(${r.id}, '${r.propertyTitle}')">Calificar</button>
-                `
-  }
+                <button class="btn-rate" onclick="window.location.href='propertyReview.html?id=${
+    encodeURIComponent(r.propertyId || r.id)
+  }'">Calificar Propiedad</button>
+                <button class="btn-rate btn-rate-owner" onclick="window.location.href='landlordReview.html?id_usuario=${
+    encodeURIComponent(r.ownerId || "")
+  }'">Calificar Propietario</button>
+                <button class="btn-rate btn-rate-tucasa" onclick="window.location.href='surveys.html'">Califica TuCasa</button>
             </div>
         </div>
     `).join("");

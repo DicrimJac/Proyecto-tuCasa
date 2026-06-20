@@ -260,6 +260,65 @@
     cursor: pointer;
 }
 
+/* Mis arriendos */
+.rentals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.rental-card {
+    background: #f8f9fa;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    border-left: 3px solid #28a745;
+}
+
+.rental-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F3B4C;
+    margin: 0 0 0.5rem;
+}
+
+.rental-detail {
+    color: #6c7f8b;
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.rental-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.btn-finish-rental,
+.btn-review-tenant {
+    border: 1px solid #2C5A6E;
+    border-radius: 0.5rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.72rem;
+    cursor: pointer;
+}
+
+.btn-finish-rental {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.btn-review-tenant {
+    background: transparent;
+    color: #2C5A6E;
+}
+
+.btn-review-tenant:hover {
+    background: #2C5A6E;
+    color: white;
+}
+
 /* Propiedades */
 .properties-grid {
     display: grid;
@@ -538,6 +597,10 @@
     }
     
     .properties-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rentals-grid {
         grid-template-columns: 1fr;
     }
 }

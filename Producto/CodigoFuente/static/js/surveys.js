@@ -279,7 +279,6 @@ if (surveyForm) {
         submitBtn.disabled = true;
         setTimeout(() => {
             saveSurvey(surveyData);
-            loadHistory();
             surveyForm.reset();
             resetStars();
             showToast('¡Gracias por tu opinión! Tu encuesta ha sido enviada.');
@@ -292,11 +291,4 @@ if (surveyForm) {
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     initStars();
-    loadHistory();
-    // ESC cerrar modal
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeSurveyModal();
-        }
-    });
 });

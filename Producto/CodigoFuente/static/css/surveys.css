@@ -27,12 +27,9 @@
 }
 
 .surveys-container {
-    max-width: 1280px;
+    max-width: 900px;
     margin: 2rem auto;
     padding: 0 2rem;
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 2rem;
 }
 
 .survey-card {
