@@ -35,7 +35,7 @@ export class EmailService {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        to: recipients,
+        to: recipients.length === 1 ? recipients[0] : recipients,
         subject,
         html,
         attachments,
@@ -320,20 +320,39 @@ export class EmailService {
       return { success: false, skipped: true };
     }
 
+    const safeTitle = this.escapeHtml(title);
+    const safeMessage = this.escapeHtml(message);
+    const safeUrl = this.escapeHtml(url);
+
     return await this.sendEmail({
       to,
       subject,
       html: `
-        <div style="font-family:Arial,sans-serif;color:#1F3B4C;line-height:1.5">
-          <h2>${title}</h2>
-          <p>${message}</p>
-          <p style="margin:24px 0">
-            <a href="${url}" style="background:#2C5A6E;color:#fff;padding:12px 18px;text-decoration:none;border-radius:6px;display:inline-block">
-              Abrir resena
-            </a>
-          </p>
-          <p>Si el boton no funciona, copia y pega este enlace en tu navegador:</p>
-          <p style="word-break:break-all">${url}</p>
+        <div style="margin:0;background:#f3f6f7;padding:24px 10px;font-family:Arial,sans-serif;color:#1f3b4c;line-height:1.5">
+          <div style="max-width:650px;margin:auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 3px 14px rgba(31,59,76,.12)">
+            <div style="background:#2c5a6e;padding:22px 28px;color:#ffffff">
+              <div style="font-size:25px;font-weight:700">Tu Casa</div>
+              <div style="opacity:.9;margin-top:3px">Tu experiencia importa</div>
+            </div>
+            <div style="padding:32px 28px;text-align:center">
+              <div style="width:62px;height:62px;margin:0 auto 20px;background:#edf3f5;border-radius:50%;color:#d99b2b;font-size:32px;line-height:62px;font-weight:700">&#9733;</div>
+              <h1 style="font-size:23px;margin:0 0 12px;color:#1f3b4c">${safeTitle}</h1>
+              <p style="max-width:500px;margin:0 auto;color:#51656f;font-size:16px">${safeMessage}</p>
+              <div style="background:#faf7ef;border:1px solid #eee4cc;border-radius:9px;padding:17px 18px;margin:24px auto;max-width:500px;color:#51656f">
+                Tu opini&oacute;n ayuda a construir una comunidad m&aacute;s segura y transparente. Completar la evaluaci&oacute;n solo te tomar&aacute; unos minutos.
+              </div>
+              <a href="${safeUrl}" style="display:inline-block;background:#2c5a6e;color:#ffffff;text-decoration:none;padding:13px 24px;border-radius:7px;font-weight:700;font-size:16px">
+                Realizar evaluaci&oacute;n
+              </a>
+              <div style="border-top:1px solid #dce5e9;margin-top:30px;padding-top:20px;text-align:left;color:#657780;font-size:13px">
+                <p style="margin:0 0 8px">Si el bot&oacute;n no funciona, copia y pega este enlace en tu navegador:</p>
+                <a href="${safeUrl}" style="color:#2c5a6e;word-break:break-all">${safeUrl}</a>
+              </div>
+            </div>
+            <div style="background:#edf3f5;padding:16px 28px;text-align:center;color:#657780;font-size:12px">
+              Este correo fue enviado autom&aacute;ticamente por Tu Casa.
+            </div>
+          </div>
         </div>
       `,
     });

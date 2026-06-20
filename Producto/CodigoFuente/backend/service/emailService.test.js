@@ -72,3 +72,54 @@ Deno.test("correo se omite cuando el propietario no tiene email", async () => {
     reason: "owner_without_email",
   });
 });
+
+Deno.test("API recibe un string cuando hay un solo destinatario", async () => {
+  const service = new EmailService();
+  service.apiUrl = "https://email.example/api/send";
+  service.apiToken = "test-token";
+  service.enabled = true;
+
+  const originalFetch = globalThis.fetch;
+  let requestBody;
+  globalThis.fetch = (_url, options) => {
+    requestBody = JSON.parse(options.body);
+    return Promise.resolve(new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    }));
+  };
+
+  try {
+    await service.sendEmail({
+      to: "dueno@example.com",
+      subject: "Solicitud",
+      html: "<p>Hola</p>",
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.equal(requestBody.to, "dueno@example.com");
+});
+
+Deno.test("correo de evaluacion usa la identidad visual de Tu Casa", async () => {
+  const service = new EmailService();
+  let sentEmail;
+  service.sendEmail = (email) => {
+    sentEmail = email;
+    return Promise.resolve({ success: true });
+  };
+
+  await service.sendReviewLink("usuario@example.com", {
+    subject: "Evalua a tu arrendatario - Tu Casa",
+    title: "Solicitud de arriendo aprobada",
+    message: "Ya puedes realizar tu evaluacion.",
+    url: "https://tucasa.example/tenantReview.html?id_request=10",
+  });
+
+  assert.match(sentEmail.html, /background:#2c5a6e/);
+  assert.match(sentEmail.html, /Tu experiencia importa/);
+  assert.match(sentEmail.html, /Realizar evaluaci&oacute;n/);
+  assert.match(sentEmail.html, /comunidad m&aacute;s segura/);
+  assert.match(sentEmail.html, /tenantReview\.html\?id_request=10/);
+});

@@ -314,6 +314,7 @@ async function loadTenantDashboardData() {
       propertyTitle: request.propertyTitle,
       propertyLocation: request.propertyLocation || "Sin ubicación",
       startDate: request.startDate,
+      createdAt: request.date,
       endDate: getRentalEndDate(request.startDate, request.duration),
       status: request.status === "finalizada" ? "finalizado" : "activo",
       rating: 0,
@@ -435,7 +436,15 @@ function renderActiveRentals() {
     return;
   }
 
-  container.innerHTML = userRentals.map((r) => `
+  const latestRentals = [...userRentals]
+    .sort((a, b) => {
+      const dateA = new Date(a.startDate || a.createdAt || 0).getTime() || 0;
+      const dateB = new Date(b.startDate || b.createdAt || 0).getTime() || 0;
+      return dateB - dateA;
+    })
+    .slice(0, 3);
+
+  container.innerHTML = latestRentals.map((r) => `
         <div class="request-card rental-card">
             <h4>${r.propertyTitle}</h4>
             <div class="request-location"><i class="fas fa-map-marker-alt"></i> ${r.propertyLocation}</div>
