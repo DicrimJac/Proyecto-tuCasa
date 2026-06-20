@@ -242,8 +242,12 @@ function getPropertyLocation(property) {
   const parts = [
     property.location,
     property.ubicacion,
+    address.street && address.number
+      ? `${address.street} ${address.number}`
+      : address.street,
     address.comuna,
     address.city,
+    address.state,
   ].filter(Boolean);
 
   return [...new Set(parts)].join(", ") || "Sin ubicacion";
@@ -382,6 +386,7 @@ function normalizeApiRequest(request) {
     tenantId,
     propertyTitle: property.title || property.titulo || property.name ||
       property.type_desc || `Propiedad ${propertyId}`,
+    propertyLocation: getPropertyLocation(property),
     applicant: applicantName,
     fullName: applicantName,
     rut: getMessageValue(request.message, "RUT"),
@@ -521,6 +526,9 @@ function renderOwnerRentals() {
   container.innerHTML = rentals.map((r) => `
       <div class="rental-card">
           <h4>${r.propertyTitle}</h4>
+          <div class="rental-detail"><i class="fas fa-map-marker-alt"></i> ${
+    r.propertyLocation || "Sin ubicación"
+  }</div>
           <div class="rental-detail"><i class="fas fa-user"></i> Arrendatario: ${r.applicant}</div>
           <div class="rental-detail"><i class="fas fa-calendar-check"></i> Inicio: ${
     formatDate(r.startDate)

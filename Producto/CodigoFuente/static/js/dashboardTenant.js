@@ -312,6 +312,7 @@ async function loadTenantDashboardData() {
       propertyId: request.propertyId,
       ownerId: request.ownerId,
       propertyTitle: request.propertyTitle,
+      propertyLocation: request.propertyLocation || "Sin ubicación",
       startDate: request.startDate,
       endDate: getRentalEndDate(request.startDate, request.duration),
       status: request.status === "finalizada" ? "finalizado" : "activo",
@@ -437,6 +438,7 @@ function renderActiveRentals() {
   container.innerHTML = userRentals.map((r) => `
         <div class="request-card rental-card">
             <h4>${r.propertyTitle}</h4>
+            <div class="request-location"><i class="fas fa-map-marker-alt"></i> ${r.propertyLocation}</div>
             <div class="request-location"><i class="fas fa-calendar-check"></i> Inicio: ${
     formatDate(r.startDate)
   }</div>
