@@ -26,10 +26,7 @@ function logEmailEvent(level, data) {
 export class EmailService {
   constructor() {
     const defaultApiUrl = "http://chokitaapi.dev:3000/api/send";
-    const configuredApiUrl = Deno.env.get("EMAIL_API_URL") || "";
-    this.apiUrl = configuredApiUrl.includes("resend.com")
-      ? defaultApiUrl
-      : configuredApiUrl || defaultApiUrl;
+    this.apiUrl = Deno.env.get("EMAIL_API_URL") || defaultApiUrl;
     this.apiToken = Deno.env.get("EMAIL_API_TOKEN") ||
       Deno.env.get("SMTP_LOCAL_SECRET") ||
       "smtp-local-secret";
@@ -73,6 +70,20 @@ export class EmailService {
       return { success: true, devMode: true };
     }
 
+    const requestPayload = {
+      to: recipients.length === 1 ? recipients[0] : recipients,
+      subject,
+      html,
+      attachments,
+    };
+
+    logEmailEvent("info", {
+      operation: "sendEmail",
+      emailType,
+      result: "request_started",
+      ...requestPayload,
+    });
+
     let response;
     try {
       response = await fetch(this.apiUrl, {
@@ -81,12 +92,7 @@ export class EmailService {
           Authorization: `Bearer ${this.apiToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          to: recipients.length === 1 ? recipients[0] : recipients,
-          subject,
-          html,
-          attachments,
-        }),
+        body: JSON.stringify(requestPayload),
         signal: AbortSignal.timeout(this.timeoutMs),
       });
     } catch (error) {
@@ -96,6 +102,7 @@ export class EmailService {
         result: "connection_error",
         error: sanitizeLogError(error),
         durationMs: Date.now() - startedAt,
+        ...requestPayload,
       });
       if (error?.name === "TimeoutError" || error?.name === "AbortError") {
         throw new Error(
@@ -118,6 +125,7 @@ export class EmailService {
         statusCode: response.status,
         error: sanitizeLogError(providerError),
         durationMs: Date.now() - startedAt,
+        ...requestPayload,
       });
       throw new Error(
         providerError,
@@ -132,6 +140,7 @@ export class EmailService {
       recipientCount: recipients.length,
       attachmentCount: attachments.length,
       durationMs: Date.now() - startedAt,
+      ...requestPayload,
     });
     return { success: true, data: result };
   }
