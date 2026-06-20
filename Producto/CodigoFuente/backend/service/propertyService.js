@@ -267,7 +267,18 @@ export class PropertyService {
       ? { state_nbr: 1, state_desc: "Disponible" }
       : { state_nbr: 0, state_desc: "No disponible" };
 
-    return this.repository.update(id, statePayload);
+    const updatedProperty = await this.repository.update(id, statePayload);
+
+    // Al volver a publicar una propiedad, el arriendo aprobado anterior termina.
+    // Esto mantiene sincronizados la disponibilidad del owner y el estado que ve
+    // el arrendatario en su dashboard.
+    if (isActive) {
+      const finalizedRequests = await this.requestRepository
+        .finalizeApprovedByPropertyId(id);
+      return { ...updatedProperty, finalizedRequests };
+    }
+
+    return updatedProperty;
   }
 
   async deleteProperty(id, { ownerId } = {}) {

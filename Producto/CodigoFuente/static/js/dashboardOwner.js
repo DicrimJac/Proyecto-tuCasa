@@ -359,6 +359,7 @@ function normalizeRequest(request) {
   return {
     ...request,
     propertyId: String(request.propertyId || ""),
+    tenantId: request.tenantId || request.id_usuario || "",
     applicant: request.applicant || request.fullName || "Solicitante",
     status: normalizeRequestStatus(request.status),
     message: request.message || "Sin mensaje",
@@ -372,11 +373,13 @@ function normalizeApiRequest(request) {
   const applicantName = getMessageValue(request.message, "Nombre") ||
     buildFullName(user) || "Solicitante";
   const propertyId = request.id_propi || property.id_propi || "";
+  const tenantId = request.id_usuario || user.id_usuario || user.id || "";
 
   return normalizeRequest({
     id: requestId,
     source: "api",
     propertyId: String(propertyId),
+    tenantId,
     propertyTitle: property.title || property.titulo || property.name ||
       property.type_desc || `Propiedad ${propertyId}`,
     applicant: applicantName,
@@ -489,7 +492,58 @@ async function refreshReceivedRequests() {
   buildRecentActivity();
   renderRecentActivity();
   renderRequests();
+  renderOwnerRentals();
   updateStats();
+}
+
+function getRentalEndDate(startDate, durationText) {
+  const start = new Date(startDate || Date.now());
+  const months = Number(String(durationText || "").match(/\d+/)?.[0] || 12);
+  const end = new Date(start);
+  end.setMonth(end.getMonth() + months);
+  return end;
+}
+
+function renderOwnerRentals() {
+  const container = document.getElementById("ownerRentalsList");
+  if (!container) return;
+
+  const rentals = receivedRequests.filter((request) =>
+    request.status === "aprobada"
+  );
+
+  if (rentals.length === 0) {
+    container.innerHTML =
+      '<div class="empty-state"><i class="fas fa-home"></i><p>No hay arriendos activos</p></div>';
+    return;
+  }
+
+  container.innerHTML = rentals.map((r) => `
+      <div class="rental-card">
+          <h4>${r.propertyTitle}</h4>
+          <div class="rental-detail"><i class="fas fa-user"></i> Arrendatario: ${r.applicant}</div>
+          <div class="rental-detail"><i class="fas fa-calendar-check"></i> Inicio: ${
+    formatDate(r.startDate)
+  }</div>
+          <div class="rental-detail"><i class="fas fa-calendar-alt"></i> Termino estimado: ${
+    formatDate(getRentalEndDate(r.startDate, r.duration))
+  }</div>
+          <span class="request-status status-aprobada">Activo</span>
+          <div class="rental-actions">
+              <button class="btn-finish-rental" onclick="finishRental(${r.id})">Finalizar Arriendo</button>
+              <button class="btn-review-tenant" onclick="window.location.href='tenantReview.html?id_usuario=${
+    encodeURIComponent(r.tenantId)
+  }'">Calificar Arrendatario</button>
+          </div>
+      </div>
+  `).join("");
+}
+
+async function finishRental(requestId) {
+  if (!confirm("¿Deseas finalizar este arriendo y habilitar la propiedad?")) {
+    return;
+  }
+  await updateRequestStatus(requestId, "finalizada");
 }
 
 async function loadOwnerProperties() {
@@ -687,6 +741,7 @@ function getStatusText(status) {
     pendiente: "Pendiente",
     aprobada: "Aprobada",
     rechazada: "Rechazada",
+    finalizada: "Finalizada",
   }[status] || status;
 }
 
@@ -786,7 +841,7 @@ async function disablePropertyAfterApproval(propertyId) {
 }
 
 async function updateRequestStatus(requestId, nextStatus) {
-  const validStatuses = new Set(["aprobada", "rechazada"]);
+  const validStatuses = new Set(["aprobada", "rechazada", "finalizada"]);
   if (!validStatuses.has(nextStatus)) return;
   const apiRequest = receivedRequests.find((request) =>
     Number(request.id) === Number(requestId) && request.source === "api"
@@ -822,10 +877,22 @@ async function updateRequestStatus(requestId, nextStatus) {
     apiRequest.statusUpdatedAt = new Date().toISOString();
     renderRecentActivity();
     renderRequests();
+    renderOwnerRentals();
     updateStats();
 
     if (nextStatus === "aprobada") {
       await disablePropertyAfterApproval(apiRequest.propertyId);
+    }
+
+    if (nextStatus === "finalizada") {
+      const property = ownerProperties.find((item) =>
+        String(item.id) === String(apiRequest.propertyId)
+      );
+      if (property) {
+        property.raw = result?.data?.propiedad || property.raw;
+        property.active = true;
+        renderProperties();
+      }
     }
 
     const failedEmail = (result?.data?.reviewEmailDelivery || []).find((item) =>
@@ -863,7 +930,49 @@ async function updateRequestStatus(requestId, nextStatus) {
     await disablePropertyAfterApproval(storedRequests[requestIndex].propertyId);
   }
 
+  if (nextStatus === "finalizada") {
+    await enablePropertyAfterRental(storedRequests[requestIndex].propertyId);
+  }
+
   showToast(`Solicitud ${getStatusText(nextStatus).toLowerCase()}`);
+}
+
+async function enablePropertyAfterRental(propertyId) {
+  const property = ownerProperties.find((item) =>
+    String(item.id) === String(propertyId)
+  );
+
+  try {
+    const response = await fetch(
+      `/api/properties/${encodeURIComponent(propertyId)}/status`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: true }),
+      },
+    );
+    const result = await response.json();
+    if (!response.ok || !result?.success) {
+      throw new Error(
+        result?.message || result?.error ||
+          "No se pudo habilitar la propiedad",
+      );
+    }
+
+    if (property) {
+      property.raw = result.data || property.raw;
+      property.active = true;
+      renderProperties();
+    }
+  } catch (error) {
+    console.error("Error habilitando propiedad al finalizar arriendo:", error);
+    showToast(
+      error.message ||
+        "El arriendo finalizo, pero no se pudo habilitar la propiedad",
+      true,
+    );
+  }
 }
 
 // ========== PROPIEDADES ==========
@@ -946,6 +1055,26 @@ async function togglePropertyStatus(id) {
 
     property.raw = result.data || property.raw;
     property.active = normalizePropertyStatus(result.data || property.raw);
+
+    if (property.active) {
+      const storedRequests = getStoredRentRequests();
+      let localRequestsChanged = false;
+      storedRequests.forEach((request) => {
+        if (
+          String(request.propertyId) === String(id) &&
+          normalizeRequestStatus(request.status) === "aprobada"
+        ) {
+          request.status = "finalizada";
+          request.statusUpdatedAt = new Date().toISOString();
+          localRequestsChanged = true;
+        }
+      });
+      if (localRequestsChanged) {
+        localStorage.setItem("rentRequests", JSON.stringify(storedRequests));
+        refreshReceivedRequests();
+      }
+    }
+
     renderProperties();
     showToast(`Propiedad ${property.active ? "habilitada" : "deshabilitada"}`);
   } catch (error) {
@@ -1051,6 +1180,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 window.viewRequestDetail = viewRequestDetail;
 window.closeRequestModal = closeRequestModal;
 window.updateRequestStatus = updateRequestStatus;
+window.finishRental = finishRental;
 window.editProperty = editProperty;
 window.togglePropertyStatus = togglePropertyStatus;
 window.deleteProperty = deleteProperty;

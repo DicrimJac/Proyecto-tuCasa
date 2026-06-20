@@ -96,6 +96,22 @@ export class RequestRepository extends BaseRepository {
     return data;
   }
 
+  async finalizeApprovedByPropertyId(propertyId) {
+    const { data, error } = await this.supabase
+      .from("SOLICITUD")
+      .update({ status_nbr: 4, status_desc: "Finalizada" })
+      .eq("id_propi", propertyId)
+      .eq("status_nbr", 2)
+      .select();
+
+    if (error) {
+      throw new Error(
+        `Error al finalizar solicitudes de la propiedad ${propertyId}: ${error.message}`,
+      );
+    }
+    return data || [];
+  }
+
   async deleteByPropertyId(propertyId) {
     const { data, error } = await this.supabase
       .from("SOLICITUD")

@@ -67,6 +67,254 @@ export class EmailService {
     });
   }
 
+  escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      })[character]);
+  }
+
+  formatMoney(value) {
+    const amount = Number(value);
+    return Number.isFinite(amount) && amount > 0
+      ? `$${Math.round(amount).toLocaleString("es-CL")}`
+      : "Precio no informado";
+  }
+
+  getPropertyAddress(property = {}) {
+    const address = property.direccion || property.address || {};
+    return [
+      address.street && address.number
+        ? `${address.street} ${address.number}`
+        : address.street,
+      address.comuna,
+      address.city,
+      address.state,
+    ].filter(Boolean).join(", ") || "Ubicación no informada";
+  }
+
+  getAbsoluteUrl(value, baseUrl) {
+    if (!value) return "";
+    try {
+      return new URL(value, baseUrl || undefined).toString();
+    } catch {
+      return "";
+    }
+  }
+
+  buildStars(value) {
+    const score = Math.max(0, Math.min(5, Number(value) || 0));
+    return `${"★".repeat(Math.round(score))}${
+      "☆".repeat(5 - Math.round(score))
+    }`;
+  }
+
+  async sendRentalRequestNotification({
+    to,
+    ownerName,
+    applicant = {},
+    property = {},
+    reviews = [],
+    request = {},
+    propertyUrl = "",
+    baseUrl = "",
+  }) {
+    if (!to) {
+      return { success: false, skipped: true, reason: "owner_without_email" };
+    }
+
+    const characteristic = property.caracteristica || property.characteristic ||
+      {};
+    const title = property.title || property.titulo || property.name ||
+      property.type_desc || "Propiedad";
+    const image = this.getAbsoluteUrl(
+      property.image || property.fotos?.[0]?.url_foto || property.imagen,
+      baseUrl,
+    );
+    const validReviews = reviews.filter((review) =>
+      Number(review.total_rank) > 0
+    );
+    const average = validReviews.length
+      ? validReviews.reduce(
+        (sum, review) => sum + Number(review.total_rank),
+        0,
+      ) / validReviews.length
+      : 0;
+    const categories = [
+      ["Pago", "pay_rank"],
+      ["Limpieza", "clean_rank"],
+      ["Respeto", "respect_rank"],
+      ["Comunicación", "comunic_rank"],
+      ["Convivencia", "noise_rank"],
+      ["Responsabilidad", "respons_rank"],
+      ["Experiencia", "exp_rank"],
+    ];
+    const categoryRows = categories.map(([label, field]) => {
+      const values = validReviews.map((review) => Number(review[field])).filter(
+        (value) => value > 0,
+      );
+      const score = values.length
+        ? values.reduce((sum, value) => sum + value, 0) / values.length
+        : 0;
+      return `<td style="padding:7px 8px;border:1px solid #dce5e9;text-align:center"><strong style="color:#1f3b4c">${label}</strong><br><span style="color:#d99b2b">${
+        score ? score.toFixed(1) : "—"
+      }</span></td>`;
+    }).join("");
+    const reviewCards = validReviews.map((review) => `
+      <div style="border-top:1px solid #dce5e9;padding:14px 0">
+        <div style="color:#d99b2b;font-size:17px;letter-spacing:1px">${
+      this.buildStars(review.total_rank)
+    } <span style="color:#1f3b4c;font-size:14px">${
+      Number(review.total_rank).toFixed(1)
+    }/5</span></div>
+        ${
+      review.comment
+        ? `<p style="margin:7px 0 0;color:#51656f">“${
+          this.escapeHtml(review.comment)
+        }”</p>`
+        : ""
+    }
+      </div>`).join("");
+    const applicantMessage = this.getRequestMessage(request.message);
+
+    return this.sendEmail({
+      to,
+      subject: `Nueva solicitud de arriendo para ${title} - Tu Casa`,
+      html: `
+        <div style="margin:0;background:#f3f6f7;padding:24px 10px;font-family:Arial,sans-serif;color:#1f3b4c;line-height:1.5">
+          <div style="max-width:650px;margin:auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 3px 14px rgba(31,59,76,.12)">
+            <div style="background:#2c5a6e;padding:22px 28px;color:#fff">
+              <div style="font-size:25px;font-weight:700">Tu Casa</div>
+              <div style="opacity:.9;margin-top:3px">Nueva solicitud de arriendo</div>
+            </div>
+            <div style="padding:28px">
+              <h1 style="font-size:23px;margin:0 0 12px;color:#1f3b4c">Hola${
+        ownerName ? `, ${this.escapeHtml(ownerName)}` : ""
+      }</h1>
+              <p style="margin:0 0 22px">${
+        this.escapeHtml(applicant.name)
+      } está interesado en arrendar tu propiedad. Estos son sus datos para que puedas ponerte en contacto:</p>
+
+              <div style="background:#edf3f5;border-left:4px solid #2c5a6e;border-radius:6px;padding:16px 18px;margin-bottom:22px">
+                <div><strong>Nombre:</strong> ${
+        this.escapeHtml(applicant.name)
+      }</div>
+                <div><strong>Correo:</strong> <a style="color:#2c5a6e" href="mailto:${
+        this.escapeHtml(applicant.email)
+      }">${this.escapeHtml(applicant.email || "No informado")}</a></div>
+                <div><strong>Teléfono:</strong> ${
+        this.escapeHtml(applicant.phone || "No informado")
+      }</div>
+              </div>
+
+              ${
+        applicantMessage
+          ? `<div style="margin-bottom:22px"><strong>Mensaje del solicitante</strong><p style="background:#faf7ef;border-radius:6px;padding:13px;margin:7px 0 0;color:#51656f">${
+            this.escapeHtml(applicantMessage)
+          }</p></div>`
+          : ""
+      }
+
+              <h2 style="font-size:18px;margin:0 0 10px">Detalle de la solicitud</h2>
+              <div style="border:1px solid #dce5e9;border-radius:6px;padding:14px 16px;margin-bottom:22px;color:#51656f">
+                <div><strong>Inicio deseado:</strong> ${
+        this.escapeHtml(
+          this.getRequestField(request.message, "Fecha de inicio deseada") ||
+            "No informado",
+        )
+      }</div>
+                <div><strong>Duración:</strong> ${
+        Number(request.contract_time || 0)
+      } meses</div>
+                <div><strong>Ocupantes:</strong> ${
+        Number(request.qty_person || 0)
+      }</div>
+                <div><strong>Situación laboral:</strong> ${
+        this.escapeHtml(request.work_situation_desc || "No informada")
+      }</div>
+                <div><strong>Ingreso mensual:</strong> ${
+        this.formatMoney(request.income)
+      }</div>
+              </div>
+
+              <h2 style="font-size:18px;margin:0 0 10px">Propiedad solicitada</h2>
+              <div style="border:1px solid #dce5e9;border-radius:9px;overflow:hidden;margin-bottom:24px">
+                ${
+        image
+          ? `<img src="${this.escapeHtml(image)}" alt="${
+            this.escapeHtml(title)
+          }" style="width:100%;height:220px;object-fit:cover;display:block">`
+          : ""
+      }
+                <div style="padding:16px">
+                  <div style="font-size:19px;font-weight:700">${
+        this.escapeHtml(title)
+      }</div>
+                  <div style="color:#657780;margin:4px 0">${
+        this.escapeHtml(this.getPropertyAddress(property))
+      }</div>
+                  <div style="font-size:18px;font-weight:700;color:#2c5a6e">${
+        this.formatMoney(characteristic.price ?? property.price)
+      } / mes</div>
+                  <div style="margin-top:5px;color:#657780">${
+        Number(characteristic.qty_room || 0)
+      } dormitorios · ${Number(characteristic.qty_bath || 0)} baños · ${
+        Number(characteristic.total_mtr || 0)
+      } m²</div>
+                  ${
+        propertyUrl
+          ? `<a href="${
+            this.escapeHtml(propertyUrl)
+          }" style="display:inline-block;margin-top:14px;background:#2c5a6e;color:#fff;text-decoration:none;padding:10px 16px;border-radius:6px;font-weight:700">Ver propiedad</a>`
+          : ""
+      }
+                </div>
+              </div>
+
+              <h2 style="font-size:18px;margin:0">Valoraciones como arrendatario</h2>
+              ${
+        validReviews.length
+          ? `
+                <p style="margin:5px 0 14px"><span style="color:#d99b2b;font-size:20px">${
+            this.buildStars(average)
+          }</span> <strong>${
+            average.toFixed(1)
+          }/5</strong> · ${validReviews.length} ${
+            validReviews.length === 1 ? "valoración" : "valoraciones"
+          }</p>
+                <table role="presentation" style="width:100%;border-collapse:collapse;font-size:12px"><tr>${categoryRows}</tr></table>
+                ${reviewCards}
+              `
+          : `<p style="background:#f5f7f8;border-radius:6px;padding:13px;color:#657780">Este solicitante todavía no tiene valoraciones como arrendatario.</p>`
+      }
+
+              <p style="margin:24px 0 0;color:#657780;font-size:13px">La solicitud quedó registrada en Tu Casa. Revisa los antecedentes y contacta al solicitante antes de tomar una decisión.</p>
+            </div>
+          </div>
+        </div>`,
+    });
+  }
+
+  getRequestMessage(message) {
+    const marker = "\nMensaje:";
+    const normalizedMessage = `\n${String(message || "")}`;
+    const index = normalizedMessage.toLowerCase().indexOf(marker.toLowerCase());
+    return index >= 0
+      ? normalizedMessage.slice(index + marker.length).trim()
+      : "";
+  }
+
+  getRequestField(message, label) {
+    const line = String(message || "").split(/\r?\n/).find((item) =>
+      item.toLowerCase().startsWith(`${String(label).toLowerCase()}:`)
+    );
+    return line ? line.slice(line.indexOf(":") + 1).trim() : "";
+  }
+
   async sendReviewLink(to, { subject, title, message, url }) {
     if (!to || !url) {
       return { success: false, skipped: true };

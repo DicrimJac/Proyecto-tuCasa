@@ -254,6 +254,11 @@
     color: #155724;
 }
 
+.status-finalizada {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
 .request-actions {
     margin-top: 0.5rem;
     display: flex;
@@ -309,6 +314,8 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .stars-small {
@@ -333,6 +340,14 @@
     border-radius: 2rem;
     font-size: 0.7rem;
     cursor: pointer;
+}
+
+.btn-rate-owner {
+    background: linear-gradient(135deg, #2C5A6E, #3f7c91);
+}
+
+.btn-rate-tucasa {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
 }
 
 .btn-rated {
