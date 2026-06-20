@@ -8,6 +8,10 @@ export class EmailService {
     this.apiToken = Deno.env.get("EMAIL_API_TOKEN") ||
       Deno.env.get("SMTP_LOCAL_SECRET") ||
       "smtp-local-secret";
+    const configuredTimeout = Number(Deno.env.get("EMAIL_API_TIMEOUT_MS"));
+    this.timeoutMs = Number.isFinite(configuredTimeout) && configuredTimeout > 0
+      ? configuredTimeout
+      : 10000;
     this.enabled = Boolean(this.apiUrl && this.apiToken);
   }
 
@@ -28,19 +32,30 @@ export class EmailService {
 
     console.log(`[EmailService] Enviando correo via ${this.apiUrl}`);
 
-    const response = await fetch(this.apiUrl, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.apiToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        to: recipients.length === 1 ? recipients[0] : recipients,
-        subject,
-        html,
-        attachments,
-      }),
-    });
+    let response;
+    try {
+      response = await fetch(this.apiUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: recipients.length === 1 ? recipients[0] : recipients,
+          subject,
+          html,
+          attachments,
+        }),
+        signal: AbortSignal.timeout(this.timeoutMs),
+      });
+    } catch (error) {
+      if (error?.name === "TimeoutError" || error?.name === "AbortError") {
+        throw new Error(
+          `La API de correo no respondio en ${this.timeoutMs} ms`,
+        );
+      }
+      throw new Error(`No se pudo conectar con la API de correo: ${error.message}`);
+    }
 
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {

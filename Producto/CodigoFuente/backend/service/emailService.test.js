@@ -123,3 +123,29 @@ Deno.test("correo de evaluacion usa la identidad visual de Tu Casa", async () =>
   assert.match(sentEmail.html, /comunidad m&aacute;s segura/);
   assert.match(sentEmail.html, /tenantReview\.html\?id_request=10/);
 });
+
+Deno.test("envio de correo termina con un error claro cuando la API expira", async () => {
+  const service = new EmailService();
+  service.apiUrl = "https://email.example/api/send";
+  service.apiToken = "test-token";
+  service.enabled = true;
+  service.timeoutMs = 5;
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (_url, options) => new Promise((_resolve, reject) => {
+    options.signal.addEventListener("abort", () => reject(options.signal.reason));
+  });
+
+  try {
+    await assert.rejects(
+      () => service.sendEmail({
+        to: "dueno@example.com",
+        subject: "Solicitud",
+        html: "<p>Hola</p>",
+      }),
+      /no respondio en 5 ms/,
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
