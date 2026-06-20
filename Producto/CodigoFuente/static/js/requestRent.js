@@ -599,9 +599,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         submitBtn.disabled = true;
         
         try {
-            const success = await submitRequest(formData);
-            if (success) {
-                showToast('¡Solicitud enviada correctamente! Te contactaremos pronto.');
+            const createdRequest = await submitRequest(formData);
+            if (createdRequest) {
+                const emailDelivery = createdRequest.notificationEmailDelivery;
+                if (emailDelivery?.success === false) {
+                    console.warn("Solicitud guardada, pero el correo no fue enviado:", emailDelivery);
+                    showToast(
+                        'La solicitud fue guardada, pero no se pudo enviar el correo al propietario.',
+                        true
+                    );
+                } else {
+                    showToast('¡Solicitud y correo enviados correctamente!');
+                }
                 form.reset();
                 prefillApplicantForm();
             } else {
